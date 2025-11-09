@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="../css/cart.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding-top: 20px;
+        }
+        .order-container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 15px;
+            padding-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .Pending { background-color: #ffc107; color: black; }
+        .Shipped { background-color: #17a2b8; color: white; }
+        .Delivered { background-color: #28a745; color: white; }
+        .Cancelled { background-color: #989293; color: white; }
+        .order-info {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .order-items {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            padding-bottom: 30px;
+        }
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .order-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .order-item-details {
+            flex: 1;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            text-align: right;
+            margin-top: 10px;
+        }
+        .back-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: #0056b3;
+        }
+        .buy-again-btn {
+    padding: 8px 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+.buy-again-btn:hover {
+    background-color: #218838;
+}
+            /* Overlay to lock the screen */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000; /* Make sure it's above all other content */
+    display: none; /* Hidden by default */
+}
+
+/* Spinner for the busy indicator */
+#loadingSpinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #ff3385; /* Pink */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+    z-index: 1100; /* Make sure the spinner is above the overlay */
+    display: none; /* Hidden by default */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.checkout-img {
+  width: 75px;
+  height:75px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+.cos {
+    display: flex;
+    justify-content: space-between;
+}
+.mrpflex {
+    display: flex
+;
+    justify-content: flex-start;
+}
+.outofStock {
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 5px;
+    border: 2px solid #E91E63;
+    border-radius: 12px;
+    font-weight: bold;
+    color: #E91E63;
+}
+
+
+.slot {
+    color: #607D8B;
+    font-size: 13px;
+    margin: 0px 0;
+    font-weight: bold;
+}
+    </style>
+ 
+</head>
+<body>
+ <!-- Loading Spinner -->
+ <div id="overlay"></div>
+ <div id="loadingSpinner"></div> 
+<div class="order-container">
+    <div id="order-details"></div>
+</div>
+
+
+ <!-- Floating Cart -->
+  <!-- Floating Cart -->
+  <div class="floating-cart" id="floatingCart" onclick="viewCart()">
+    <div>
+<div style="
+font-size: 15px;
+font-weight: bold;
+">
+    <span> View Cart</span> 
+</div>
+<div style="
+font-size: 12px;
+font-weight: bold;
+">
+    <span id="cartCount">0</span> Items
+</div>
+    
+</div>
+ <div style="
+ font-size: 20px;
+ width: 10px;
+">
+    <i class="fa-solid fa-angle-right"></i>
+ </div>
+ </div>
+  <!-- Clear cart Modal -->
+  <div id="clearCartModal" class="modal">
+    <div class="modal-content">
+        <h2>Switching Shops?</h2>
+        <p>Your cart contains items from another shop. Do you want to clear it and add new items?</p>
+        <div class="modal-buttons">
+            <button id="cancelClearCart" class="btn-secondary">Cancel</button>
+            <button id="confirmClearCart" class="btn-primary">Yes, Clear Cart</button>
+        </div>
+    </div>
+  </div>
+
+<!-- Custom Confirmation Modal -->
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <p id="orderplaced">This product is already added in your cart</p>
+
+      <button class="cart-btn" onclick="closeConfirmModal()">Close</button>
+    </div>
+  </div>
+
+<script>
+function openConfirmModal() {
+  document.getElementById("confirmModal").style.display = "flex";
+}
+
+function closeConfirmModal() {
+  document.getElementById("confirmModal").style.display = "none";
+}
+
+const userData = JSON.parse(localStorage.getItem('user'));
+const orderDetail = JSON.parse(localStorage.getItem('selectedOrder'));
+
+if (userData) {
+
+    var API_URL = `/odata/v4/order/Orders('${orderDetail.orderId}')?$expand=user,shop,orderItems($expand=product($expand=medias))`;
+}
+fetchOrders(); 
+// Fetch products from API
+async function fetchOrders() {
+    try {
+        loadingSpinner.style.display = 'block';
+        const response = await fetch(API_URL, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
+            }
+        });
+
+        if (!response.ok) throw new Error(`Error fetching products: ${response.status}`);
+
+        const data = await response.json();
+        selectedOrder = data;
+    
+        loadOrders();
+    } catch (error) {
+        console.error("Failed to load products:", error);
+    } finally {
+        loadingSpinner.style.display = 'none';
+    }
+}
+
+function loadOrders() {
+    // Load order details from localStorage
+    //const selectedOrder = JSON.parse(localStorage.getItem("selectedOrder"));
+
+    if (!selectedOrder) {
+        document.getElementById("order-details").innerHTML = "<p>No order selected.</p>";
+    } else { 
+        const orderDetailsDiv = document.getElementById("order-details");
+        orderDetailsDiv.innerHTML = `
+            <div class="order-header">
+                <span>Order ID: ${selectedOrder.orderId}</span>
+                <span class="order-status ${selectedOrder.status}">${selectedOrder.status}</span>
+            </div>
+            <div class="order-info">
+                <p><strong>Shop:</strong> ${selectedOrder.shop.shopName} - ${selectedOrder.shop.shopLocation}</p>
+                <p><strong>Shipping Address:</strong> ${selectedOrder.shippingAddress}</p>
+                <p><strong>Ordered On:</strong> ${new Date(selectedOrder.createdAt).toLocaleString()}</p>
+            </div>
+            <div class="order-items">
+             
+                ${selectedOrder.orderItems.map(item => `
+
+                    <div class="checkout-item">
+                    <img src="${item.product.medias[0].url}" alt="${item.productName} class="checkout-img" style="width: 100px; object-fit: cover; border-radius: 5px;">
+                    <div style="width: 100%;"> 
+                    <p class="product-title">${item.product.productName}</p>
+                    <div class="cos">
+                    <p class="product-price">₹${item.product.sellPrice.toFixed(2)} / ${item.product.unit}</p>
+                    <p class="product-price">QTY ${item.quantity}</p>
+                     </div>
+                    <div class="mrpflex">
+                    <p class="product-priceMRP">MRP ₹${item.product.mrp.toFixed(2)}</p>
+                    <p class="product-priceOffer">(${Math.round(((item.product.mrp - item.product.sellPrice) / item.product.mrp) * 100)}% Off)</p>
+                    </div>
+                    <div class="cos">
+                    ${
+                    selectedOrder.shop.type ==="Services"
+                        ? `
+                        <p class="slot">${item.product.color}</p>`
+                        : ""
+                    }
+                     ${item.product.online === "Show" 
+                    ? `<button class="cart-btn" onclick="buyAgain('${item.product.productId}')">Buy Again</button>` 
+                    : `<p class="product-title outofStock">Out Of Stock</p>`
+                    }
+                     </div>
+                    </div>
+                    </div>
+
+                `).join('')}
+            </div>
+            
+        `;
+    }
+    updateCartUI();
+}
+
+
+
+function buyAgain(productId) {
+
+    const currentShopId = selectedOrder.shop_shopId;
+    const storedShopId = localStorage.getItem("cartShopId");
+
+    if (storedShopId && storedShopId !== String(currentShopId)) {
+        showClearCartModal(() => {
+            clearCartAndAddItem(productId, currentShopId);
+        });
+        return;
+    }
+
+    const getCartItem = JSON.parse(localStorage.getItem('cartProducts'))
+    if(getCartItem){
+        const itemByPID = getCartItem.find(p => p.productId === productId);
+     if(itemByPID){
+        openConfirmModal();
+    }else{
+        addToCart(productId)
+    }
+    
+  }
+
+
+
+}
+
+// function addToCart(productId) {
+//     const currentShopId = shopData.shopId;
+//     const storedShopId = localStorage.getItem("cartShopId");
+
+//     if (storedShopId && storedShopId !== String(currentShopId)) {
+//         showClearCartModal(() => {
+//             clearCartAndAddItem(productId, currentShopId);
+//         });
+//         return;
+//     }
+
+//     addItemToCart(productId, currentShopId);
+// }
+
+// Show the fancy confirmation popup
+function showClearCartModal(confirmCallback) {
+    const modal = document.getElementById("clearCartModal");
+    modal.style.display = "flex";
+
+    document.getElementById("cancelClearCart").onclick = () => {
+        modal.style.display = "none";
+    };
+
+    document.getElementById("confirmClearCart").onclick = () => {
+        modal.style.display = "none";
+        confirmCallback(); // Proceed to clear cart and add item
+    };
+}
+
+// Clear cart and add the new product
+function clearCartAndAddItem(productId, currentShopId) {
+    cartItems = {};
+    localStorage.removeItem("cart");
+    localStorage.removeItem("cartProducts");
+    localStorage.setItem("cartShopId", currentShopId);
+    addItemToCart(productId, currentShopId);
+}
+
+
+
+
+// ==============CART ============
+const floatingCart = document.getElementById("floatingCart");
+const cartCount = document.getElementById("cartCount");
+let cartItems = JSON.parse(localStorage.getItem("cart")) || {};
+const cartProducts = localStorage.getItem('cartProducts');
+const products = JSON.parse(cartProducts);
+
+
+const shopData = JSON.parse(localStorage.getItem('shop'));
+
+
+
+
+function addToCart(productId) {
+    const currentShopId = shopData.shopId;
+    const storedShopId = localStorage.getItem("cartShopId");
+
+    if (storedShopId && storedShopId !== String(currentShopId)) {
+        showClearCartModal(() => {
+            clearCartAndAddItem(productId, currentShopId);
+        });
+        return;
+    }
+
+    addItemToCart(productId, currentShopId);
+}
+
+
+
+// Show the fancy confirmation popup
+function showClearCartModal(confirmCallback) {
+    const modal = document.getElementById("clearCartModal");
+    modal.style.display = "flex";
+
+    document.getElementById("cancelClearCart").onclick = () => {
+        modal.style.display = "none";
+    };
+
+    document.getElementById("confirmClearCart").onclick = () => {
+        modal.style.display = "none";
+        confirmCallback(); // Proceed to clear cart and add item
+    };
+}
+
+// Clear cart and add the new product
+function clearCartAndAddItem(productId, currentShopId) {
+    cartItems = {};
+    localStorage.removeItem("cart");
+    localStorage.removeItem("cartProducts");
+    localStorage.setItem("cartShopId", currentShopId);
+    addItemToCart(productId, currentShopId);
+}
+
+// Add an item to the cart
+function addItemToCart(productId, currentShopId) {
+    localStorage.setItem("cartShopId", currentShopId);
+    cartItems[productId] = (cartItems[productId] || 0) + 1;
+    saveCart();
+    saveCartProducts(productId)
+    updateCartUI();
+}
+
+function changeQuantity(productId, change) {
+    if (!cartItems[productId]) return;
+
+    cartItems[productId] = Math.max(0, cartItems[productId] + change);
+
+    if (cartItems[productId] === 0) 
+{
+    delete cartItems[productId]; // Remove item if quantity is 0
+    removeCartProduct(productId);
+}
+  
+     
+    saveCart();
+    updateCartUI();
+
+    if (document.getElementById("checkoutModal").style.display === "flex") viewCart();
+}
+
+function saveCart() {
+    localStorage.setItem("cart", JSON.stringify(cartItems));
+    updateCartCount();
+}
+function saveCartProducts(productId) {
+    const cartProductsArr = localStorage.getItem('cartProducts');
+        const cartProdData = JSON.parse(cartProductsArr);
+        if(!cartProdData){
+            var cartProducts = [];
+        }else{
+            var cartProducts = cartProdData;
+        }
+    const product = selectedOrder.orderItems.find(p => p.product.productId === productId);
+    cartProducts.push(product.product);
+    localStorage.setItem("cartProducts", JSON.stringify(cartProducts));
+}
+function removeCartProduct(productId){
+    const cartProducts = localStorage.getItem('cartProducts');
+    const cartProdData = JSON.parse(cartProducts);
+            //const product = cartProdData.find(p => p.productId === productId);
+    const updatedProducts = cartProdData.filter(product => product.productId !== productId);
+    localStorage.setItem("cartProducts", JSON.stringify(updatedProducts));
+    if(updatedProducts.length==0) localStorage.removeItem('cartShopId');
+}
+
+
+function updateCartUI() {
+    selectedOrder.orderItems.forEach(product => {
+        let controls = document.getElementById(`cartControls-${product.productId}`);
+        if (controls) {
+            if (cartItems[product.productId] && cartItems[product.productId] > 0) {
+                controls.innerHTML = `
+                    <div class="quantity-control">
+                        <button class="quantity-btn" onclick="changeQuantity('${product.productId}', -1)">-</button>
+                        <span class="cart-quantity">${cartItems[product.productId]}</span>
+                        <button class="quantity-btn" onclick="changeQuantity('${product.productId}', 1)">+</button>
+                    </div>
+                `;
+            } else {
+                controls.innerHTML = `<button class="cart-btn" onclick="addToCart('${product.productId}')">Buy Again</button>`;
+            }
+        }
+    });
+
+    updateCartCount();
+}
+
+function updateCartCount() {
+    let totalItems = Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
+    cartCount.textContent = totalItems;
+    floatingCart.style.display = totalItems > 0 ? "flex" : "none";
+}
+
+function loadContent(url) {    
+    window.parent.document.getElementById('userProfileHeader').style.display = 'none'; // Hide Cart Icon
+    window.parent.document.getElementById('backButton').classList.add('show'); // Animate Back Button
+    window.parent.document.getElementById('content').innerHTML = '<iframe src="' + url + '" style="width:100%; height: 100%; border:none;"></iframe>';
+           // document.querySelector('.container').style.display = 'none';
+        }
+
+function viewCart(){
+       const url="./iframe/mycart.html";
+    loadContent(url);  
+}
+
+
+
+
+document.addEventListener("click", function () {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+
+
+// Login
+// document.addEventListener("DOMContentLoaded", function () {
+//     const token = localStorage.getItem('refreshToken');
+//     const user = localStorage.getItem('user');
+// if(!token && !user){
+//     window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+//     const url="./iframe/login.html";
+//     loadContent(url);
+// }
+// });
+</script>
+
+</body>
+</html>

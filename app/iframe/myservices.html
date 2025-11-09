@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop</title>
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        .imageUploader {
+            display: flex
+;
+    justify-content: center;
+    align-items: center;
+    padding-top: 40px;
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    background: white;
+            }
+
+            .uploadIcon {
+                    height: auto;
+                    width: 166px;
+                    align-content: center;
+                    align-items: center;
+                    justify-content: center;
+                    justify-items: center;
+                }
+
+        /* Header */
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Subheader with Buttons */
+        .subheader {
+            display: flex;
+            justify-content: space-around;
+            background-color: #fff;
+            padding: 10px;
+            top: 60px;
+            border-bottom: 2px solid #ddd;
+            }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background-color: transparent;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            border-bottom: 3px solid #007bff;
+            color: #007bff;
+        }
+
+        /* Section Content */
+        .tab-content {
+            display: none;
+    margin-top: 60px;
+    border-radius: 10px;
+
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Profile Section */
+        .profile-card {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .profile-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+    .containerInfo {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+        /* Responsive Design */
+
+        @media (max-width: 768px) {
+            .tab-btn {
+                font-size: 14px;
+            }
+
+           
+            
+        }
+        .input-groupInfo {
+    width: 340px;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.inputInfo {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ff338524;
+    border-radius: 6px;
+
+    color: #333;
+    outline: none;
+}
+
+.inputInfoEdit {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ff3385;
+    border-radius: 6px;
+
+    color: #333;
+    outline: none;
+    margin-top: 5px;
+}
+
+
+.inputInfo::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.buttonInfo {
+    margin: 15px;
+    padding: 10px;
+    font-size: 13px;
+    background: #f3f3f3;
+    border: none;
+    border-radius: 6px;
+    background-image: none;
+    background-color: #f3f3f3;
+    border-color: #dbeda0;
+    color: #ea7302;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 600;
+    box-shadow: 0 0 5px 1px rgb(0 0 0 / 28%);
+}
+
+.buttonInfo:hover {
+    background: #ffe0b0;
+}
+
+/* User info */
+
+
+.tiles-containerInfoImage {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    justify-items: center;
+    padding-top: 200px;
+}
+
+.tiles-containerInfo {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+
+}
+.shopHeaderBtn{
+    display: flex
+;
+    justify-content: space-between;
+}
+select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 2px solid #ff3385;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 5px;
+  }
+    
+  section#shopCreate {
+      padding: 20px;
+      margin: auto;
+      margin-top: 40px;
+      max-width: 800px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .infoInCenter {
+      flex-wrap: wrap;
+      justify-content: space-between;
+      justify-items: center;
+      gap: 0px;
+    }
+    
+    .input-groupInfo {
+      flex: 1 1 45%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+   
+    
+    .tiles-containerInfoBanner {
+    display: grid
+;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 11px;
+    margin-top: 10px;
+}
+    
+    /* Map placeholder styling */
+    #map {
+        width: 100%;
+    height: 300px;
+    background: #e9e9e9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .input-groupInfo {
+        flex: 1 1 100%;
+      }
+    }
+
+
+
+
+.tile-image {
+    width: 95%;
+    max-height: 350px;
+    object-fit: scale-down;
+    display: block;
+}
+.carousel-imageUploader {
+    width: 100%;
+    height: auto;
+    object-fit: scale-down;
+    position: relative;
+    top: 0;
+    left: 0;
+    opacity: 1;
+    z-index: -1;
+    transition: opacity 1s ease-in-out;
+    border-radius: 10px;
+}
+.edit-camera-icon {
+    position: relative;
+    bottom: 39px;
+    right: 0px;
+    font-size: 2.5rem;
+    color: #ffffff;
+    background: #666;
+    border-radius: 20%;
+    padding: 7px;
+}
+
+.shop-tile{
+
+    height: 329px !important;
+
+}
+
+.shop-bottom-info{
+    border-bottom-left-radius: 0px !important;
+}
+
+.shop-offer{
+    margin-bottom: 8px !important;
+    z-index: 0;
+}
+
+.shop-bottom-info2{
+    margin-top: -5px;
+    border-bottom-left-radius: 9px !important;
+    border-bottom-right-radius: 9px !important;
+}
+
+.carousel-dots-top{
+    margin-top: 5px !important;
+    bottom: inherit !important;
+}
+
+    /* Toggle Button Container - Positioned at the top right corner of the tile */
+/* Tile styling (ensure relative positioning for toggle placement) */
+.tile {
+    position: relative;
+    height: 300px;
+    border: 2px solid;
+    border-radius: 10px;
+    background-size: contain;
+    background-position: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #ffffff;
+    margin: 10px;
+}
+
+
+/* Toggle Button Container - Positioned at the top right corner */
+.toggle-container {
+    width: 85px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 8px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    box-shadow: 0 0 5px 1px rgb(0 0 0 / 28%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    z-index: 10;
+    overflow: hidden;
+    transition: background-color 0.4s ease;
+}
+
+/* Toggle Text */
+.toggle-text {
+    flex: 1;
+    transition: transform 0.4s ease;
+    white-space: nowrap;
+}
+
+/* Toggle Circle Element */
+.toggle-circle {
+    margin-left: -6px;
+    margin-right: -8px;
+    width: 25px;
+    height: 25px;
+    background-color: #28a745;
+    border-radius: 50%;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.4s ease;
+    flex-shrink: 0;
+}
+
+/* Open state styling */
+.toggle-container.Open {
+    background-color: #ccc;
+    flex-direction: row-reverse; /* Text on left, circle on right */
+}
+.toggle-container.Open .toggle-text {
+    transform: translateX(0);
+    text-align: right;
+}
+.toggle-container.Open .toggle-circle {
+    transform: translateX(0);
+    background-color: #28a745;
+}
+
+/* Closed state styling */
+.toggle-container.Closed {
+    background-color: #ddd;
+    flex-direction: row; /* Text on right, circle on left */
+}
+.toggle-container.Closed .toggle-text {
+    transform: translateX(0);
+    text-align: left;
+}
+.toggle-container.Closed .toggle-circle {
+    transform: translateX(0);
+    background-color: #dc3545;
+}
+
+/* Form Layout inside Card */
+form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .button-create {
+            width: 100%;
+            padding: 14px;
+            margin: 8px 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        input:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        button-create {
+            background-color: #ffa500;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button-create:hover {
+            background-color: #ffa500
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+            padding: 5px;
+            font-size: 20px;
+            border: 2px solid #cacaca;
+            font-weight: bold;
+            color: white;
+        }
+        .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .edit-btn {
+            background-color: #ffa500;
+            color: white;
+        }
+        .edit-btn:hover {
+            background-color:#ffa500
+        }
+
+        .tile-image{
+            height: 229px;
+        }
+.infotrans {
+    background: repeat !important;
+}
+    </style>
+</head>
+<body class="noselect">
+     <!-- Overlay for Locking the Screen -->
+     <div id="overlay"></div>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner"></div>
+
+ <!-- ============ PAGE UI START================================================================================== -->
+
+   <!-- Subheader with Tabs -->
+   <!-- <div class="subheader">
+    <button class="tab-btn" onclick="showSection('shops')">Shops</button>
+</div> -->
+
+
+<!-- =======SHOP Module========== -->
+<section id="shops" class="tab-content active">
+    <div class="profile-card bottom-info shopHeaderBtn">
+        <div class="input-groupInfo">
+            <button class="buttonInfo button-create" onclick="showSection('shopCreate')">Register Your New Services</button>
+
+        </div>
+      
+       
+    </div>
+    </div>
+
+    <div class="tiles-containerInfo" id="tiles-container">
+        <!-- Tiles will be dynamically inserted here -->
+    </div>
+</section>
+
+<!-- Register Shop -->
+<section id="shopCreate" class="tab-content">
+    <div class="infoInCenter">
+      <div class="input-groupInfo">
+        <label for="shopName">Service Name</label>
+        <input class="inputInfoEdit" type="text" placeholder="Service Name" id="shopName">
+      </div>
+      <div class="input-groupInfo">
+        <label for="shopLocation">Service Location</label>
+        <input class="inputInfoEdit" placeholder="Service Location" type="text" id="shopLocation">
+      </div>
+      <div class="input-groupInfo">
+        <label for="shopAddress">Service Address</label>
+        <input class="inputInfoEdit" placeholder="Service Address" type="text" id="shopAddress">
+      </div>
+      <div class="input-groupInfo">
+        <label for="shopOffer">Service Offer</label>
+        <input class="inputInfoEdit" placeholder="Service Offer" type="text" id="shopOffer">
+      </div>
+      <div class="input-groupInfo">
+        <label for="shopArea">Service Area</label>
+        <select id="shopArea">
+          <option value="" disabled selected>Select Area</option>
+          <option>MRJ</option>
+          <option>GKP</option>
+        </select>
+      </div>
+      <div class="input-groupInfo">
+        <label for="shopCategories">Service Type</label>
+        <select id="shopCategories">
+           <option  value="" disabled selected>Service Type</option>
+                <option value="101">Parlour</option>
+                <option value="102">Teacher</option>
+                <option value="103">Carpenter</option>
+                <option value="104">Painter</option>
+                <option value="105">Plumber</option>
+                <option value="106">cook</option>
+                <option value="107">Driver</option>
+                <option value="108">Labour</option>
+                <option value="109">Car</option>
+                <option value="110">Bike</option>
+                <option value="111">Auto</option>
+                <option value="112">Tailor</option>
+                <option value="113">Labour</option>
+                <option value="114">Cameraman</option>
+                <option value="115">Videographer</option>
+                <option value="116">BandBaja</option>
+                <option value="117">Barber</option>
+                <option value="118">Maid</option>
+                <option value="119">Pathology</option>
+                <option value="120">Truck</option>
+                <option value="121">Tractor</option>
+                <option value="122">Bhangra</option>
+                <option value="123">Mistri</option>
+                <option value="124">Technician</option>
+            
+        </select>
+      </div>
+      
+
+      <div class="input-groupInfo" style="width:100%; text-align: center;">
+        <button class="buttonInfo button-create" onclick="getLocation(event)">Set Your Service Location</button>
+        <p id="status"></p>
+        <p><strong>Latitude:</strong> <span id="latitude"></span></p>
+        <p><strong>Longitude:</strong> <span id="longitude"></span></p>
+        <div id="map"></div>
+     
+      <div class="form-actions">
+        <button type="button" id="createShop" class="buttonInfo button-create" onclick="createShop()">Create</button>
+    </div>
+    </div>
+  </section>
+
+<!-- Edit Shop -->
+<section id="EditShop" class="tab-content">
+    <div class="infoInCenter">
+        <div class="input-groupInfo">
+            <label for="shopName">Service ID</label>
+            <p class="inputInfoEdit" id="shopID"></p>
+          </div>
+      <div class="input-groupInfo">
+        <label for="shopName">Service Name</label>
+        <input class="inputInfoEdit" type="text" placeholder="Service Name" id="shopNameE">
+      </div>
+      <div class="input-groupInfo">
+        <label for="shopLocation">Service Location</label>
+        <input class="inputInfoEdit" placeholder="Service Location" type="text" id="shopLocationE">
+      </div>
+      <div class="input-groupInfo">
+        <label for="shopAddress">Service Address</label>
+        <input class="inputInfoEdit" placeholder="Service Address" type="text" id="shopAddressE">
+      </div>
+      <div class="input-groupInfo">
+        <label for="shopOffer">Service Offer</label>
+        <input class="inputInfoEdit" placeholder="Service Offer" type="text" id="shopOfferE">
+      </div>
+      <div class="input-groupInfo">
+        <select id="shopAreaE">
+          <option class="inputInfoEdit" value="" disabled selected>Select Area</option>
+          <option>MRJ</option>
+          <option>GKP</option>
+        </select>
+      </div>
+      <div class="input-groupInfo">
+        <select id="shopCategoriesE">
+          <option  value="" disabled selected>Service Type</option>
+                <option value="101">Parlour</option>
+                <option value="102">Teacher</option>
+                <option value="103">Carpenter</option>
+                <option value="104">Painter</option>
+                <option value="105">Plumber</option>
+                <option value="106">cook</option>
+                <option value="107">Driver</option>
+                <option value="108">Labour</option>
+                <option value="109">Car</option>
+                <option value="110">Bike</option>
+                <option value="111">Auto</option>
+                <option value="112">Tailor</option>
+                <option value="113">Labour</option>
+                <option value="114">Cameraman</option>
+                <option value="115">Videographer</option>
+                <option value="116">BandBaja</option>
+                <option value="117">Barber</option>
+                <option value="118">Maid</option>
+                <option value="119">Pathology</option>
+                <option value="120">Truck</option>
+                <option value="121">Tractor</option>
+                <option value="122">Bhangra</option>
+                <option value="123">Mistri</option>
+                <option value="124">Technician</option>
+            
+        </select>
+      </div> 
+      
+
+      <div class="input-groupInfo" style=" text-align: center;">
+        <button class="buttonInfo button-create" onclick="getLocation(event)">Update Your Service Location</button>
+        <p id="statusE"></p>
+        <p style="
+        padding: 10px;
+    "><strong>Latitude:</strong> <span id="latitudeE"></span></p>
+        <p style="
+        padding: 10px;
+    "><strong>Longitude:</strong> <span id="longitudeE"></span></p>
+        <div id="mapE"></div>
+      <div class="input-groupInfo" style="text-align: center;">
+        <button class="buttonInfo button-create" onclick="updateShop()">Update</button>
+        <button class="buttonInfo button-create" onclick="showSection('shops')">Cancel</button>
+      </div>
+    </div>
+  </section>
+
+
+<!-- Add Banner -->
+<section id="addShopBanner" class="tab-content">
+      <div class="imageUploader">
+            <!-- Use unique IDs for each file input -->
+            <label for="fileInput1">
+              <img id="ban1" class="uploadIcon" src="../image/shop.avif" alt="">
+              <i class="fas fa-camera edit-camera-icon"></i>
+            </label>
+            <input type="file" id="fileInput1" accept="image/*" style="display: none;" onchange="createShopMedia(this, 1)">
+        </div>
+
+
+    <div class="tiles-containerInfoImage" id="tiles-containerImage">
+        <!-- Tiles will be dynamically inserted here -->
+    </div>
+
+
+  </section>
+  
+
+
+<!-- Add Products -->
+<section id="createProduct" class="tab-content">
+    <div class="infoInCenter">
+        <div class="input-groupInfo">
+            <label for="productName">Product Name</label>
+            <input class="inputInfoEdit" type="text" placeholder="Product Name" id="productName" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="productCategory">Product Category</label>
+            <select id="productCategory" class="inputInfoEdit">
+                <option value="" disabled>Select Category</option>
+                <option value="2" selected>2</option>
+            </select>
+        </div>
+        <div class="input-groupInfo">
+            <label for="productPrice">MRP</label>
+            <input class="inputInfoEdit" type="number" placeholder="MRP" id="productPrice" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="sellPrice">Selling Price</label>
+            <input class="inputInfoEdit" type="number" placeholder="Selling Price" id="sellPrice" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="productDescription">Product Description</label>
+            <input class="inputInfoEdit" type="text" placeholder="Product Description" id="productDescription" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="productStock">Stock Quantity</label>
+            <input class="inputInfoEdit" type="number" placeholder="Stock Quantity" id="productStock" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="minQtyToBuy">Minimum Quantity to Buy</label>
+            <input class="inputInfoEdit" type="number" placeholder="Minimum Quantity to Buy" id="minQtyToBuy" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="unit">Unit</label>
+            <input class="inputInfoEdit" type="text" placeholder="Unit" id="unit" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="color">Color</label>
+            <input class="inputInfoEdit" type="text" placeholder="Color" id="color" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="rating">Rating</label>
+            <input class="inputInfoEdit" type="text" placeholder="Rating" id="rating" value="">
+        </div>
+        <div class="input-groupInfo">
+            <label for="online">Available Online</label>
+            <select id="online" class="inputInfoEdit">
+                <option value="yes">Yes</option>
+                <option value="no" selected>No</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button type="button" id="createProductSubmit" class="buttonInfo button-create" onclick="createProduct()">Create Product</button>
+        </div>
+    </div>
+</section>
+
+ <!-- ============ PAGE UI END================================================================================== -->
+    <script>
+
+//============ PAGE LOGIC START================================================================================== 
+
+// Show the selected section
+function showSection(sectionId,event) {
+            // Hide all sections
+            document.querySelectorAll(".tab-content").forEach(section => {
+                section.classList.remove("active");
+            });
+
+            // Show the clicked section
+            document.getElementById(sectionId).classList.add("active");
+
+            // Update button active state
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.classList.remove("active");
+            });
+            if (typeof event !== 'undefined' && event.currentTarget) {
+                    event.currentTarget.classList.add("active");
+                }
+                localStorage.setItem('action', "manage-service");          
+}
+
+function showSectionEdit(sectionId,event) {
+    console.log("Clicked element:", event.target);
+
+    // Find the closest tile element
+    const tileElement = event.target.closest('.tile');
+    if (tileElement) {
+        // Retrieve the attached shop data
+        const shopDetails = tileElement.shopData;
+document.getElementById('shopID').textContent=shopDetails.shopId;       
+document.getElementById('shopNameE').value=shopDetails.shopName;
+document.getElementById('shopLocationE').value=shopDetails.shopLocation;
+document.getElementById('shopAddressE').value=shopDetails.shopAddress;
+document.getElementById('shopOfferE').value=shopDetails.shopOffer;
+document.getElementById('shopCategoriesE').value=shopDetails.shopType;
+document.getElementById('shopAreaE').value=shopDetails.shopCity; 
+document.getElementById('latitudeE').textContent=shopDetails.latitude;
+document.getElementById('longitudeE').textContent=shopDetails.longitude;    
+        // Now you can use shopDetails to update the banner section or process further
+        // For example:
+       // document.getElementById('bannerShopName').innerText = shopDetails.shopName;
+    } else {
+        console.warn('Tile element not found.');
+    }
+            // Hide all sections
+            document.querySelectorAll(".tab-content").forEach(section => {
+                section.classList.remove("active");
+            });
+
+            // Show the clicked section
+            document.getElementById(sectionId).classList.add("active");
+
+            // Update button active state
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.classList.remove("active");
+            });
+            if (typeof event !== 'undefined' && event.currentTarget) {
+                    event.currentTarget.classList.add("active");
+                }
+                localStorage.setItem('action', "manage-service");            
+}
+
+function showSectionImages(sectionId,event) {
+    console.log("Clicked element:", event.target);
+
+    // Find the closest tile element
+    const tileElement = event.target.closest('.tile');
+    if (tileElement) {
+        // Retrieve the attached shop data
+        const shopDetails = tileElement.shopData;
+        document.getElementById('ban1').alt = shopDetails.shopId;
+        // document.getElementById('ban2').alt = shopDetails.shopId;
+        // document.getElementById('ban3').alt = shopDetails.shopId;
+        // document.getElementById('ban4').alt = shopDetails.shopId;
+        console.log('Specific Tile Shop Details:', shopDetails);
+        generateImageTiles(shopDetails.shopId); 
+        // Now you can use shopDetails to update the banner section or process further
+        // For example:
+       // document.getElementById('bannerShopName').innerText = shopDetails.shopName;
+    } else {
+        console.warn('Tile element not found.');
+    }
+            // Hide all sections
+            document.querySelectorAll(".tab-content").forEach(section => {
+                section.classList.remove("active");
+            });
+
+            // Show the clicked section
+            document.getElementById(sectionId).classList.add("active");
+
+            // Update button active state
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.classList.remove("active");
+            });
+            if (typeof event !== 'undefined' && event.currentTarget) {
+                    event.currentTarget.classList.add("active");
+                }
+                localStorage.setItem('action', "manage-service");                        
+}
+ 
+function showSectionCreateProduct(sectionId,event) {
+    console.log("Clicked element:", event.target);
+
+    // Find the closest tile element
+    const tileElement = event.target.closest('.tile');
+    if (tileElement) {
+        // Retrieve the attached shop data
+        const shopDetails = tileElement.shopData;
+        //document.getElementById('shopId').textContent=shopDetails.shopId;       
+      
+    } else {
+        console.warn('Tile element not found.');
+    }
+            // Hide all sections
+            document.querySelectorAll(".tab-content").forEach(section => {
+                section.classList.remove("active");
+            });
+
+            // Show the clicked section
+            document.getElementById(sectionId).classList.add("active");
+
+            // Update button active state
+            document.querySelectorAll(".tab-btn").forEach(btn => {
+                btn.classList.remove("active");
+            });
+            if (typeof event !== 'undefined' && event.currentTarget) {
+                    event.currentTarget.classList.add("active");
+                }
+                localStorage.setItem('action', "manage-service");            
+}
+
+async function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert("Please select an image to upload!");
+                return;
+            }
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            // if (user) {
+            //     const userphoneNumber = user.phoneNumber;
+            // }else{
+            //     return;  
+            // }
+
+            const token = localStorage.getItem('refreshToken');  // Retrieve token
+            const file = fileInput.files[0];
+   // Show the loading spinner
+                document.getElementById('overlay').style.display = 'block';
+                document.getElementById('loadingSpinner').style.display = 'block';
+                fetch("/odata/v4/user-profile/Users('"+user.phoneNumber+"')/profilePicture", {
+                method: 'PUT',
+                body: file,
+                headers: { 'Content-Type': 'image/png',
+                    'Authorization': `Bearer ${token}`  // Send token in request
+                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(`${data.error.message || JSON.stringify(data.error)}`);
+                }
+      
+                document.getElementById("profilePicInfoEdit").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "../image/user.png" ;
+                document.getElementById("profilePicInfo").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "../image/user.png";
+                document.getElementById("profilePic").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "../image/user.png";
+                // Hide the overlay and spinner once the API call is done
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('loadingSpinner').style.display = 'none';
+            })
+            .catch(error => {
+                document.getElementById("profilePicInfoEdit").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "../image/user.png" ;
+                document.getElementById("profilePicInfo").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "../image/user.png";
+                document.getElementById("profilePic").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "../image/user.png";
+ // Hide the overlay and spinner once the API call is done
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('loadingSpinner').style.display = 'none';
+
+        });
+        }
+
+generateTiles();
+async function generateTiles() {
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    // Show loading spinner while fetching data
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('loadingSpinner').style.display = 'block';
+
+    try {
+        // Fetch data from the API
+        const response = await fetch(`/odata/v4/shop/Users('${user.phoneNumber}')/shops?$filter=type eq 'Services'&$expand=medias`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch shops');
+        }
+
+        // Get the response JSON data
+        const data = await response.json();
+        const tilesContainer = document.getElementById('tiles-container');
+
+        // Clear previous tiles
+        tilesContainer.innerHTML = '';
+
+        // Loop through each shop in the API response
+        data.value.forEach(shop => {
+            // Create tile element and attach shop data
+            const tile = document.createElement('div');
+            tile.classList.add('tile', 'shop-tile');
+            tile.shopData = shop; // Attaching shop details
+
+            // Add click event on tile to show 'shopCreate' section (if needed)
+            tile.addEventListener('click', (event) => {
+                // Prevent triggering tile click when a button inside is clicked
+                if (event.target.closest('button')) return;
+                localStorage.setItem('shop', JSON.stringify(shop));
+                localStorage.setItem('action', "manage-ser-product"); 
+                window.location.href = './my-service-products.html';
+            });
+
+            // Create a wrapper for the carousel images
+            const carouselWrapper = document.createElement('div');
+            carouselWrapper.classList.add('carousel-wrapper');
+            tile.appendChild(carouselWrapper);
+
+            // Create a container for the carousel dots
+            const dotsContainer = document.createElement('div');
+            dotsContainer.classList.add('carousel-dots', 'carousel-dots-top');
+            tile.appendChild(dotsContainer);
+
+            // Create the previous and next buttons for manual navigation
+            const prevButton = document.createElement('button');
+            prevButton.classList.add('prev');
+            prevButton.innerText = '❮';
+
+            const nextButton = document.createElement('button');
+            nextButton.classList.add('next');
+            nextButton.innerText = '❯';
+
+            tile.appendChild(prevButton);
+            tile.appendChild(nextButton);
+
+            // Loop through each media item (image) for the shop
+            shop.medias.forEach((media, index) => {
+                const img = document.createElement('img');
+                img.src = `${media.url}`;
+                img.classList.add('carousel-image');
+                if (index === 0) img.classList.add('active');
+                carouselWrapper.appendChild(img);
+
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (index === 0) dot.classList.add('active');
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showImage(index);
+                });
+                dotsContainer.appendChild(dot);
+            });
+
+            // Create the Open/Closed toggle button in the top-right corner
+            const toggleContainer = document.createElement('div');
+            toggleContainer.classList.add('toggle-container', shop.online); // default to open
+            toggleContainer.dataset.status = shop.online;
+
+            const toggleText = document.createElement('div');
+            toggleText.classList.add('toggle-text');
+            toggleText.innerText = shop.online;
+            toggleContainer.appendChild(toggleText);
+
+            const toggleCircle = document.createElement('div');
+            toggleCircle.classList.add('toggle-circle');
+            toggleContainer.appendChild(toggleCircle);
+
+            // Toggle function for Open/Closed state
+            toggleContainer.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (toggleContainer.dataset.status === "Open") {
+                    toggleContainer.dataset.status = "Closed";
+                    toggleContainer.classList.remove('Open');
+                    toggleContainer.classList.add("Closed");
+                    toggleText.innerText = "Closed";
+                } else {
+                    toggleContainer.dataset.status = "Open";
+                    toggleContainer.classList.remove("Closed");
+                    toggleContainer.classList.add('Open');
+                    toggleText.innerText = "Open";
+                }
+                // Optionally, trigger an API call or update shop data here
+                // Call your function with the new status
+                updateShopStatus(toggleContainer.dataset.status, shop.shopId);
+            });
+
+            // Create shop information (title)
+            const shopInfo = document.createElement('div');
+            shopInfo.classList.add('shop-info');
+            shopInfo.innerHTML = `<span><strong>${shop.shopName}</strong></span>`;
+
+            // Bottom information (location, distance, offer)
+            const bottomInfo = document.createElement('div');
+            bottomInfo.classList.add('bottom-info', 'shop-bottom-info');
+            bottomInfo.innerHTML = `
+                <span>${shop.shopLocation}-${shop.shopCity}</span>
+                <span>🟢 ${shop.distance}</span>
+                <span class="offer shop-offer">${shop.shopOffer ? shop.shopOffer + "% OFF" : 'No Offer'}</span>
+            `;
+
+            // Action buttons (Edit, Add Banner, Add Products)
+            const actionInfo = document.createElement('div');
+            actionInfo.classList.add('bottom-info');
+            actionInfo.innerHTML = `
+                <button class="buttonInfo button-create" onclick="showSectionEdit('EditShop', event)">Edit</button>
+                <button class="buttonInfo button-create" onclick="showSectionImages('addShopBanner', event)">Add Banners</button>
+                <button class="buttonInfo button-create" onclick="event.stopPropagation(); shopOrders('${shop.shopId}')">Bookings</button>
+                `;
+
+            // Append toggle (first so it appears on top) and other elements to the tile
+            tile.appendChild(toggleContainer);
+            tile.appendChild(shopInfo);
+            tile.appendChild(bottomInfo);
+            tile.appendChild(actionInfo);
+            tilesContainer.appendChild(tile);
+
+            // Carousel functionality for the current tile
+            let imageIndex = 0;
+            function showImage(index) {
+                const carouselImages = carouselWrapper.getElementsByClassName('carousel-image');
+                const dots = dotsContainer.getElementsByClassName('dot');
+                Array.from(carouselImages).forEach(img => img.classList.remove('active'));
+                Array.from(dots).forEach(dot => dot.classList.remove('active'));
+                carouselImages[index].classList.add('active');
+                dots[index].classList.add('active');
+            }
+
+            prevButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                imageIndex = (imageIndex - 1 + shop.medias.length) % shop.medias.length;
+                showImage(imageIndex);
+            });
+            nextButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                imageIndex = (imageIndex + 1) % shop.medias.length;
+                showImage(imageIndex);
+            });
+        });
+
+        // Hide the loading spinner after processing
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'none';
+    } catch (error) {
+        console.error('Error fetching shops:', error);
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+}
+
+
+function shopOrders (shopId){
+                localStorage.setItem('ordershopId', shopId);
+                localStorage.setItem('action', "manage-service"); 
+                loadContent('./iframe/shop-orders.html')
+}
+
+function getLocation(evt) {
+
+    if(evt.target.innerHTML==="Update Your Shop Location"){
+        const latitudeE = document.getElementById("latitudeE");
+        const longitudeE = document.getElementById("longitudeE");
+        const statusE = document.getElementById("statusE");
+        if ("geolocation" in navigator) {
+        statusE.textContent = "Getting location...";
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                latitudeE.textContent = lat;
+                longitudeE.textContent = lon;
+                statusE.textContent = "Location fetched successfully!";
+            },
+            function(error) {
+                statusE.textContent = "Error getting location: " + error.message;
+            }
+        );
+    } else {
+        statusE.textContent = "Geolocation is not supported by your browser.";
+    }
+    }else{
+    const latitude = document.getElementById("latitude");
+    const longitude = document.getElementById("longitude");
+    const status = document.getElementById("status");
+    if ("geolocation" in navigator) {
+        status.textContent = "Getting location...";
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                latitude.textContent = lat;
+                longitude.textContent = lon;
+                status.textContent = "Location fetched successfully!";
+                
+                showMap(lat, lon);
+            },
+            function(error) {
+                status.textContent = "Error getting location: " + error.message;
+            }
+        );
+    } else {
+        status.textContent = "Geolocation is not supported by your browser.";
+    }
+    }
+    
+    
+
+   
+}
+
+function showMap(lat, lon) {
+    const mapUrl = `https://www.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+    document.getElementById("map").innerHTML = `<iframe src="${mapUrl}" width="100%" height="300" frameborder="0"></iframe>`;
+}
+
+function searchTiles() {
+const searchInput = document.getElementById('searchInput').value.toLowerCase();
+const tiles = document.querySelectorAll('.tile');
+tiles.forEach(tile => {
+    const title = tile.querySelector('.shop-info span:first-child').textContent.toLowerCase();
+    const location = tile.querySelector('.bottom-info span:first-child').textContent.toLowerCase();
+    
+    if (title.includes(searchInput) || location.includes(searchInput)) {
+        tile.style.display = '';
+    } else {
+        tile.style.display = 'none';
+    }
+});
+}
+
+function updateShop() {
+const shopId =  document.getElementById('shopID').textContent;
+const shopName = document.getElementById('shopNameE').value;
+const shopLocation = document.getElementById('shopLocationE').value;
+const shopAddress = document.getElementById('shopAddressE').value;
+const shopOffer = document.getElementById('shopOfferE').value;
+const category_categoryId = document.getElementById('shopCategoriesE').value;
+const shopCategories = document.getElementById('shopCategoriesE').options[document.getElementById('shopCategoriesE').selectedIndex].text;
+const shopArea = document.getElementById('shopAreaE').value;
+const latitudeValue = document.getElementById('latitudeE').textContent;
+const Longitude = document.getElementById('longitudeE').textContent;
+
+const requestBody = {
+    shopId: shopId,
+    shop: {
+    shopName: shopName,
+    type:"Services",
+    shopAddress: shopAddress,
+    shopType: shopCategories,
+    category_categoryId:category_categoryId,
+    shopOffer: shopOffer,
+    shopLocation:shopLocation,
+    shopCity:shopArea,
+    longitude:latitudeValue,
+    latitude:Longitude
+  }
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/shop/updateShop', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    showSection('shops');
+    generateTiles();
+
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+
+function updateShopStatus(shopStatus,shopId) {
+
+if(shopStatus==="Open"){
+    shopStatus = "Open"
+}else{
+    shopStatus = "Closed"  
+}
+
+
+const requestBody = {
+    shopId: shopId,
+    shop: {
+    online: shopStatus
+  }
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/shop/updateShopStatus', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+   // showSection('shops');
+    generateTiles();
+   document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+
+async function generateImageTiles(shopid) {
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    // Show loading spinner while fetching data
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('loadingSpinner').style.display = 'block';
+
+    try {
+        // Fetch data from the API
+        const response = await fetch(`/odata/v4/shop/Shops(${shopid})/medias`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch shops');
+        }
+
+        // Get the response JSON data
+        const data = await response.json();
+        const tilesContainer = document.getElementById('tiles-containerImage');
+
+     // Clear previous tiles
+     tilesContainer.innerHTML = '';
+
+        // Loop through each shop in the API response
+        data.value.forEach(shop => {
+            // Create tile element and attach shop data
+            const tile = document.createElement('div');
+            tile.classList.add('tile');
+            tile.classList.add('tile-image');
+            tile.shopData = shop; // Attaching shop details
+
+         // Create a wrapper for the carousel images
+         const carouselWrapper = document.createElement('div');
+            carouselWrapper.classList.add('carousel-wrapper');
+            tile.appendChild(carouselWrapper);
+
+            const img = document.createElement('img');
+                img.src = `${shop.url}`;
+                img.classList.add('carousel-imageUploader');
+                carouselWrapper.appendChild(img);
+      
+            // Action buttons (Edit, Add Banner, Add Products)
+            const actionInfo = document.createElement('div');
+            actionInfo.classList.add('bottom-info');
+            actionInfo.classList.add('infotrans');
+            
+            actionInfo.innerHTML = `
+                <button class="cancel-btn" onclick="deleteShopBanner(event)">X</button>
+            `;
+
+         
+            tile.appendChild(actionInfo);
+            tilesContainer.appendChild(tile);
+
+    
+        });
+
+        // Hide the loading spinner after processing
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'none';
+    } catch (error) {
+        console.error('Error fetching shops:', error);
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'none';
+    }
+}
+
+function createShop() {
+
+const shopName = document.getElementById('shopName').value;
+const shopLocation = document.getElementById('shopLocation').value;
+const shopAddress = document.getElementById('shopAddress').value;
+const shopOffer = document.getElementById('shopOffer').value;
+const category_categoryId = document.getElementById('shopCategories').value;
+const shopCategories = document.getElementById('shopCategories').options[document.getElementById('shopCategories').selectedIndex].text;
+const shopArea = document.getElementById('shopArea').value;
+const latitudeValue = document.getElementById('latitude').textContent;
+const Longitude = document.getElementById('longitude').textContent;
+
+const requestBody = {
+    shop: {
+    shopName: shopName,
+    type:"Services",
+    shopAddress: shopAddress,
+    shopType: shopCategories,
+    category_categoryId:category_categoryId,
+    shopOffer: shopOffer,
+    shopLocation:shopLocation,
+    shopCity:shopArea,
+    longitude:latitudeValue,
+    latitude:Longitude
+  }
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/shop/createShop', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    showSection('shops');
+    generateTiles();
+
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+
+// function createShopMedia() {
+
+// const shopid = document.getElementById('ban1').alt;
+
+// const requestBody = {
+// fileName: "image",
+// applicationName: "DukanMitra",
+// mediaCategory :"ShopBanner",
+// productMedia_productId: null,
+// shopMedia_shopId: shopid,
+// mediaType: "image/png" 
+// };
+// const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// // Show the loading spinner
+// document.getElementById('overlay').style.display = 'block';
+// document.getElementById('loadingSpinner').style.display = 'block';
+// fetch('/media-server/Media', {
+//     method: 'POST',
+//     body: JSON.stringify(requestBody),
+//     headers: { 'Content-Type': 'application/json' ,
+//     'Authorization': `Bearer ${token}`  // Send token in request
+//     }
+// })
+// .then(response => response.json())
+// .then(data => {
+   
+//     const fileInput = document.getElementById('fileInput1');
+//             if (!fileInput.files.length) {
+//                 alert("Please select an image to upload!");
+//                 return;
+//             }
+//             const user = JSON.parse(localStorage.getItem('user'));
+
+//             // if (user) {
+//             //     const userphoneNumber = user.phoneNumber;
+//             // }else{
+//             //     return;  
+//             // }
+
+//             const token = localStorage.getItem('refreshToken');  // Retrieve token
+//             const file = fileInput.files[0];
+//    // Show the loading spinner
+//    if(data.mediaId){
+//                 //document.getElementById('overlay').style.display = 'block';
+//                // document.getElementById('loadingSpinner').style.display = 'block';
+//                 fetch("/media-server/Media('"+data.mediaId+"')/content", {
+//                 method: 'PUT',
+//                 body: file,
+//                 headers: { 'Content-Type': 'image/png',
+//                     'Authorization': `Bearer ${token}`  // Send token in request
+//                  }
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.error) {
+//                     throw new Error(`${data.error.message || JSON.stringify(data.error)}`);
+//                 }
+                
+//                 // document.getElementById("profilePicInfoEdit").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "image/user.png" ;
+//                 // document.getElementById("profilePicInfo").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "image/user.png";
+//                 // document.getElementById("profilePic").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "image/user.png";
+//                 // // Hide the overlay and spinner once the API call is done
+//                 //generateImageTiles(shopDetails.shopMedia_shopId); 
+//                 // document.getElementById('overlay').style.display = 'none';
+//                 // document.getElementById('loadingSpinner').style.display = 'none';
+//             })
+//             .catch(error => {
+//               //  generateImageTiles(shopDetails.shopMedia_shopId); 
+//                 // document.getElementById("profilePicInfoEdit").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "image/user.png" ;
+//                 // document.getElementById("profilePicInfo").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "image/user.png";
+//                 // document.getElementById("profilePic").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "image/user.png";
+//                 // // Hide the overlay and spinner once the API call is done
+//                 // document.getElementById('overlay').style.display = 'none';
+//                 // document.getElementById('loadingSpinner').style.display = 'none';
+
+//         });
+//     }
+       
+//     // document.getElementById('overlay').style.display = 'none';
+//     // document.getElementById('loadingSpinner').style.display = 'none';
+//    // generateImageTiles(shopDetails.shopMedia_shopId); 
+// })
+// .catch(error => {
+//     //showSection('userInfoEdit');
+//     // document.getElementById('overlay').style.display = 'none';
+//     // document.getElementById('loadingSpinner').style.display = 'none';
+//    // generateImageTiles(shopDetails.shopMedia_shopId); 
+// })
+// generateImageTiles(shopDetails.shopMedia_shopId);     
+
+// }
+
+
+async function createShopMedia() {
+    try {
+        const shopId = document.getElementById('ban1').alt;
+        const fileInput = document.getElementById('fileInput1');
+
+        if (!fileInput.files.length) {
+            alert("Please select an image to upload!");
+            return;
+        }
+
+        const token = localStorage.getItem('refreshToken');
+        const file = fileInput.files[0];
+
+        if (!token) {
+            alert("Authentication token is missing. Please log in again.");
+            return;
+        }
+
+        // Show the loading spinner
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('loadingSpinner').style.display = 'block';
+
+        const requestBody = {
+            fileName: "image",
+            applicationName: "DukanMitra",
+            mediaCategory: "ShopBanner",
+            productMedia_productId: null,
+            shopMedia_shopId: shopId,
+            mediaType: "image/png"
+        };
+
+        // Step 1: Create media entry
+        const mediaResponse = await fetch('/media-server/Media', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        const mediaData = await mediaResponse.json();
+
+        if (!mediaData.mediaId) {
+            throw new Error("Failed to create media entry.");
+        }
+
+        // Step 2: Upload the image file
+        const uploadResponse = await fetch(`/media-server/Media('${mediaData.mediaId}')/content`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'image/png',
+                'Authorization': `Bearer ${token}`
+            },
+            body: file
+        });
+
+        const uploadData = await uploadResponse.json();
+
+        if (uploadData.error) {
+            throw new Error(uploadData.error.message || JSON.stringify(uploadData.error));
+        }
+
+        console.log("Media uploaded successfully:", uploadData);
+
+    } catch (error) {
+        console.error("Error:");
+        
+    } finally {
+        // Hide the overlay and spinner once the API call is done
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'none';
+
+        // Refresh the image tiles
+        shopidimage = document.getElementById('ban1').alt;
+        generateImageTiles(shopidimage);
+    }
+}
+
+
+function deleteShopBanner(evt) {
+   // Find the closest tile element
+   const tileElement = event.target.closest('.tile');
+    if (tileElement) {
+        // Retrieve the attached shop data
+        var shopDetails = tileElement.shopData;
+
+    }
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch("/media-server/Media('"+shopDetails.mediaId+"')", {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+    generateImageTiles(shopDetails.shopMedia_shopId); 
+})
+.catch(error => {
+    generateImageTiles(shopDetails.shopMedia_shopId); 
+})
+    
+   
+}
+
+function createProduct() {
+
+       const requestBody = {
+                category_categoryId: parseInt(document.getElementById('productCategory').value),
+                shopProducts_shopId: "1a46a726-aaba-4c17-a52c-410a134e5840",
+                productName: document.getElementById('productName').value,
+                mrp: parseFloat(document.getElementById('productPrice').value),
+                sellPrice: parseFloat(document.getElementById('sellPrice').value),
+                description: document.getElementById('productDescription').value,
+                stockQuantity: parseInt(document.getElementById('productStock').value),
+                minQtyToBuy: parseInt(document.getElementById('minQtyToBuy').value),
+                unit: document.getElementById('unit').value,
+                color: document.getElementById('color').value,
+                rating: document.getElementById('rating').value,
+                online: document.getElementById('online').value
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/products-server/Products', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    // showSection('shops');
+    // generateTiles();
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+
+
+
+//============ PAGE LOGIC END================================================================================== 
+document.addEventListener("click", function () {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+function loadContent(url) {    
+    window.parent.document.getElementById('userProfileHeader').style.display = 'none'; // Hide Cart Icon
+    window.parent.document.getElementById('backButton').classList.add('show'); // Animate Back Button
+    window.parent.document.getElementById('content').innerHTML = '<iframe src="' + url + '" style="width:100%; height: 100%; border:none;"></iframe>';
+           // document.querySelector('.container').style.display = 'none';
+        }
+// Login
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem('refreshToken');
+    const user = localStorage.getItem('user');
+if(!token && !user){
+    window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+    const url="./iframe/login.html";
+    loadContent(url);
+}
+});
+    </script>
+</body>
+</html>

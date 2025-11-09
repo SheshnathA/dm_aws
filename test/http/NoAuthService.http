@@ -1,0 +1,65 @@
+@server = http://localhost:4004
+@auth = Authorization: Basic alice:
+
+
+### Shops
+# @name Shops_GET
+GET {{server}}/odata/v4/no-auth/Shops
+
+
+
+### Products
+# @name Products_GET
+GET {{server}}/odata/v4/no-auth/Products
+
+
+
+### Media
+# @name Media_GET
+GET {{server}}/odata/v4/no-auth/Media
+
+
+
+### Books
+# @name Books_GET
+GET {{server}}/odata/v4/no-auth/Books
+
+
+### Books
+# @name Books_POST
+POST {{server}}/odata/v4/no-auth/Books
+Content-Type: application/json
+
+{
+  "id":2
+}
+
+
+###
+# @name Books_PUT
+PUT {{server}}/odata/v4/no-auth/Books(2)/image1
+Content-Type: image/png
+
+< ./k1.jpg
+
+
+
+
+###
+GET {{server}}/odata/v4/no-auth/Books(2)/image1
+
+
+### Books
+# @name Books_PATCH
+PATCH {{server}}/odata/v4/no-auth/Books/5219766
+Content-Type: application/json
+
+{
+  "id": 5219766
+}
+
+
+### Books
+# @name Books_DELETE
+DELETE {{server}}/odata/v4/no-auth/Books/1
+Content-Type: application/json

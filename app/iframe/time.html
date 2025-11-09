@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Service Booking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+    }
+    .booking-container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .booking-container h2 {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    select, input[type="date"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .time-slots {
+      margin-top: 1rem;
+    }
+    .time-slot {
+      display: inline-block;
+      margin: 0.3rem;
+    }
+    .time-slot input {
+      display: none;
+    }
+    .time-slot label {
+      padding: 0.5rem 1rem;
+      background: #eee;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .time-slot input:checked + label {
+      background: #4CAF50;
+      color: white;
+    }
+    button {
+      margin-top: 2rem;
+      width: 100%;
+      padding: 1rem;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="booking-container">
+  <h2>Book a Service</h2>
+
+  <label for="date">Select Date:</label>
+  <input type="date" id="date" name="date">
+
+  <label>Select Time Slot:</label>
+  <div class="time-slots">
+    <div class="time-slot">
+      <input type="radio" id="slot1" name="time-slot" value="09:00 AM">
+      <label for="slot1">09:00 AM</label>
+    </div>
+    <div class="time-slot">
+      <input type="radio" id="slot2" name="time-slot" value="10:00 AM">
+      <label for="slot2">10:00 AM</label>
+    </div>
+    <div class="time-slot">
+      <input type="radio" id="slot3" name="time-slot" value="11:00 AM">
+      <label for="slot3">11:00 AM</label>
+    </div>
+    <div class="time-slot">
+      <input type="radio" id="slot4" name="time-slot" value="12:00 PM">
+      <label for="slot4">12:00 PM</label>
+    </div>
+    <!-- Add more slots as needed -->
+  </div>
+
+  <button type="submit">Confirm Booking</button>
+</div>
+
+</body>
+</html>

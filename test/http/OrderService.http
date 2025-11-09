@@ -1,0 +1,242 @@
+@server = http://localhost:4004
+@auth = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDAiLCJpYXQiOjE3NDEwMDY5NjQsImV4cCI6MTc0MTYxMTc2NH0.b6jlpEFWvFt819bzPLh_GrLdzGR05aqNp-ZKkWWF0qI
+
+
+### Orders
+# @name Orders_GET
+GET {{server}}/odata/v4/order/Orders
+{{auth}}
+
+
+### Orders
+# @name Orders_POST
+POST {{server}}/odata/v4/order/Orders
+Content-Type: application/json
+{{auth}}
+
+{
+  "shop": {
+    "shopId": "8331e15f-907f-4485-91f7-9ca23738fd73"
+  },
+  "paymentMethod": "COS",
+  "shippingAddress": "H.N. 71, Pachrukhiya, Maharajganj, Pin -273302, Uttar Pradesh",
+  "orderItems": [
+    {
+      "itemId": "8800755400_ITEM_1",
+      "product": {
+        "productId": "8800755400_PROD_zab6"
+      },
+      "quantity": 2
+    }
+  ]
+}
+
+### Orders
+# @name Orders_POST
+POST {{server}}/odata/v4/order/Orders
+Content-Type: application/json
+{{auth}}
+
+{
+  "orderId": "8800755400_ORD_xyz1",
+  "shop": {
+    "shopId": "1a46a726-aaba-4c17-a52c-410a134e5840"
+  },
+  "totalAmount": 67.25,
+  "paymentMethod": "COS",
+  "shippingAddress": "H.N. 71, Pachrukhiya, Maharajganj, Pin -273302, Uttar Pradesh",
+  "status": "Pending",
+  "orderItems": [
+    {
+      "itemId": "8800755400_ITEM_1",
+      "product": {
+        "productId": "8800755400_PROD_chmm"
+      },
+      "quantity": 93
+    },
+    {
+      "itemId": "8800755400_ITEM_2",
+      "product": {
+        "productId": "8800755400_PROD_jd5x"
+      },
+      "quantity": 47
+    }
+  ]
+}
+### Orders
+# @name Orders_PATCH
+PATCH {{server}}/odata/v4/order/Orders/Orders-4099985
+Content-Type: application/json
+{{auth}}
+
+{
+  "orderId": "Orders-4099985",
+  "shop": {
+    "shopId": "26922911-00ff-4243-a2e6-3b34776fb42e"
+  },
+  "totalAmount": 67.25,
+  "paymentMethod": "paymentMethod-4099985",
+  "shippingAddress": "shippingAddress-4099985",
+  "status": "Delivered",
+  "orderItems": [
+    {
+      "itemId": "OrderItems-8379900",
+      "product": {
+        "productId": "Products-15922577"
+      },
+      "quantity": 93,
+      "createdAt": "2005-02-04T18:30:00.000Z",
+      "createdBy": "createdBy.4zlz0@example.org",
+      "modifiedAt": "2010-04-03T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.4zlz0@example.org"
+    },
+    {
+      "itemId": "OrderItems-8379901",
+      "product": {
+        "productId": "Products-15922577"
+      },
+      "quantity": 47,
+      "createdAt": "2020-03-17T18:30:00.000Z",
+      "createdBy": "createdBy.4zlz1@example.net",
+      "modifiedAt": "2018-05-10T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.4zlz1@example.com"
+    }
+  ],
+  "createdAt": "2007-08-02T18:30:00.000Z",
+  "createdBy": "createdBy.2fvkh@example.org",
+  "modifiedAt": "2020-06-21T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.2fvkh@example.net"
+}
+
+
+### Orders
+# @name Orders_DELETE
+DELETE {{server}}/odata/v4/order/Orders/8800755400_ORD_456j
+Content-Type: application/json
+{{auth}}
+
+
+### OrderItems
+# @name OrderItems_GET
+GET {{server}}/odata/v4/order/OrderItems
+{{auth}}
+
+
+### OrderItems
+# @name OrderItems_POST
+POST {{server}}/odata/v4/order/OrderItems
+Content-Type: application/json
+{{auth}}
+
+{
+  "itemId": "OrderItems-8379900",
+  "product": {
+    "productId": "Products-15922577"
+  },
+  "quantity": 93,
+  "createdAt": "2005-02-04T18:30:00.000Z",
+  "createdBy": "createdBy.4zlz0@example.org",
+  "modifiedAt": "2010-04-03T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.4zlz0@example.org"
+}
+
+
+### OrderItems
+# @name OrderItems_PATCH
+PATCH {{server}}/odata/v4/order/OrderItems/OrderItems-8379900
+Content-Type: application/json
+{{auth}}
+
+{
+  "itemId": "OrderItems-8379900",
+  "product": {
+    "productId": "Products-15922577"
+  },
+  "quantity": 93,
+  "createdAt": "2005-02-04T18:30:00.000Z",
+  "createdBy": "createdBy.4zlz0@example.org",
+  "modifiedAt": "2010-04-03T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.4zlz0@example.org"
+}
+
+
+### OrderItems
+# @name OrderItems_DELETE
+DELETE {{server}}/odata/v4/order/OrderItems/OrderItems-8379900
+Content-Type: application/json
+{{auth}}
+
+
+### placeOrder
+# @name placeOrder_POST
+POST {{server}}/odata/v4/order/placeOrder
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "1a46a726-aaba-4c17-a52c-410a134e5840",
+  "items": [
+    {
+    "productId": "8800755400_PROD_chmm",
+    "quantity": 2
+   }
+  ],
+  "paymentMethod": "COD",
+  "shippingAddress": "H.N. 71, Pachrukhiya, Maharajganj, Pin -273302, Uttar Pradesh"
+}
+
+
+### getOrdersByUser
+# @name getOrdersByUser_POST
+POST {{server}}/odata/v4/order/getOrdersByUser
+Content-Type: application/json
+{{auth}}
+
+{
+  "userId": null
+}
+
+
+### getOrdersByShop
+# @name getOrdersByShop_POST
+POST {{server}}/odata/v4/order/getOrdersByShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": null
+}
+
+
+### cancelOrder
+# @name cancelOrder_POST
+POST {{server}}/odata/v4/order/cancelOrder
+Content-Type: application/json
+{{auth}}
+
+{
+  "orderId": null
+}
+
+
+### updateOrderStatus
+# @name updateOrderStatus_POST
+POST {{server}}/odata/v4/order/updateOrderStatus
+Content-Type: application/json
+{{auth}}
+
+{
+  "orderId": null,
+  "status": null
+}
+
+
+### getOrderDetails
+# @name getOrderDetails_POST
+POST {{server}}/odata/v4/order/getOrderDetails
+Content-Type: application/json
+{{auth}}
+
+{
+  "orderId": "8800755400_ORD_xyz1"
+}

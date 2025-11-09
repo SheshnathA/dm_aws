@@ -1,0 +1,75 @@
+@server = http://localhost:4004
+@auth = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDAiLCJpYXQiOjE3NjIzNzM4MTcsImV4cCI6MjYyNjM3MzgxN30.Xc0gHaNu4EY0K4z8TxJE4J1GdV7cK5ZSsWO1fEo1FtI
+
+
+
+### register
+# @name register_POST
+POST {{server}}/odata/v4/auth/register
+Content-Type: application/json
+
+{
+  "phoneNumber": "8800755400",
+  "firstName": "Ram Kumar",
+  "lastName": "Agrahari",
+  "email": "sfdf@gmail.com",
+  "password": "1234",
+  "username": "8800755400"
+}
+
+
+### login
+# @name login_POST
+POST {{server}}/odata/v4/auth/login
+Content-Type: application/json
+
+{
+  "phoneNumber": "8800755400",
+  "password": "1234"
+}
+
+
+### refreshToken
+# @name refreshToken_POST
+POST {{server}}/odata/v4/auth/refreshToken
+Content-Type: application/json
+
+{
+"refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDAiLCJpYXQiOjE3MzkwMDI1OTIsImV4cCI6MTczOTYwNzM5Mn0.oi7NVsPdQTaJ-pDQBBSh9C7WVB-rarzI_mOxdG7CZyU"
+}
+
+
+### requestPasswordReset
+# @name requestPasswordReset_POST
+POST {{server}}/odata/v4/auth/requestPasswordReset
+Content-Type: application/json
+
+
+{
+  "phoneNumber": "8800755400"
+}
+
+
+### resetPassword
+# @name resetPassword_POST
+POST {{server}}/odata/v4/auth/resetPassword
+Content-Type: application/json
+
+
+{
+  "phoneNumber": "8800755400",
+  "otp": "696278",
+  "newPassword": "1212"
+}
+
+
+### get user info
+# @name getUserInfo_POST
+POST {{server}}/odata/v4/auth/getUserInfo
+Content-Type: application/json
+{{auth}}
+
+
+
+
+

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 KM Range Coordinates</title>
+</head>
+<body>
+
+<h2>Click to Get Coordinate Range</h2>
+<button onclick="getLocation()">Get 5KM Range</button>
+
+<p id="output"></p>
+
+<script>
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showRange, showError);
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+function showRange(position) {
+    let lat = position.coords.latitude;
+    let lon = position.coords.longitude;
+    let radius = 5; // 5 KM
+
+    // Earth's radius in KM
+    const R = 6371;
+
+    // Convert degrees to radians
+    let latDiff = (radius / R) * (180 / Math.PI);
+    let lonDiff = (radius / (R * Math.cos(lat * Math.PI / 180))) * (180 / Math.PI);
+
+    let minLat = lat - latDiff;
+    let maxLat = lat + latDiff;
+    let minLon = lon - lonDiff;
+    let maxLon = lon + lonDiff;
+
+    document.getElementById("output").innerHTML = `
+        <b>Current Location:</b> ${lat.toFixed(6)}, ${lon.toFixed(6)}<br>
+        <b>Latitude Range:</b> ${minLat.toFixed(6)} to ${maxLat.toFixed(6)}<br>
+        <b>Longitude Range:</b> ${minLon.toFixed(6)} to ${maxLon.toFixed(6)}
+    `;
+}
+
+function showError(error) {
+    switch (error.code) {
+        case error.PERMISSION_DENIED:
+            alert("User denied the request for Geolocation.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            alert("The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("An unknown error occurred.");
+            break;
+    }
+}
+</script>
+
+</body>
+</html>

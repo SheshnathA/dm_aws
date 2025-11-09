@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop</title>
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f7f7f7;
+          margin: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+    
+        .slide-up {
+            animation: slideUp 0.5s ease-in-out;
+        }
+    
+        .pulse:hover {
+            animation: pulse 0.5s ease-in-out;
+        }
+        select {
+            padding: 8px;
+    border-radius: 5px;
+    border: 2px solid #FF9800;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 5px;
+  }
+        .infoInCenter {
+            display: flex
+;
+    flex-direction: column;
+    margin: 40px auto;
+    border-radius: 12px;
+        }
+    
+        .input-groupInfo {
+
+    margin-bottom: 5px;
+    position: relative;
+}
+    
+        .input-groupInfo-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 100%;
+        }
+    
+        .input-groupInfo-row .input-groupInfo {
+            flex: 1;
+            min-width: 160px;
+        }
+    
+  .inputInfoEdit {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #FF9800;
+    border-radius: 6px;
+    color: #333;
+    outline: none;
+    margin-top: 5px;
+    transition: all 0.3s ease-in-out;
+        }
+    
+        .inputInfoEdit:focus {
+            border-color: #aaaaaa;
+            box-shadow: 0 0 10px rgba(203, 203, 203, 0.5);
+        }
+    
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 25px;
+        }
+
+        .inputInfo::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.buttonInfo {
+    margin: 15px;
+    padding: 10px;
+    font-size: 13px;
+    background: #f3f3f3;
+    border: none;
+    border-radius: 6px;
+    background-image: none;
+    background-color: #f3f3f3;
+    border-color: #dbeda0;
+    color: #ea7302;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 600;
+    box-shadow: 0 0 5px 1px rgb(0 0 0 / 28%);
+}
+
+.buttonInfo:hover {
+    background: #ffe0b0;
+}
+.inputInfoEditSingle {
+                max-width: 357px;
+            }
+            .inputInfoEditTwo {
+                max-width: 162px;
+            }
+        @media (max-width: 375px) {
+            .inputInfoEditSingle {
+                max-width: 302px;
+            }
+            .inputInfoEditTwo {
+                max-width: 135px;
+            }
+        
+        }
+
+        /* Overlay to lock the screen */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000; /* Make sure it's above all other content */
+    display: none; /* Hidden by default */
+}
+
+/* Spinner for the busy indicator */
+#loadingSpinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #ff3385; /* Pink */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+    z-index: 1100; /* Make sure the spinner is above the overlay */
+    display: none; /* Hidden by default */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+    </style>
+</head>
+<body class="noselect">
+     <!-- Overlay for Locking the Screen -->
+     <div id="overlay"></div>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner"></div>
+
+ <!-- ============ PAGE UI START================================================================================== -->
+
+
+<!-- Add Products -->
+<div id="createProduct" style="justify-self: center;padding-top: 20px;">
+    <div class="infoInCenter fade-in">
+        <div class="input-groupInfo slide-up">
+            <input class="inputInfoEdit inputInfoEditSingle" type="text" placeholder="Service name" id="productName" required>
+        </div>
+        <div class="input-groupInfo slide-up">
+            <textarea class="inputInfoEdit inputInfoEditSingle" placeholder="Service description" id="productDescription" required></textarea>
+        </div>
+        <div class="input-groupInfo slide-up">
+            <select id="productCategory"  required >
+                <option  value="" disabled selected>Service Type</option>
+                <option value="101">Parlour</option>
+                <option value="102">Teacher</option>
+                <option value="103">Carpenter</option>
+                <option value="104">Painter</option>
+                <option value="105">Plumber</option>
+                <option value="106">cook</option>
+                <option value="107">Driver</option>
+                <option value="108">Labour</option>
+                <option value="109">Car</option>
+                <option value="110">Bike</option>
+                <option value="111">Auto</option>
+                <option value="112">Tailor</option>
+                <option value="113">Labour</option>
+                <option value="114">Cameraman</option>
+                <option value="115">Videographer</option>
+                <option value="116">BandBaja</option>
+                <option value="117">Barber</option>
+                <option value="118">Maid</option>
+                <option value="119">Pathology</option>
+                <option value="120">Truck</option>
+                <option value="121">Tractor</option>
+                <option value="122">Bhangra</option>
+                <option value="123">Mistri</option>
+                <option value="124">Technician</option>
+                
+            </select>
+        </div>
+        <div class="input-groupInfo-row slide-up">
+        
+        <div class="input-groupInfo slide-up">
+            <select id="slotsFrom"  required style="
+            max-width: 384px;
+        ">
+                <option  value="" disabled selected>Booking From</option>
+                <option value="12 AM">12 AM</option>
+                <option value="12:30 AM">12:30 AM</option>
+                <option value="1 AM">1 AM</option>
+                <option value="1:30 AM">1:30 AM</option>
+                <option value="2 AM">2 AM</option>
+                <option value="2:30 AM">2:30 AM</option>
+                <option value="3 AM">3 AM</option>
+                <option value="3:30 AM">3:30 AM</option>
+                <option value="4 AM">4 AM</option>
+                <option value="4:30 AM">4:30 AM</option>
+                <option value="5 AM">5 AM</option>
+                <option value="5:30 AM">5:30 AM</option>
+                <option value="6 AM">6 AM</option>
+                <option value="6:30 AM">6:30 AM</option>
+                <option value="7 AM">7 AM</option>
+                <option value="7:30 AM">7:30 AM</option>
+                <option value="8 AM">8 AM</option>
+                <option value="8:30 AM">8:30 AM</option>
+                <option value="9 AM">9 AM</option>
+                <option value="9:30 AM">9:30 AM</option>
+                <option value="10 AM">10 AM</option>
+                <option value="10:30 AM">10:30 AM</option>
+                <option value="11 AM">11 AM</option>
+                <option value="11:30 AM">11:30 AM</option>
+                <option value="12 PM">12 PM</option>
+                <option value="12:30 PM">12:30 PM</option>
+                <option value="1 PM">1 PM</option>
+                <option value="1:30 PM">1:30 PM</option>
+                <option value="2 PM">2 PM</option>
+                <option value="2:30 PM">2:30 PM</option>
+                <option value="3 PM">3 PM</option>
+                <option value="3:30 PM">3:30 PM</option>
+                <option value="4 PM">4 PM</option>
+                <option value="4:30 PM">4:30 PM</option>
+                <option value="5 PM">5 PM</option>
+                <option value="5:30 PM">5:30 PM</option>
+                <option value="6 PM">6 PM</option>
+                <option value="6:30 PM">6:30 PM</option>
+                <option value="7 PM">7 PM</option>
+                <option value="7:30 PM">7:30 PM</option>
+                <option value="8 PM">8 PM</option>
+                <option value="8:30 PM">8:30 PM</option>
+                <option value="9 PM">9 PM</option>
+                <option value="9:30 PM">9:30 PM</option>
+                <option value="10 PM">10 PM</option>
+                <option value="10:30 PM">10:30 PM</option>
+                <option value="11 PM">11 PM</option>
+                <option value="11:30 PM">11:30 PM</option>
+                
+            </select>
+        </div>
+        <div class="input-groupInfo slide-up">
+            <select id="slotsTo"  required style="
+            max-width: 384px;
+        ">
+                <option  value="" disabled selected>Booking To</option>
+                <option value="12 AM">12 AM</option>
+                <option value="12:30 AM">12:30 AM</option>
+                <option value="1 AM">1 AM</option>
+                <option value="1:30 AM">1:30 AM</option>
+                <option value="2 AM">2 AM</option>
+                <option value="2:30 AM">2:30 AM</option>
+                <option value="3 AM">3 AM</option>
+                <option value="3:30 AM">3:30 AM</option>
+                <option value="4 AM">4 AM</option>
+                <option value="4:30 AM">4:30 AM</option>
+                <option value="5 AM">5 AM</option>
+                <option value="5:30 AM">5:30 AM</option>
+                <option value="6 AM">6 AM</option>
+                <option value="6:30 AM">6:30 AM</option>
+                <option value="7 AM">7 AM</option>
+                <option value="7:30 AM">7:30 AM</option>
+                <option value="8 AM">8 AM</option>
+                <option value="8:30 AM">8:30 AM</option>
+                <option value="9 AM">9 AM</option>
+                <option value="9:30 AM">9:30 AM</option>
+                <option value="10 AM">10 AM</option>
+                <option value="10:30 AM">10:30 AM</option>
+                <option value="11 AM">11 AM</option>
+                <option value="11:30 AM">11:30 AM</option>
+                <option value="12 PM">12 PM</option>
+                <option value="12:30 PM">12:30 PM</option>
+                <option value="1 PM">1 PM</option>
+                <option value="1:30 PM">1:30 PM</option>
+                <option value="2 PM">2 PM</option>
+                <option value="2:30 PM">2:30 PM</option>
+                <option value="3 PM">3 PM</option>
+                <option value="3:30 PM">3:30 PM</option>
+                <option value="4 PM">4 PM</option>
+                <option value="4:30 PM">4:30 PM</option>
+                <option value="5 PM">5 PM</option>
+                <option value="5:30 PM">5:30 PM</option>
+                <option value="6 PM">6 PM</option>
+                <option value="6:30 PM">6:30 PM</option>
+                <option value="7 PM">7 PM</option>
+                <option value="7:30 PM">7:30 PM</option>
+                <option value="8 PM">8 PM</option>
+                <option value="8:30 PM">8:30 PM</option>
+                <option value="9 PM">9 PM</option>
+                <option value="9:30 PM">9:30 PM</option>
+                <option value="10 PM">10 PM</option>
+                <option value="10:30 PM">10:30 PM</option>
+                <option value="11 PM">11 PM</option>
+                <option value="11:30 PM">11:30 PM</option>
+                
+            </select>
+        </div>
+    </div>
+        <div class="input-groupInfo-row slide-up">
+            <div class="input-groupInfo">
+                <input class="inputInfoEdit inputInfoEditTwo" type="number" placeholder="Service Charges" id="productPrice" min="0" step="0.01" required>
+         
+                <input class="inputInfoEdit inputInfoEditTwo" type="number" placeholder="Booking price" id="sellPrice" min="0" step="0.01" required>
+            </div>
+        </div>
+     
+        <div class="input-groupInfo-row slide-up">
+        <div class="input-groupInfo slide-up">
+            <input class="inputInfoEdit inputInfoEditTwo" type="number" placeholder="Available Bookings" id="productStock" min="0" required>
+     
+            <input class="inputInfoEdit inputInfoEditTwo" type="number" placeholder="Min Booking" id="minQtyToBuy" min="1" required>
+        </div>
+    </div>
+        <div class="input-groupInfo-row slide-up">
+        <div class="input-groupInfo slide-up">
+            <input class="inputInfoEdit inputInfoEditSingle" type="text" placeholder="Duration: 2Hrs, 1Day, 1Month, 1 Year" id="unit" required>
+        </div>
+    </div>
+        <div class="form-actions">
+            <button type="submit" id="createProductSubmit" class="buttonInfo button-create pulse" onclick="updateProduct()">Update Service</button>
+        </div>
+    </div> 
+</div>
+ <!-- ============ PAGE UI END================================================================================== -->
+    <script>
+
+//============ PAGE LOGIC START================================================================================== 
+
+
+
+// function getTimeDifference(start, end) {
+//   const toMinutes = (timeStr) => {
+//     const [time, meridian] = timeStr.split(" ");
+//     let [hour, minute] = time.split(":").map(Number);
+//     if (meridian === "PM" && hour !== 12) hour += 12;
+//     if (meridian === "AM" && hour === 12) hour = 0;
+//     return hour * 60 + (minute || 0);
+//   };
+
+//   const startMinutes = toMinutes(start);
+//   const endMinutes = toMinutes(end);
+
+//   const diff = endMinutes - startMinutes;
+//   const hours = Math.floor(diff / 60);
+//   const minutes = diff % 60;
+
+//   return `${hours} hour${hours !== 1 ? "s" : ""} ${minutes} minute${minutes !== 1 ? "s" : ""}`;
+// }
+
+// // Example usage:
+// console.log(getTimeDifference("7:30 AM", "11 AM"));  // Output: "3 hours 30 minutes"
+
+
+function updateProduct() {
+    const shopData = JSON.parse(localStorage.getItem('shop'));
+    const productData = JSON.parse(localStorage.getItem('product'));
+    if(shopData && productData){
+        var shopId = shopData.shopId;
+        var productId = productData.productId;
+    }
+       const requestBody = {
+                category_categoryId: parseInt(document.getElementById('productCategory').value),
+                shopProducts_shopId: shopId,
+                productName: document.getElementById('productName').value,
+                mrp: parseFloat(document.getElementById('productPrice').value),
+                sellPrice: parseFloat(document.getElementById('sellPrice').value),
+                description: document.getElementById('productDescription').value,
+                stockQuantity: parseInt(document.getElementById('productStock').value),
+                minQtyToBuy: parseInt(document.getElementById('minQtyToBuy').value),
+                unit: document.getElementById('unit').value,
+                color: document.getElementById('slotsFrom').value +" - "+document.getElementById('slotsTo').value
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch("/products-server/Products('"+productId+"')", {
+    method: 'PUT',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    // showSection('shops');
+    // generateTiles();
+    window.location.href = './my-service-products.html';
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+            const product = localStorage.getItem('product');
+            if(product){
+            const productInfo = JSON.parse(product);
+            document.getElementById('productCategory').value = productInfo.category_categoryId;
+
+            document.getElementById('productName').value = productInfo.productName;
+            document.getElementById('productPrice').value = productInfo.mrp;
+            document.getElementById('sellPrice').value = productInfo.sellPrice;
+            document.getElementById('productDescription').value = productInfo.description;
+            document.getElementById('productStock').value = productInfo.stockQuantity;
+            document.getElementById('minQtyToBuy').value = productInfo.minQtyToBuy;
+            document.getElementById('unit').value = productInfo.unit;
+            if(productInfo.color){
+                    document.getElementById('slotsFrom').value=productInfo.color.split(" - ")[0];
+                    document.getElementById('slotsTo').value=productInfo.color.split(" - ")[1];
+                }
+
+                // document.getElementById('productCategory').value=productInfo.category_categoryId;
+                // shopProducts_shopId: shopId,
+                // document.getElementById('productName').value=productInfo.productName;
+                // document.getElementById('productPrice').value=productInfo.mrp;
+                // document.getElementById('sellPrice').value=productInfo.sellPrice;
+                // document.getElementById('productDescription').value=productInfo.description;
+                // document.getElementById('productStock').value=productInfo.stockQuantity;
+                // document.getElementById('minQtyToBuy').value=productInfo.minQtyToBuy;
+                // unit: document.getElementById('unit').value=productInfo.unit;
+                // if(productInfo.color){
+                //     document.getElementById('slotsFrom').value=productInfo.color.split("-")[0];
+                //     document.getElementById('slotsTo').value==productInfo.color.split("-")[1];
+                // }
+                
+
+
+
+
+
+
+            } 
+            
+            
+
+});
+
+//============ PAGE LOGIC END================================================================================== 
+document.addEventListener("click", function () {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+// Login
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem('refreshToken');
+    const user = localStorage.getItem('user');
+if(!token && !user){
+    window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+    const url="./iframe/login.html";
+    loadContent(url);
+}
+});
+    </script>
+</body>
+</html>

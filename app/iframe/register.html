@@ -1,0 +1,358 @@
+<!-- register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        /* General Styles */
+  .logo {
+      width: 120px; /* Slightly larger for better visibility */
+      height: 115px;
+      border-radius: 60px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgb(255 255 255 / 43%);
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .logo:hover {
+      transform: scale(1.1); /* Slightly enlarges the logo */
+      box-shadow: 0 6px 15px rgba(255, 223, 0, 0.5); /* Golden glow on hover */
+  }
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+  }
+  
+  body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    
+      color: #fff;
+      padding: 20px;
+      height: 100vh;
+      font-family: 'Arial', sans-serif;
+  
+      /* Multi-Color Gradient Background */
+      background: #ff3385;
+
+  }
+
+  .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
+  }
+  
+  h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+  }
+  
+  .input-group {
+      margin-bottom: 15px;
+      position: relative;
+  }
+  
+  input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      outline: none;
+  }
+  
+  input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+  }
+  
+  button {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      background: #ebf5cb;
+      border: none;
+      border-radius: 6px;
+      background-image: none;
+      background-color: #ebf5cb;
+      border-color: #dbeda0;
+      color: #256f3a;
+      cursor: pointer;
+      transition: 0.3s;
+  }
+  
+  button:hover {
+      background: #ffe0b0;
+  }
+  
+  .links {
+      margin-top: 15px;
+  }
+  
+  .links a {
+      color: #FFD700;
+      text-decoration: none;
+      font-size: 14px;
+  }
+  
+  .links a:hover {
+      text-decoration: underline;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+      body {
+          padding: 15px;
+      }
+      .container {
+          width: 90%;
+          max-width: 320px;
+      }
+  }
+  
+  @media (max-width: 480px) {
+      h2 {
+          font-size: 20px;
+      }
+      input, button {
+          font-size: 14px;
+          padding: 10px;
+      }
+      .links a {
+          font-size: 12px;
+      }
+  }
+  
+  
+  /* Overlay to lock the screen */
+  #overlay {
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+              z-index: 1000; /* Make sure it's above all other content */
+              display: none; /* Hidden by default */
+          }
+  
+          /* Spinner for the busy indicator */
+          #loadingSpinner {
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              border: 16px solid #f3f3f3; /* Light grey */
+              border-top: 16px solid #ff3385; /* Pink */
+              border-radius: 50%;
+              width: 80px;
+              height: 80px;
+              animation: spin 2s linear infinite;
+              z-index: 1100; /* Make sure the spinner is above the overlay */
+              display: none; /* Hidden by default */
+          }
+  
+          @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+          }
+  
+/* popup model */
+.popup-modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  }
+  
+  .popup-modal-content {
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+  } 
+  .popup-btn {
+    background: #ff3385;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+  } 
+ /* Overlay to lock the screen */
+#overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            z-index: 1000; /* Make sure it's above all other content */
+            display: none; /* Hidden by default */
+        }
+
+        /* Spinner for the busy indicator */
+        #loadingSpinner {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #ff3385; /* Pink */
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 2s linear infinite;
+            z-index: 1100; /* Make sure the spinner is above the overlay */
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Overlay for Locking the Screen -->
+ <div id="overlay"></div>
+<div id="loadingSpinner"></div>
+
+<div class="container">
+    <h2>Register</h2>
+    <div class="input-group"><input type="text" id="phoneNumber" placeholder="Phone Number"></div>
+    <div class="input-group"><input type="text" id="firstName" placeholder="First Name"></div>
+    <div class="input-group"><input type="text" id="lastName" placeholder="Last Name"></div>
+    <div class="input-group"><input type="email" id="email" placeholder="Email"></div>
+    <div class="input-group"><input type="password" id="password" placeholder="Password"></div>
+    <div class="input-group"><input type="password" id="confirmPassword" placeholder="Confirm Password"></div>
+    <button onclick="register()">Register</button>
+    <div class="links"><a href="./login.html">Already have an account? Login</a></div>
+</div>
+
+<div id="confirmModal" class="popup-modal">
+    <div class="popup-modal-content">
+        <p id="popupmess" style="color: #333;padding:15px;"></p>
+        <button id="popupbtn" class="popup-btn" onclick="closeConfirmModal()">Close</button>
+    </div>
+</div>
+
+<script>
+function openConfirmModal(mess, btntext) {
+    document.getElementById("popupmess").textContent = mess;
+    const popupBtn = document.getElementById("popupbtn");
+    popupBtn.textContent = btntext;
+    document.getElementById("confirmModal").style.display = "flex";
+}
+
+function closeConfirmModal() {
+    document.getElementById("confirmModal").style.display = "none";
+    const redirect = document.getElementById("popupbtn").getAttribute("data-redirect");
+    if (redirect) window.location.href = redirect;
+}
+
+// Validation functions
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePhone(phone) {
+    const re = /^[0-9]{10,15}$/;
+    return re.test(phone);
+}
+
+function register() {
+    const phoneNumber = document.getElementById('phoneNumber').value.trim();
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Required fields check
+    if (!phoneNumber || !firstName || !lastName || !email || !password || !confirmPassword) {
+        openConfirmModal("All fields are required!", "Close");
+        return;
+    }
+
+    if (!validatePhone(phoneNumber)) {
+        openConfirmModal("Please enter a valid phone number (10-15 digits).", "Close");
+        return;
+    }
+
+    if (!validateEmail(email)) {
+        openConfirmModal("Please enter a valid email address.", "Close");
+        return;
+    }
+
+    if (password.length < 6) {
+        openConfirmModal("Password must be at least 6 characters long.", "Close");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        openConfirmModal("Passwords do not match!", "Close");
+        return;
+    }
+
+    // Show overlay & spinner
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('loadingSpinner').style.display = 'block';
+
+    fetch('/odata/v4/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ phoneNumber, firstName, lastName, email, password }),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'none';
+        const popupBtn = document.getElementById("popupbtn");
+        popupBtn.setAttribute("data-redirect", "./login.html");
+        openConfirmModal("Registration successful! Please login.", "Login here");
+    })
+    .catch(error => {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'none';
+        console.error(error);
+        openConfirmModal("Registration failed! Please try again later.", "Close");
+    });
+}
+
+document.addEventListener("click", function() {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+</script>
+
+</body>
+</html>
+

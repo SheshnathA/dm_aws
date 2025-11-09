@@ -1,0 +1,8 @@
+SECRET_KEY = "aa101f3d848074993883dfac95b53c5f4b5e618ffb71a7d62379e8ebcdad3d33"
+REFRESH_SECRET = "47123384d8a948eed70e8fb57261bec85368652ff3842a473b7e8ecf5c3d7aff"
+
+EMAIL_HOST=mail.dukanmitra.com
+EMAIL_PORT=465
+EMAIL_USER=otp@dukanmitra.com
+EMAIL_PASS=DukanMitra8800755400@otp9140679201
+EMAIL_FROM="Dukan Mitra OTP <otp@dukanmitra.com>"

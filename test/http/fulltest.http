@@ -1,0 +1,362 @@
+@server = http://localhost:4004
+
+
+@protocol = http
+
+@host = localhost
+
+@port = 4004
+
+
+@auth = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDAiLCJpYXQiOjE3NDEyOTU4MjMsImV4cCI6MTc0MTkwMDYyM30.O3HGXIlTBF2Sc4ZmjVRzHcy5JkTRVVcSpwlmjuzZZjU
+### register
+# @name register_POST
+POST {{server}}/odata/v4/auth/register
+Content-Type: application/json
+
+{
+  "phoneNumber": "8800755400",
+  "firstName": "Ram Kumar",
+  "lastName": "Agrahari",
+  "password": "1234"
+}
+
+### login
+# @name login_POST
+POST {{server}}/odata/v4/auth/login
+Content-Type: application/json
+
+{
+  "phoneNumber": "8800755400",
+  "password": "1234"
+}
+
+
+### getUserProfile
+# @name getUserProfile_GET
+GET http://localhost:4004/odata/v4/user-profile/getUserProfile()
+Content-Type: application/json
+{{auth}}
+
+
+
+###
+# @name Books_PUT
+PUT http://localhost:4004/odata/v4/user-profile/Users('8800755400')/profilePicture
+Content-Type: image/png
+{{auth}}
+
+< ./shesh.jpg
+
+
+
+
+###
+GET http://localhost:4004/odata/v4/user-profile/Users('8800755400')/profilePicture
+{{auth}}
+
+###
+GET http://localhost:4004/odata/v4/user-profile/Users('8800755400')
+{{auth}}
+
+### Users
+# @name Users_GET
+GET {{server}}/odata/v4/auth/Users
+{{auth}}
+
+### Users
+# @name Users_DELETE
+DELETE http://localhost:4004/odata/v4/user-profile/Users/08800755400
+Content-Type: application/json
+{{auth}}
+
+
+
+### get user info
+# @name getUserInfo_POST
+POST {{server}}/odata/v4/auth/getUserInfo
+Content-Type: application/json
+{{auth}}
+
+
+
+
+
+
+### Category
+# @name Category_GET
+GET {{server}}/category-server/Category
+{{auth}}
+
+
+### Category
+# @name Category_POST
+POST {{server}}/category-server/Category
+Content-Type: application/json
+{{auth}}
+
+{
+  "categoryId": 3,
+  "categoryName": "Electronic",
+  "description": "Electronic"
+}
+
+
+###
+# @name Category_PUT
+PUT {{server}}/category-server/Category(3)/categoryPicture
+Content-Type: image/png
+{{auth}}
+
+< ./electronic.jpeg
+
+
+
+###
+GET {{server}}/category-server/Category(3)/categoryPicture
+{{auth}}
+
+
+### Category
+# @name Category_PATCH
+PATCH {{server}}/category-server/Category/23105252
+Content-Type: application/json
+{{auth}}
+
+{
+  "categoryId": 23105252,
+  "categoryName": "categoryName-23105252",
+  "description": "description-23105252",
+}
+
+
+### Category
+# @name Category_DELETE
+DELETE {{server}}/category-server/Category/23105252
+Content-Type: application/json
+{{auth}}
+
+
+
+### Shops
+# @name Shops_GET
+GET {{server}}/odata/v4/shop/Shops
+{{auth}}
+
+### Shops
+# @name Shops_GET
+GET {{server}}/odata/v4/shop/getUserShops()
+{{auth}}
+
+
+###
+POST {{server}}/odata/v4/shop/Shops
+Content-Type: application/json
+{{auth}}
+
+{
+    "shopName": "Sree Ji Pooja",
+    "shopAddress": "Churaha",
+    "shopType": "Pooja",
+    "shopOffer": "10",
+    "shopLocation": "Maupakar",
+    "shopCity": "MRJ"
+}
+
+### createShop
+# @name createShop_POST
+POST {{server}}/odata/v4/shop/createShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shop": {
+    "shopName": "Sree Ji Pooja",
+    "shopAddress": "Churaha",
+    "shopType": "Pooja",
+    "shopOffer": "10",
+    "shopLocation": "Maupakar",
+    "shopCity": "MRJ",
+    "latitude": "2.97878978",
+    "longitude": "4.6787788"
+  }
+}
+
+### updateShop
+# @name updateShopStatus_POST
+POST {{server}}/odata/v4/shop/updateShopStatus
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "5c41a7d0-6136-4bd6-950b-2633cb3be0bd",
+  "shop": {
+    "online": "Open"
+  }
+}
+
+### updateShop
+# @name updateShop_POST
+POST {{server}}/odata/v4/shop/updateShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "24700208-a743-4c62-a745-65809ddbd2a4",
+  "shop": {
+    "shopName": "shopName-24700208",
+    "shopAddress": "shopAddress-24700208",
+    "shopType": "shopType-24700208",
+    "shopOffer": "shopOffer-24700208",
+    "shopLocation": "shopLocation-24700208",
+    "shopCity": "shopCity-24700208"
+  }
+}
+
+### deleteShop
+# @name deleteShop_POST
+POST {{server}}/odata/v4/shop/deleteShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "26837b6f-66ae-4a01-8ea7-73773352b2a8"
+}
+
+
+### Read Pictures
+GET {{protocol}}://{{host}}:{{port}}/media-server/Media
+{{auth}}
+
+### Create Picture with mediatype
+POST {{protocol}}://{{host}}:{{port}}/odata/v4/media-server/Media
+{{auth}}
+Accept: application/json
+Content-Type: application/json
+
+{ 
+  "fileName": "image",
+  "applicationName": "DukanMitra",
+  "mediaCategory" :"ShopBanner",
+  "productMedia_productId": null,
+  "shopMedia_shopId": "70c0254a-8a2f-4888-92f4-98d040361cad",
+  "mediaType": "image/png" 
+}
+
+
+### Create Picture with mediatype PRODUCT
+POST {{protocol}}://{{host}}:{{port}}/odata/v4/media-server/Media
+{{auth}}
+Accept: application/json
+Content-Type: application/json
+
+{ 
+  "fileName": "image",
+  "applicationName": "DukanMitra",
+  "mediaCategory" :"ProductImage",
+  "productMedia_productId": "111",
+  "shopMedia_shopId": "1a46a726-aaba-4c17-a52c-410a134e5840",
+  "mediaType": "image/png" 
+}
+
+### Upload Binary PNG
+PUT {{protocol}}://{{host}}:{{port}}/odata/v4/media-server/Media('8800755400_PROD_se0z')/content
+{{auth}}
+Content-Type: image/png
+
+< ./k1.jpg
+
+### Read Binary
+GET {{protocol}}://{{host}}:{{port}}/odata/v4/media-server/Media('8800755400_PROD_se0z')/content
+{{auth}}
+
+### Delete Image
+DELETE http://localhost:4004/odata/v4/media-server/Media('8800755400_BAN_6l7r')
+{{auth}}
+
+
+
+
+
+
+###
+GET {{server}}/products-server/Products
+
+
+### Products
+# @name Products_POST
+POST {{server}}/products-server/Products
+Content-Type: application/json
+{{auth}}
+
+    {
+      "category_categoryId": 2,
+      "shopProducts_shopId": "1a46a726-aaba-4c17-a52c-410a134e5840",
+      "productName": "Rice",
+      "description": "rice",
+      "mrp": 32,
+      "stockQuantity": 100,
+      "sellPrice": 30,
+      "isVerified": false,
+      "online": "no",
+      "unit": "KG",
+      "color": "white",
+      "rating": "2.3",
+      "minQtyToBuy": 1
+    }
+
+### Products
+# @name Products_PATCH
+PATCH {{server}}/products-server/Products('111')
+Content-Type: application/json
+{{auth}}
+
+    {
+      "productName": "Whirlpool 184 L 2 Star Direct-Cool Single Door Refrigerator ",
+      "description": "Whirlpool 184 L 2 Star Direct-Cool Single Door Refrigerator (205 WDE PRM 2S SAPPHIRE BLOOM-Z, 2023 Model)",
+      "mrp": 32999,
+      "stockQuantity": 100,
+      "sellPrice": 30499,
+      "isVerified": true,
+      "online": "yes",
+      "unit": "PCS",
+      "color": "white",
+      "rating": "4.2",
+      "minQtyToBuy": 1
+    }
+
+
+
+### Products
+# @name Products_DELETE
+DELETE {{server}}/products-server/Products('p')
+Content-Type: application/json
+{{auth}}
+
+
+###
+GET http://localhost:4004/odata/v4/user-profile/Users('8800755400')/shops(1a46a726-aaba-4c17-a52c-410a134e5840)/products?$expand=medias
+Content-Type: application/json
+{{auth}}
+
+###
+GET http://localhost:4004/odata/v4/shop/Shops(1a46a726-aaba-4c17-a52c-410a134e5840)/products?$expand=medias
+Content-Type: application/json
+
+###
+GET http://localhost:4004/odata/v4/user-profile/Users('8800755400')/userAddress
+Content-Type: application/json
+
+
+### Products
+# @name Products_POST
+POST {{server}}/odata/v4/address/Address
+Content-Type: application/json
+{{auth}}
+
+    {
+      "completeAddress": "Azad nagar near exl accedemy",
+      "locality": "churaha road maupakar",
+      "latitude": "1.09789899",
+      "longitude": "2.9089877"
+    }

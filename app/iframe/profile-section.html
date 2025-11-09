@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop</title>
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/header.css">
+</head>
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        max-width: 800px;
+        margin: auto;
+    }
+    .tile {
+    background: white;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    color: black;
+    height: auto;
+    border: 3px solid #ff3385;
+    }
+    .tile:hover {
+        background: #e0e0e0;
+    }
+    .contentMargin {
+        margin-top: 65px;
+        padding: 15px;
+    }
+    #content {
+        height: 100%;
+        margin-top: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        display: none;
+    }
+</style>
+<body class="noselect">
+<!-- ================================ Fixed header information =========================================== -->
+<!-- ============ PAGE UI START================================================================================== -->
+<div class="container contentMargin">
+    <div class="tile" onclick="loadContent('./iframe/myprofile.html')">Manage Profile</div>
+    <div class="tile" onclick="loadContent('./iframe/myshops.html')">Manage Shops, Products and Orders</div>
+    <div class="tile" onclick="loadContent('./iframe/myservices.html')">Manage Services and Booking</div>
+
+
+</div>
+<div id="content"></div>
+
+ <!-- ============ PAGE UI END================================================================================== -->
+
+ <script>
+
+function loadContent(url) {    
+    window.parent.document.getElementById('userProfileHeader').style.display = 'none'; // Hide Cart Icon
+    window.parent.document.getElementById('backButton').classList.add('show'); // Animate Back Button
+    window.parent.document.getElementById('content').innerHTML = '<iframe src="' + url + '" style="width:100%; height: 100%; border:none;"></iframe>';
+           // document.querySelector('.container').style.display = 'none';
+        }
+document.addEventListener("click", function () {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+
+// Login
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem('refreshToken');
+    const user = localStorage.getItem('user');
+if(!token && !user){
+    window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+    const url="./iframe/login.html";
+    loadContent(url);
+}
+});
+
+</script>
+</body>
+</html>

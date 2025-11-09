@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop</title>
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+    
+        .slide-up {
+            animation: slideUp 0.5s ease-in-out;
+        }
+    
+        .pulse:hover {
+            animation: pulse 0.5s ease-in-out;
+        }
+    
+        .infoInCenter {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 500px;
+            margin: 30px auto;
+            background: linear-gradient(135deg, #f3f3f3, #ffffff);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+    
+        .input-groupInfo {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    
+        .input-groupInfo-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 100%;
+        }
+    
+        .input-groupInfo-row .input-groupInfo {
+            flex: 1;
+            min-width: 160px;
+        }
+    
+        .inputInfoEdit {
+            width: 90%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+        }
+    
+        .inputInfoEdit:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+        }
+    
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 25px;
+        }
+    
+        .buttonInfo {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+    
+        .buttonInfo:hover {
+            background: linear-gradient(135deg, #218838, #1e7e34);
+            box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+        }
+    
+        @media (max-width: 600px) {
+            .infoInCenter {
+                padding: 20px;
+            }
+    
+            .input-groupInfo-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+         /* Map placeholder styling */
+    #map {
+        width: 100%;
+    height: 300px;
+    background: #e9e9e9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    }
+    </style>
+</head>
+<body class="noselect">
+     <!-- Overlay for Locking the Screen -->
+     <div id="overlay"></div>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner"></div>
+
+ <!-- ============ PAGE UI START================================================================================== -->
+
+
+<!-- Add Products -->
+<div id="createProduct">
+    <div class="infoInCenter fade-in">
+        <div class="input-groupInfo slide-up">
+            <label for="productName">Complete Address</label>
+            <input class="inputInfoEdit" type="text" placeholder="Enter Complete Address" id="completeAddress" required>
+        </div>
+        <div class="input-groupInfo slide-up">
+            <label for="productName">Locality</label>
+            <input class="inputInfoEdit" type="text" placeholder="Enter locality" id="locality" required>
+        </div>
+        <div class="input-groupInfo slide-up">
+
+            <div id="map"></div>
+        </div>
+       
+        <div class="form-actions">
+            <button type="submit" id="updateAddress" class="buttonInfo button-create pulse" onclick="updateAddress()">Confirm address</button>
+        </div>
+    </div>
+</div>
+ <!-- ============ PAGE UI END================================================================================== -->
+    <script>
+
+//============ PAGE LOGIC START================================================================================== 
+document.addEventListener("DOMContentLoaded", function () {
+            const address = localStorage.getItem('address');
+            if(address){
+            const addressInfo = JSON.parse(address);
+            document.getElementById('completeAddress').value = addressInfo.completeAddress;
+            document.getElementById('locality').value = addressInfo.locality;
+            }      
+});
+function updateAddress() {
+    const address = localStorage.getItem('address');
+            if(address){
+            const addressInfo = JSON.parse(address);
+            var addressId = addressInfo.addressId;
+            } 
+       const requestBody = {
+                completeAddress: document.getElementById('completeAddress').value,
+                locality: document.getElementById('locality').value,
+                latitude           : lat.toString(),
+                longitude          : lon.toString()
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch("/odata/v4/address/Address("+addressId+")", {
+    method: 'PUT',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    // showSection('shops');
+    // generateTiles();
+    window.location.href = './my-address.html';
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+getLocation();
+function getLocation() {
+
+if ("geolocation" in navigator) {
+
+    
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            lat = position.coords.latitude;
+            lon = position.coords.longitude;
+            
+            showMap(lat, lon);
+        },
+        function(error) {
+           // status.textContent = "Error getting location: " + error.message;
+        }
+    );
+} else {
+   // status.textContent = "Geolocation is not supported by your browser.";
+}
+}
+
+
+function showMap(lat, lon) {
+const mapUrl = `https://www.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+document.getElementById("map").innerHTML = `<iframe src="${mapUrl}" width="100%" height="300" frameborder="0"></iframe>`;
+}
+
+//============ PAGE LOGIC END================================================================================== 
+document.addEventListener("click", function () {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+// Login
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem('refreshToken');
+    const user = localStorage.getItem('user');
+if(!token && !user){
+    window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+    const url="./iframe/login.html";
+    loadContent(url);
+}
+});
+    </script>
+</body>
+</html>

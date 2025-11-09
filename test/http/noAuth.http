@@ -1,0 +1,13 @@
+### Requires REST Client for VS Code
+### https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+###
+@protocol = http
+@host = localhost
+@port = 4004
+
+@auth = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDEiLCJpYXQiOjE3Mzk0MzA3ODksImV4cCI6MTc0MDAzNTU4OX0.4c4tWZOcV5ifAMkzUbLmZnhb3BPzS27-LM0vGDLAzto
+### Read Products
+GET {{protocol}}://{{host}}:{{port}}/products-server/Products
+
+### Read Cat
+GET {{protocol}}://{{host}}:{{port}}/products-server/Products

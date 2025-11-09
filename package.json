@@ -1,0 +1,87 @@
+{
+  "name": "dukanmitra.com",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@newdash/graphlib": "3.1.4",
+    "@newdash/newdash": "5.23.1",
+    "@sap/cds": "^7",
+    "@sap/xssec": "^4.4.0",
+    "bcrypt": "^6.0.0",
+    "cds-internal-tool": "1.7.9",
+    "cds-mysql": "^7.9.0",
+    "colors": "1.4.0",
+    "express": "^4",
+    "generic-pool": "3.9.0",
+    "glob": "11.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "lokijs": "^1.5.6",
+    "luxon": "3.5.0",
+    "mysql2": "^3.12.0",
+    "nodemailer": "^7.0.10",
+    "passport": "^0.7.0",
+    "ts-mysql-parser": "0.2.0",
+    "typeorm": "0.3.20"
+  },
+  "devDependencies": {
+    "@types/generic-pool": "3.8.3",
+    "@types/jest": "29.5.14",
+    "@types/luxon": "3.4.2",
+    "@types/node": "22.13.0",
+    "@typescript-eslint/eslint-plugin": "8.22.0",
+    "@typescript-eslint/parser": "8.22.0",
+    "axios": "1.7.9",
+    "benchmark": "2.1.4",
+    "eslint": "9.19.0",
+    "jest": "29.7.0",
+    "sqlite3": "^5.0.4",
+    "ts-jest": "29.2.5",
+    "ts-node": "10.9.2",
+    "typescript": "5.7.3"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "deploy": "cds-mysql-deploy",
+    "watch-project1": "cds watch --open project1/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-usermanagement": "cds watch --open usermanagement/webapp/index.html?sap-ui-xx-viewCache=false"
+  },
+  "cds": {
+    "requires": {
+      "auth": {
+        "kind": "basic",
+        "users": {
+          "user": {
+            "password": "user",
+            "ID": "user",
+            "roles": [
+              "authenticated-user"
+            ]
+          },
+          "admin": {
+            "password": "admin",
+            "ID": "admin",
+            "roles": [
+              "Admin"
+            ]
+          }
+        }
+      },
+      "db": {
+        "kind": "mysql"
+      },
+      "mysql": {
+        "impl": "cds-mysql",
+        "models": [
+          "srv",
+          "db"
+        ]
+      }
+    }
+  },
+  "sapux": [
+    "app"
+  ]
+}

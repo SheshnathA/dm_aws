@@ -1,0 +1,731 @@
+@server = http://localhost:4004
+@auth = Authorization: Basic alice:
+
+
+### Cart
+# @name Cart_GET
+GET {{server}}/odata/v4/cart/Cart
+{{auth}}
+
+
+### Cart
+# @name Cart_POST
+POST {{server}}/odata/v4/cart/Cart
+Content-Type: application/json
+{{auth}}
+
+{
+  "cartId": "30230323-869f-48d1-9583-43b6d89175e7",
+  "shop": {
+    "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+  },
+  "items": [
+    {
+      "itemId": "15091302-03c3-439f-a661-32066468486d",
+      "product": {
+        "productId": "19573317-903a-415d-bd36-869bb099bab8"
+      },
+      "quantity": 75,
+      "createdAt": "2012-10-06T18:30:00.000Z",
+      "createdBy": "createdBy.8zgiu@example.org",
+      "modifiedAt": "2008-01-24T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.8zgiu@example.net"
+    },
+    {
+      "itemId": "15091303-3d0f-4e37-b520-367fb9aec692",
+      "product": {
+        "productId": "19573317-903a-415d-bd36-869bb099bab8"
+      },
+      "quantity": 76,
+      "createdAt": "2018-07-27T18:30:00.000Z",
+      "createdBy": "createdBy.8zgiv@example.net",
+      "modifiedAt": "2009-08-29T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.8zgiv@example.org"
+    }
+  ],
+  "createdAt": "2022-01-28T18:30:00.000Z",
+  "createdBy": "createdBy.hzxv7@example.com",
+  "modifiedAt": "2003-07-16T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.hzxv7@example.com"
+}
+
+
+### Cart
+# @name Cart_PATCH
+PATCH {{server}}/odata/v4/cart/Cart/30230323-869f-48d1-9583-43b6d89175e7
+Content-Type: application/json
+{{auth}}
+
+{
+  "cartId": "30230323-869f-48d1-9583-43b6d89175e7",
+  "shop": {
+    "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+  },
+  "items": [
+    {
+      "itemId": "15091302-03c3-439f-a661-32066468486d",
+      "product": {
+        "productId": "19573317-903a-415d-bd36-869bb099bab8"
+      },
+      "quantity": 75,
+      "createdAt": "2012-10-06T18:30:00.000Z",
+      "createdBy": "createdBy.8zgiu@example.org",
+      "modifiedAt": "2008-01-24T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.8zgiu@example.net"
+    },
+    {
+      "itemId": "15091303-3d0f-4e37-b520-367fb9aec692",
+      "product": {
+        "productId": "19573317-903a-415d-bd36-869bb099bab8"
+      },
+      "quantity": 76,
+      "createdAt": "2018-07-27T18:30:00.000Z",
+      "createdBy": "createdBy.8zgiv@example.net",
+      "modifiedAt": "2009-08-29T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.8zgiv@example.org"
+    }
+  ],
+  "createdAt": "2022-01-28T18:30:00.000Z",
+  "createdBy": "createdBy.hzxv7@example.com",
+  "modifiedAt": "2003-07-16T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.hzxv7@example.com"
+}
+
+
+### Cart
+# @name Cart_DELETE
+DELETE {{server}}/odata/v4/cart/Cart/30230323-869f-48d1-9583-43b6d89175e7
+Content-Type: application/json
+{{auth}}
+
+
+### CartItems
+# @name CartItems_GET
+GET {{server}}/odata/v4/cart/CartItems
+{{auth}}
+
+
+### CartItems
+# @name CartItems_POST
+POST {{server}}/odata/v4/cart/CartItems
+Content-Type: application/json
+{{auth}}
+
+{
+  "itemId": "15091302-03c3-439f-a661-32066468486d",
+  "product": {
+    "productId": "19573317-903a-415d-bd36-869bb099bab8"
+  },
+  "quantity": 75,
+  "createdAt": "2012-10-06T18:30:00.000Z",
+  "createdBy": "createdBy.8zgiu@example.org",
+  "modifiedAt": "2008-01-24T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.8zgiu@example.net"
+}
+
+
+### CartItems
+# @name CartItems_PATCH
+PATCH {{server}}/odata/v4/cart/CartItems/15091302-03c3-439f-a661-32066468486d
+Content-Type: application/json
+{{auth}}
+
+{
+  "itemId": "15091302-03c3-439f-a661-32066468486d",
+  "product": {
+    "productId": "19573317-903a-415d-bd36-869bb099bab8"
+  },
+  "quantity": 75,
+  "createdAt": "2012-10-06T18:30:00.000Z",
+  "createdBy": "createdBy.8zgiu@example.org",
+  "modifiedAt": "2008-01-24T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.8zgiu@example.net"
+}
+
+
+### CartItems
+# @name CartItems_DELETE
+DELETE {{server}}/odata/v4/cart/CartItems/15091302-03c3-439f-a661-32066468486d
+Content-Type: application/json
+{{auth}}
+
+
+### Products
+# @name Products_GET
+GET {{server}}/odata/v4/cart/Products
+{{auth}}
+
+
+### Products
+# @name Products_POST
+POST {{server}}/odata/v4/cart/Products
+Content-Type: application/json
+{{auth}}
+
+{
+  "productId": "26891361-b8c5-4204-8807-19194fff4a15",
+  "shopProducts": {
+    "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+  },
+  "productName": "productName-26891361",
+  "description": "description-26891361",
+  "mrp": 94.21,
+  "stockQuantity": 34,
+  "sellPrice": 4.26,
+  "isVerified": false,
+  "online": "online-26891361",
+  "unit": "unit-26891361",
+  "color": "color-26891361",
+  "rating": "361",
+  "minQtyToBuy": 84,
+  "medias": [
+    {
+      "id": 18694231,
+      "shopMedia": {
+        "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+      },
+      "isVerified": false,
+      "mediaCategory": "mediaCategory-18694231",
+      "mediaType": "mediaType-18694231",
+      "fileName": "fileName-18694231",
+      "applicationName": "applicationName-18694231",
+      "url": "url-18694231",
+      "createdAt": "2016-12-03T18:30:00.000Z",
+      "createdBy": "createdBy.b4ok7@example.com",
+      "modifiedAt": "2004-07-16T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.b4ok7@example.org"
+    },
+    {
+      "id": 18694232,
+      "shopMedia": {
+        "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+      },
+      "isVerified": true,
+      "mediaCategory": "mediaCategory-18694232",
+      "mediaType": "mediaType-18694232",
+      "fileName": "fileName-18694232",
+      "applicationName": "applicationName-18694232",
+      "url": "url-18694232",
+      "createdAt": "2013-09-25T18:30:00.000Z",
+      "createdBy": "createdBy.b4ok8@example.org",
+      "modifiedAt": "2015-02-18T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.b4ok8@example.com"
+    }
+  ],
+  "createdAt": "2011-09-14T18:30:00.000Z",
+  "createdBy": "createdBy.g0di9@example.org",
+  "modifiedAt": "2003-06-29T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.g0di9@example.com"
+}
+
+
+### Products
+# @name Products_PATCH
+PATCH {{server}}/odata/v4/cart/Products/26891361-b8c5-4204-8807-19194fff4a15
+Content-Type: application/json
+{{auth}}
+
+{
+  "productId": "26891361-b8c5-4204-8807-19194fff4a15",
+  "shopProducts": {
+    "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+  },
+  "productName": "productName-26891361",
+  "description": "description-26891361",
+  "mrp": 94.21,
+  "stockQuantity": 34,
+  "sellPrice": 4.26,
+  "isVerified": false,
+  "online": "online-26891361",
+  "unit": "unit-26891361",
+  "color": "color-26891361",
+  "rating": "361",
+  "minQtyToBuy": 84,
+  "medias": [
+    {
+      "id": 18694231,
+      "shopMedia": {
+        "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+      },
+      "isVerified": false,
+      "mediaCategory": "mediaCategory-18694231",
+      "mediaType": "mediaType-18694231",
+      "fileName": "fileName-18694231",
+      "applicationName": "applicationName-18694231",
+      "url": "url-18694231",
+      "createdAt": "2016-12-03T18:30:00.000Z",
+      "createdBy": "createdBy.b4ok7@example.com",
+      "modifiedAt": "2004-07-16T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.b4ok7@example.org"
+    },
+    {
+      "id": 18694232,
+      "shopMedia": {
+        "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+      },
+      "isVerified": true,
+      "mediaCategory": "mediaCategory-18694232",
+      "mediaType": "mediaType-18694232",
+      "fileName": "fileName-18694232",
+      "applicationName": "applicationName-18694232",
+      "url": "url-18694232",
+      "createdAt": "2013-09-25T18:30:00.000Z",
+      "createdBy": "createdBy.b4ok8@example.org",
+      "modifiedAt": "2015-02-18T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.b4ok8@example.com"
+    }
+  ],
+  "createdAt": "2011-09-14T18:30:00.000Z",
+  "createdBy": "createdBy.g0di9@example.org",
+  "modifiedAt": "2003-06-29T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.g0di9@example.com"
+}
+
+
+### Products
+# @name Products_DELETE
+DELETE {{server}}/odata/v4/cart/Products/26891361-b8c5-4204-8807-19194fff4a15
+Content-Type: application/json
+{{auth}}
+
+
+### Shops
+# @name Shops_GET
+GET {{server}}/odata/v4/cart/Shops
+{{auth}}
+
+
+### Shops
+# @name Shops_POST
+POST {{server}}/odata/v4/cart/Shops
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc",
+  "shopName": "shopName-22129415",
+  "shopAddress": "shopAddress-22129415",
+  "shopLocation": "shopLocation-22129415",
+  "shopCity": "shopCity-22129415",
+  "shopType": "shopType-22129415",
+  "shopOffer": "shopOffer-22129415",
+  "isVerified": false,
+  "rating": "415",
+  "online": "online-22129415",
+  "latitude": "latitude-22129415",
+  "longitude": "longitude-22129415",
+  "medias": [
+    {
+      "id": 17296210,
+      "productMedia": {
+        "productId": "26891361-b8c5-4204-8807-19194fff4a15"
+      },
+      "isVerified": true,
+      "mediaCategory": "mediaCategory-17296210",
+      "mediaType": "mediaType-17296210",
+      "fileName": "fileName-17296210",
+      "applicationName": "applicationName-17296210",
+      "url": "url-17296210",
+      "createdAt": "2009-02-17T18:30:00.000Z",
+      "createdBy": "createdBy.aapua@example.org",
+      "modifiedAt": "2002-07-06T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.aapua@example.com"
+    },
+    {
+      "id": 17296211,
+      "productMedia": {
+        "productId": "26891361-b8c5-4204-8807-19194fff4a15"
+      },
+      "isVerified": false,
+      "mediaCategory": "mediaCategory-17296211",
+      "mediaType": "mediaType-17296211",
+      "fileName": "fileName-17296211",
+      "applicationName": "applicationName-17296211",
+      "url": "url-17296211",
+      "createdAt": "2015-05-26T18:30:00.000Z",
+      "createdBy": "createdBy.aapub@example.net",
+      "modifiedAt": "2022-12-04T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.aapub@example.net"
+    }
+  ],
+  "products": [
+    {
+      "productId": "19573316-5f81-4172-9e24-58723fb2111d",
+      "productName": "productName-19573316",
+      "description": "description-19573316",
+      "mrp": 67.18,
+      "stockQuantity": 58,
+      "sellPrice": 22.73,
+      "isVerified": true,
+      "online": "online-19573316",
+      "unit": "unit-19573316",
+      "color": "color-19573316",
+      "rating": "316",
+      "minQtyToBuy": 17,
+      "medias": [
+        {
+          "id": 1639513,
+          "shopMedia": {
+            "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+          },
+          "isVerified": false,
+          "mediaCategory": "mediaCategory-1639513",
+          "mediaType": "mediaType-1639513",
+          "fileName": "fileName-1639513",
+          "applicationName": "applicationName-1639513",
+          "url": "url-1639513",
+          "createdAt": "2013-10-24T18:30:00.000Z",
+          "createdBy": "createdBy.z521@example.org",
+          "modifiedAt": "2000-01-18T18:30:00.000Z",
+          "modifiedBy": "modifiedBy.z521@example.org"
+        },
+        {
+          "id": 1639514,
+          "shopMedia": {
+            "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+          },
+          "isVerified": true,
+          "mediaCategory": "mediaCategory-1639514",
+          "mediaType": "mediaType-1639514",
+          "fileName": "fileName-1639514",
+          "applicationName": "applicationName-1639514",
+          "url": "url-1639514",
+          "createdAt": "2022-05-29T18:30:00.000Z",
+          "createdBy": "createdBy.z522@example.com",
+          "modifiedAt": "2019-07-02T18:30:00.000Z",
+          "modifiedBy": "modifiedBy.z522@example.org"
+        }
+      ],
+      "createdAt": "2016-02-11T18:30:00.000Z",
+      "createdBy": "createdBy.bniv8@example.org",
+      "modifiedAt": "2007-12-01T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.bniv8@example.org"
+    },
+    {
+      "productId": "19573317-903a-415d-bd36-869bb099bab8",
+      "productName": "productName-19573317",
+      "description": "description-19573317",
+      "mrp": 7.17,
+      "stockQuantity": 59,
+      "sellPrice": 65.18,
+      "isVerified": false,
+      "online": "online-19573317",
+      "unit": "unit-19573317",
+      "color": "color-19573317",
+      "rating": "317",
+      "minQtyToBuy": 75,
+      "medias": [
+        {
+          "id": 18902694,
+          "shopMedia": {
+            "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+          },
+          "isVerified": true,
+          "mediaCategory": "mediaCategory-18902694",
+          "mediaType": "mediaType-18902694",
+          "fileName": "fileName-18902694",
+          "applicationName": "applicationName-18902694",
+          "url": "url-18902694",
+          "createdAt": "2000-09-03T18:30:00.000Z",
+          "createdBy": "createdBy.b95eu@example.com",
+          "modifiedAt": "2015-07-16T18:30:00.000Z",
+          "modifiedBy": "modifiedBy.b95eu@example.com"
+        },
+        {
+          "id": 18902695,
+          "shopMedia": {
+            "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+          },
+          "isVerified": false,
+          "mediaCategory": "mediaCategory-18902695",
+          "mediaType": "mediaType-18902695",
+          "fileName": "fileName-18902695",
+          "applicationName": "applicationName-18902695",
+          "url": "url-18902695",
+          "createdAt": "2014-09-12T18:30:00.000Z",
+          "createdBy": "createdBy.b95ev@example.net",
+          "modifiedAt": "2008-03-10T18:30:00.000Z",
+          "modifiedBy": "modifiedBy.b95ev@example.com"
+        }
+      ],
+      "createdAt": "2017-12-02T18:30:00.000Z",
+      "createdBy": "createdBy.bniv9@example.org",
+      "modifiedAt": "2015-05-20T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.bniv9@example.org"
+    }
+  ],
+  "createdAt": "2012-10-27T18:30:00.000Z",
+  "createdBy": "createdBy.d6b5z@example.com",
+  "modifiedAt": "2014-04-01T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.d6b5z@example.net"
+}
+
+
+### Shops
+# @name Shops_PATCH
+PATCH {{server}}/odata/v4/cart/Shops/22129415-4cb6-4215-8269-1b8402cee7fc
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc",
+  "shopName": "shopName-22129415",
+  "shopAddress": "shopAddress-22129415",
+  "shopLocation": "shopLocation-22129415",
+  "shopCity": "shopCity-22129415",
+  "shopType": "shopType-22129415",
+  "shopOffer": "shopOffer-22129415",
+  "isVerified": false,
+  "rating": "415",
+  "online": "online-22129415",
+  "latitude": "latitude-22129415",
+  "longitude": "longitude-22129415",
+  "medias": [
+    {
+      "id": 17296210,
+      "productMedia": {
+        "productId": "26891361-b8c5-4204-8807-19194fff4a15"
+      },
+      "isVerified": true,
+      "mediaCategory": "mediaCategory-17296210",
+      "mediaType": "mediaType-17296210",
+      "fileName": "fileName-17296210",
+      "applicationName": "applicationName-17296210",
+      "url": "url-17296210",
+      "createdAt": "2009-02-17T18:30:00.000Z",
+      "createdBy": "createdBy.aapua@example.org",
+      "modifiedAt": "2002-07-06T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.aapua@example.com"
+    },
+    {
+      "id": 17296211,
+      "productMedia": {
+        "productId": "26891361-b8c5-4204-8807-19194fff4a15"
+      },
+      "isVerified": false,
+      "mediaCategory": "mediaCategory-17296211",
+      "mediaType": "mediaType-17296211",
+      "fileName": "fileName-17296211",
+      "applicationName": "applicationName-17296211",
+      "url": "url-17296211",
+      "createdAt": "2015-05-26T18:30:00.000Z",
+      "createdBy": "createdBy.aapub@example.net",
+      "modifiedAt": "2022-12-04T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.aapub@example.net"
+    }
+  ],
+  "products": [
+    {
+      "productId": "19573316-5f81-4172-9e24-58723fb2111d",
+      "productName": "productName-19573316",
+      "description": "description-19573316",
+      "mrp": 67.18,
+      "stockQuantity": 58,
+      "sellPrice": 22.73,
+      "isVerified": true,
+      "online": "online-19573316",
+      "unit": "unit-19573316",
+      "color": "color-19573316",
+      "rating": "316",
+      "minQtyToBuy": 17,
+      "medias": [
+        {
+          "id": 1639513,
+          "shopMedia": {
+            "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+          },
+          "isVerified": false,
+          "mediaCategory": "mediaCategory-1639513",
+          "mediaType": "mediaType-1639513",
+          "fileName": "fileName-1639513",
+          "applicationName": "applicationName-1639513",
+          "url": "url-1639513",
+          "createdAt": "2013-10-24T18:30:00.000Z",
+          "createdBy": "createdBy.z521@example.org",
+          "modifiedAt": "2000-01-18T18:30:00.000Z",
+          "modifiedBy": "modifiedBy.z521@example.org"
+        },
+        {
+          "id": 1639514,
+          "shopMedia": {
+            "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+          },
+          "isVerified": true,
+          "mediaCategory": "mediaCategory-1639514",
+          "mediaType": "mediaType-1639514",
+          "fileName": "fileName-1639514",
+          "applicationName": "applicationName-1639514",
+          "url": "url-1639514",
+          "createdAt": "2022-05-29T18:30:00.000Z",
+          "createdBy": "createdBy.z522@example.com",
+          "modifiedAt": "2019-07-02T18:30:00.000Z",
+          "modifiedBy": "modifiedBy.z522@example.org"
+        }
+      ],
+      "createdAt": "2016-02-11T18:30:00.000Z",
+      "createdBy": "createdBy.bniv8@example.org",
+      "modifiedAt": "2007-12-01T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.bniv8@example.org"
+    },
+    {
+      "productId": "19573317-903a-415d-bd36-869bb099bab8",
+      "productName": "productName-19573317",
+      "description": "description-19573317",
+      "mrp": 7.17,
+      "stockQuantity": 59,
+      "sellPrice": 65.18,
+      "isVerified": false,
+      "online": "online-19573317",
+      "unit": "unit-19573317",
+      "color": "color-19573317",
+      "rating": "317",
+      "minQtyToBuy": 75,
+      "medias": [
+        {
+          "id": 18902694,
+          "shopMedia": {
+            "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+          },
+          "isVerified": true,
+          "mediaCategory": "mediaCategory-18902694",
+          "mediaType": "mediaType-18902694",
+          "fileName": "fileName-18902694",
+          "applicationName": "applicationName-18902694",
+          "url": "url-18902694",
+          "createdAt": "2000-09-03T18:30:00.000Z",
+          "createdBy": "createdBy.b95eu@example.com",
+          "modifiedAt": "2015-07-16T18:30:00.000Z",
+          "modifiedBy": "modifiedBy.b95eu@example.com"
+        },
+        {
+          "id": 18902695,
+          "shopMedia": {
+            "shopId": "22129415-4cb6-4215-8269-1b8402cee7fc"
+          },
+          "isVerified": false,
+          "mediaCategory": "mediaCategory-18902695",
+          "mediaType": "mediaType-18902695",
+          "fileName": "fileName-18902695",
+          "applicationName": "applicationName-18902695",
+          "url": "url-18902695",
+          "createdAt": "2014-09-12T18:30:00.000Z",
+          "createdBy": "createdBy.b95ev@example.net",
+          "modifiedAt": "2008-03-10T18:30:00.000Z",
+          "modifiedBy": "modifiedBy.b95ev@example.com"
+        }
+      ],
+      "createdAt": "2017-12-02T18:30:00.000Z",
+      "createdBy": "createdBy.bniv9@example.org",
+      "modifiedAt": "2015-05-20T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.bniv9@example.org"
+    }
+  ],
+  "createdAt": "2012-10-27T18:30:00.000Z",
+  "createdBy": "createdBy.d6b5z@example.com",
+  "modifiedAt": "2014-04-01T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.d6b5z@example.net"
+}
+
+
+### Shops
+# @name Shops_DELETE
+DELETE {{server}}/odata/v4/cart/Shops/22129415-4cb6-4215-8269-1b8402cee7fc
+Content-Type: application/json
+{{auth}}
+
+
+### Media
+# @name Media_GET
+GET {{server}}/odata/v4/cart/Media
+{{auth}}
+
+
+### Media
+# @name Media_POST
+POST {{server}}/odata/v4/cart/Media
+Content-Type: application/json
+{{auth}}
+
+{
+  "id": 17296210,
+  "productMedia": {
+    "productId": "26891361-b8c5-4204-8807-19194fff4a15"
+  },
+  "isVerified": true,
+  "mediaCategory": "mediaCategory-17296210",
+  "mediaType": "mediaType-17296210",
+  "fileName": "fileName-17296210",
+  "applicationName": "applicationName-17296210",
+  "url": "url-17296210",
+  "createdAt": "2009-02-17T18:30:00.000Z",
+  "createdBy": "createdBy.aapua@example.org",
+  "modifiedAt": "2002-07-06T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.aapua@example.com"
+}
+
+
+### Media
+# @name Media_PATCH
+PATCH {{server}}/odata/v4/cart/Media/17296210
+Content-Type: application/json
+{{auth}}
+
+{
+  "id": 17296210,
+  "productMedia": {
+    "productId": "26891361-b8c5-4204-8807-19194fff4a15"
+  },
+  "isVerified": true,
+  "mediaCategory": "mediaCategory-17296210",
+  "mediaType": "mediaType-17296210",
+  "fileName": "fileName-17296210",
+  "applicationName": "applicationName-17296210",
+  "url": "url-17296210",
+  "createdAt": "2009-02-17T18:30:00.000Z",
+  "createdBy": "createdBy.aapua@example.org",
+  "modifiedAt": "2002-07-06T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.aapua@example.com"
+}
+
+
+### Media
+# @name Media_DELETE
+DELETE {{server}}/odata/v4/cart/Media/17296210
+Content-Type: application/json
+{{auth}}
+
+
+### addToCart
+# @name addToCart_POST
+POST {{server}}/odata/v4/cart/addToCart
+Content-Type: application/json
+{{auth}}
+
+{
+  "userId": null,
+  "productId": null,
+  "quantity": 1
+}
+
+
+### removeFromCart
+# @name removeFromCart_POST
+POST {{server}}/odata/v4/cart/removeFromCart
+Content-Type: application/json
+{{auth}}
+
+{
+  "userId": null,
+  "itemId": null
+}
+
+
+### clearCart
+# @name clearCart_POST
+POST {{server}}/odata/v4/cart/clearCart
+Content-Type: application/json
+{{auth}}
+
+{
+  "userId": null
+}

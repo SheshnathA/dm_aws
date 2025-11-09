@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Profile</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Overlay to lock the screen */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000; /* Make sure it's above all other content */
+    display: none; /* Hidden by default */
+}
+
+/* Spinner for the busy indicator */
+#loadingSpinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #ff3385; /* Pink */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+    z-index: 1100; /* Make sure the spinner is above the overlay */
+    display: none; /* Hidden by default */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        /* Card Layout Container */
+        .container1 {
+            justify-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        /* Profile Picture (Avatar) */
+        .profile-card {
+            width: 100%;
+            max-width: 500px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .profile-card img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #ddd;
+            transition: border 0.3s ease;
+        }
+
+        .profile-card img:hover {
+            border: 3px solid #007bff;
+        }
+
+        .profile-card h2 {
+            margin-top: 10px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .profile-card p {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* Form Layout inside Card */
+        form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="file"],
+        button {
+            width: 100%;
+            padding: 14px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease;
+        }
+
+        input:disabled {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+
+        button {
+            background-color: #ffa500;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ffa500
+        }
+
+        .cancel-btn {
+            background-color: #f44336;
+        }
+        .cancel-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .edit-btn {
+            background-color: #ffa500;
+            color: white;
+        }
+        .edit-btn:hover {
+            background-color:#ffa500
+        }
+
+        /* Media Queries for responsiveness */
+        @media (max-width: 768px) {
+            .container1 {
+                width: 100%;
+                margin: 20px auto;
+            }
+
+            .profile-card {
+                width: 100%;
+                margin-top: 15px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container1 {
+                width: 100%;
+                flex-direction: column;
+                gap: 40px;
+                padding: 40px;
+            }
+        }
+        .profile-img{
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+        <!-- Loading Spinner -->
+    <div id="overlay"></div>
+    <div id="loadingSpinner"></div>
+    <div class="container1">
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <!-- <div class="profile-img">
+                <img id="profilePic" src="image/user.png" alt="User Profile">
+            </div> -->
+            <div class="profile-img">
+                <label for="fileInput">
+                    <i style="
+                    font-size: 50px;
+                "class="fas fa-camera edit-camera-icon"></i><img id="profilePic" src="../image/user.png" alt="User Profile" style="cursor: pointer;">
+                </label>
+                <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="uploadImage()">
+            </div>
+            <h3 id="username">Dukan Miitra</h3>
+            <p id="userphone">📞 +91 8800755400</p>
+            <p class="inputInfo" id="varify">Verified</h3>
+
+            <!-- Profile Form Section -->
+            <form id="profileForm">
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" value="" disabled>
+                </div>
+                 <!-- Full Name -->
+                 <div class="form-group">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" value="" disabled>
+                </div>
+             
+                <!-- Email Address -->
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" value="" disabled>
+                </div>
+        
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" id="editButton" class="edit-btn" onclick="editProfile()">Edit</button>
+                    <button type="button" id="saveButton" class="save-btn" onclick="updateProfile()" style="display:none;">Save Changes</button>
+                    <button type="button" class="cancel-btn" style="display:none;" onclick="window.location.href='myprofile.html'">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+function editProfile() {
+            // Enable form fields for editing
+            document.getElementById("firstName").disabled = false;
+            document.getElementById("lastName").disabled = false;
+            document.getElementById("email").disabled = false;
+
+            // Hide Edit button and show Save button
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('saveButton').style.display = 'inline-block';
+        }
+
+ async function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) {
+                alert("Please select an image to upload!");
+                return;
+            }
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            // if (user) {
+            //     const userphoneNumber = user.phoneNumber;
+            // }else{
+            //     return;  
+            // }
+
+            const token = localStorage.getItem('refreshToken');  // Retrieve token
+            const file = fileInput.files[0];
+   // Show the loading spinner
+                document.getElementById('overlay').style.display = 'block';
+                document.getElementById('loadingSpinner').style.display = 'block';
+                fetch("/odata/v4/user-profile/Users('"+user.phoneNumber+"')/profilePicture", {
+                method: 'PUT',
+                body: file,
+                headers: { 'Content-Type': 'image/png',
+                    'Authorization': `Bearer ${token}`  // Send token in request
+                 }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(`${data.error.message || JSON.stringify(data.error)}`);
+                }
+      
+             document.getElementById("profilePic").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "../image/user.png";
+                // Hide the overlay and spinner once the API call is done
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('loadingSpinner').style.display = 'none';
+            })
+            .catch(error => {
+               document.getElementById("profilePic").src = `/odata/v4/user-profile/Users('${user.phoneNumber}')/profilePicture` || "../image/user.png";
+ // Hide the overlay and spinner once the API call is done
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('loadingSpinner').style.display = 'none';
+
+        });
+        }
+  
+function updateProfile() {
+
+const firstName = document.getElementById('firstName').value;
+const lastName = document.getElementById('lastName').value;
+const email = document.getElementById('email').value;
+
+const requestBody = {
+    input: {
+        firstName: firstName,
+        lastName: lastName,
+        email: email
+    }
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/user-profile/updateUserProfile', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+    const user = JSON.stringify(data.value);
+    localStorage.setItem('user', user);
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+
+
+
+    const userData = localStorage.getItem('user');
+    const userInfo = JSON.parse(userData);
+    document.getElementById("profilePic").src = "/odata/v4/user-profile/Users('"+userInfo.phoneNumber+"')/profilePicture";
+    document.getElementById("username").textContent = userInfo.firstName;
+    document.getElementById("userphone").textContent = userInfo.phoneNumber;
+    if(userInfo.isVerified===true){
+        document.getElementById("varify").textContent = "Verified";
+    }else{
+        document.getElementById("varify").textContent = "Not Verified"; 
+    }
+    
+    document.getElementById("firstName").value = userInfo.firstName;
+    document.getElementById("lastName").value = userInfo.lastName;
+    document.getElementById("email").value = userInfo.email;
+
+        // Disable all inputs after saving
+        document.getElementById("firstName").disabled = true;
+    document.getElementById("lastName").disabled = true;
+    document.getElementById("email").disabled = true;
+    document.getElementById('editButton').style.display = 'block';
+    document.getElementById('saveButton').style.display = 'none';
+
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+   
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+
+
+
+ document.addEventListener("DOMContentLoaded", function () {
+            const user = localStorage.getItem('user');
+            const userInfo = JSON.parse(user);
+            document.getElementById("profilePic").src = "/odata/v4/user-profile/Users('"+userInfo.phoneNumber+"')/profilePicture";
+            document.getElementById("username").textContent = userInfo.firstName;
+            document.getElementById("userphone").textContent = userInfo.phoneNumber;
+            if(userInfo.isVerified===true){
+                document.getElementById("varify").textContent = "Verified";
+            }else{
+                document.getElementById("varify").textContent = "Not Verified"; 
+            }
+            
+            document.getElementById("firstName").value = userInfo.firstName;
+            document.getElementById("lastName").value = userInfo.lastName;
+            document.getElementById("email").value = userInfo.email;
+            
+});
+
+
+document.addEventListener("click", function () {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+function loadContent(url) {    
+    window.parent.document.getElementById('userProfileHeader').style.display = 'none'; // Hide Cart Icon
+    window.parent.document.getElementById('backButton').classList.add('show'); // Animate Back Button
+    window.parent.document.getElementById('content').innerHTML = '<iframe src="' + url + '" style="width:100%; height: 100%; border:none;"></iframe>';
+           // document.querySelector('.container').style.display = 'none';
+        }
+// Login
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem('refreshToken');
+    const user = localStorage.getItem('user');
+if(!token && !user){
+    window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+    const url="./iframe/login.html";
+    loadContent(url);
+}
+});
+    </script>
+
+</body>
+</html>

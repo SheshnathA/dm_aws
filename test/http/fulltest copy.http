@@ -1,0 +1,216 @@
+@server = http://localhost:4004
+
+
+@protocol = http
+
+@host = localhost
+
+@port = 4004
+
+
+@auth = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDAiLCJpYXQiOjE3Mzk3ODcwMDAsImV4cCI6MTc0MDM5MTgwMH0.Cbb9OfY86ie9zAdFd4tauDIkEdvrXG7nOkC815i1Wyo
+
+### register
+# @name register_POST
+POST {{server}}/odata/v4/auth/register
+Content-Type: application/json
+
+{
+  "phoneNumber": "8800755400",
+  "firstName": "Ram Kumar",
+  "lastName": "Agrahari",
+  "email": "sfdf@gmail.com",
+  "password": "1234",
+  "username": "8800755400"
+}
+
+### login
+# @name login_POST
+POST {{server}}/odata/v4/auth/login
+Content-Type: application/json
+
+{
+  "phoneNumber": "8800755400",
+  "password": "1234"
+}
+
+
+### getUserProfile
+# @name getUserProfile_GET
+GET http://localhost:4004/odata/v4/user-profile/getUserProfile()
+Content-Type: application/json
+{{auth}}
+
+
+
+###
+# @name Books_PUT
+PUT http://localhost:4004/odata/v4/user-profile/Users('8800755400')/profilePicture
+Content-Type: image/png
+{{auth}}
+
+< ./shesh.jpg
+
+
+
+
+###
+GET http://localhost:4004/odata/v4/user-profile/Users('8800755400')/profilePicture
+{{auth}}
+
+###
+GET http://localhost:4004/odata/v4/user-profile/Users('8800755400')
+{{auth}}
+
+### Users
+# @name Users_GET
+GET {{server}}/odata/v4/auth/Users
+{{auth}}
+
+### Users
+# @name Users_DELETE
+DELETE http://localhost:4004/odata/v4/user-profile/Users/08800755400
+Content-Type: application/json
+{{auth}}
+
+
+
+### get user info
+# @name getUserInfo_POST
+POST {{server}}/odata/v4/auth/getUserInfo
+Content-Type: application/json
+{{auth}}
+
+
+
+
+
+
+### Category
+# @name Category_GET
+GET {{server}}/category-server/Category
+{{auth}}
+
+
+### Category
+# @name Category_POST
+POST {{server}}/category-server/Category
+Content-Type: application/json
+{{auth}}
+
+{
+  "categoryId": 1,
+  "categoryName": "Electronics",
+  "description": "Electronics"
+}
+
+
+###
+# @name Category_PUT
+PUT {{server}}/category-server/Category(1)/categoryPicture
+Content-Type: image/png
+{{auth}}
+
+< ./image/electronic.jpeg
+
+
+
+###
+GET {{server}}/category-server/Category(1)/categoryPicture
+{{auth}}
+
+
+### Category
+# @name Category_PATCH
+PATCH {{server}}/category-server/Category/23105252
+Content-Type: application/json
+{{auth}}
+
+{
+  "categoryId": 23105252,
+  "categoryName": "categoryName-23105252",
+  "description": "description-23105252",
+}
+
+
+### Category
+# @name Category_DELETE
+DELETE {{server}}/category-server/Category/23105252
+Content-Type: application/json
+{{auth}}
+
+
+
+### Shops
+# @name Shops_GET
+GET {{server}}/odata/v4/shop/Shops
+{{auth}}
+
+### Shops
+# @name Shops_GET
+GET {{server}}/odata/v4/shop/getUserShops()
+{{auth}}
+
+
+### createShop
+# @name createShop_POST
+POST {{server}}/odata/v4/shop/createShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shop": {
+    "shopName": "SriRam Cloths",
+    "shopAddress": "123 Main Street, City",
+    "shopType": "Cloths",
+    "shopOffer": "10",
+    "shopLocation": "Dharampur Chauraha",
+    "shopCity": "Maharajaganj"
+  }
+}
+
+### deleteShop
+# @name deleteShop_POST
+POST {{server}}/odata/v4/shop/deleteShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "26837b6f-66ae-4a01-8ea7-73773352b2a8"
+}
+
+
+### Read Pictures
+GET {{protocol}}://{{host}}:{{port}}/media-server/Media
+{{auth}}
+
+### Create Picture with mediatype
+POST {{protocol}}://{{host}}:{{port}}/odata/v4/media-server/Media
+{{auth}}
+Accept: application/json
+Content-Type: application/json
+
+{ 
+  "fileName": "image",
+  "applicationName": "DukanMitra",
+  "mediaCategory" :"ShopBanner",
+  "productMedia_productId": null,
+  "shopMedia_shopId": "25ed8107-fbd7-43ba-b2a2-a5bd1d014720",
+  "mediaType": "image/png" 
+}
+
+
+### Upload Binary PNG
+PUT {{protocol}}://{{host}}:{{port}}/odata/v4/media-server/Media('8800755400_BAN_pp06')/content
+{{auth}}
+Content-Type: image/png
+
+< ./shesh.jpg
+
+### Read Binary
+GET {{protocol}}://{{host}}:{{port}}/odata/v4/media-server/Media('8800755400_BAN_pp06')/content
+{{auth}}
+
+### Delete Image
+DELETE {{protocol}}://{{host}}:{{port}}/media-server/Media(2147483647)
+{{auth}}

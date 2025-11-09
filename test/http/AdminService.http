@@ -1,0 +1,71 @@
+@server = http://localhost:4004
+@auth = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDEiLCJpYXQiOjE3MzkzNjY3NDcsImV4cCI6MTczOTk3MTU0N30.C1FSD302XoSHo0HhQiTbAXovb_2ANr-kWq9lWho_LSg
+
+
+### Users
+# @name Users_GET
+GET {{server}}/odata/v4/admin/Users
+{{auth}}
+
+
+### Users
+# @name Users_POST
+POST {{server}}/odata/v4/admin/Users
+Content-Type: application/json
+{{auth}}
+
+{
+  "phoneNumber": "Users-17222500",
+  "firstName": "firstName-17222500",
+  "lastName": "lastName-17222500",
+  "email": "email-17222500",
+  "passwordHash": "passwordHash-17222500",
+  "username": "username-17222500",
+  "profilePicture": "profilePicture-17222500",
+  "isVerified": true,
+  "dateOfBirth": "2002-03-20",
+  "role": "admin",
+  "lastLogin": "2010-09-13T18:30:00.000Z",
+  "refreshToken": "refreshToken-17222500",
+  "otp": "222500",
+  "otpExpiry": "2011-09-13T18:30:00.000Z",
+  "createdAt": "2021-08-07T18:30:00.000Z",
+  "createdBy": "createdBy.a94ys@example.org",
+  "modifiedAt": "2013-07-24T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.a94ys@example.net"
+}
+
+
+### Users
+# @name Users_PATCH
+PATCH {{server}}/odata/v4/admin/Users/Users-17222500
+Content-Type: application/json
+{{auth}}
+
+{
+  "phoneNumber": "Users-17222500",
+  "firstName": "firstName-17222500",
+  "lastName": "lastName-17222500",
+  "email": "email-17222500",
+  "passwordHash": "passwordHash-17222500",
+  "username": "username-17222500",
+  "profilePicture": "profilePicture-17222500",
+  "isVerified": true,
+  "dateOfBirth": "2002-03-20",
+  "role": "admin",
+  "lastLogin": "2010-09-13T18:30:00.000Z",
+  "refreshToken": "refreshToken-17222500",
+  "otp": "222500",
+  "otpExpiry": "2011-09-13T18:30:00.000Z",
+  "createdAt": "2021-08-07T18:30:00.000Z",
+  "createdBy": "createdBy.a94ys@example.org",
+  "modifiedAt": "2013-07-24T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.a94ys@example.net"
+}
+
+
+### Users
+# @name Users_DELETE
+DELETE {{server}}/odata/v4/admin/Users/8800755401
+Content-Type: application/json
+{{auth}}

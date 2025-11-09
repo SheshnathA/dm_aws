@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distance Calculator</title>
+</head>
+<body>
+
+<h2>Distance Calculator</h2>
+<label>From Latitude: <input type="text" id="fromLat"></label>
+<label>From Longitude: <input type="text" id="fromLon"></label><br>
+<label>To Latitude: <input type="text" id="toLat"></label>
+<label>To Longitude: <input type="text" id="toLon"></label><br>
+<button onclick="calculateDistance()">Calculate Distance</button>
+
+<p id="output"></p>
+
+<script>
+function calculateDistance() {
+    let fromLat = parseFloat(document.getElementById("fromLat").value);
+    let fromLon = parseFloat(document.getElementById("fromLon").value);
+    let toLat = parseFloat(document.getElementById("toLat").value);
+    let toLon = parseFloat(document.getElementById("toLon").value);
+
+    if (isNaN(fromLat) || isNaN(fromLon) || isNaN(toLat) || isNaN(toLon)) {
+        alert("Please enter valid coordinates");
+        return;
+    }
+
+    const R = 6371; // Earth's radius in KM
+    let dLat = (toLat - fromLat) * (Math.PI / 180);
+    let dLon = (toLon - fromLon) * (Math.PI / 180);
+    let a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(fromLat * (Math.PI / 180)) * Math.cos(toLat * (Math.PI / 180)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    let distance = R * c;
+
+    document.getElementById("output").innerHTML = `<b>Distance:</b> ${distance.toFixed(2)} km`;
+}
+</script>
+
+</body>
+</html>

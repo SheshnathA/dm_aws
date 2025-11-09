@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="../css/cart.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding-top: 20px;
+        }
+        .order-container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 15px;
+            padding-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #000000f3;
+        }
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            width: fit-content;
+        }
+        .Pending { background-color: #ffc107; color: black; }
+        .Shipped { background-color: #17a2b8; color: white; }
+        .InProgress { background-color: #17a2b8; color: white; }
+        .Delivered { background-color: #28a745; color: white; }
+        .Cancelled { background-color: #989293; color: white; }
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #717171;
+            font-weight: bold;
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+        .order-amount {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .shop-name {
+            font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+        }
+        .shipping-address {
+            font-size: 14px;
+            color: #666;
+        }
+        .order-footer {
+            font-size: 12px;
+            color: #888;
+            text-align: right;
+        }
+        .cancel-btn {
+            padding: 8px;
+            margin-top: 5px;
+           
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            display: block;
+            text-align: center;
+        }
+        .cancel-btn:hover {
+            background-color: #c82333;
+        }
+        @media (max-width: 600px) {
+            .orders-container {
+                max-width: 100%;
+                padding: 10px;
+            }
+            .order-card {
+                padding: 12px;
+            }
+            /* .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            } */
+        }
+        .order-items {
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            padding-bottom: 30px;
+            width: 100%;
+
+        }
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .order-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .order-item-details {
+            flex: 1;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+            text-align: right;
+            margin-top: 10px;
+        }
+        .back-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: #0056b3;
+        }
+        .buy-again-btn {
+    padding: 8px 12px;
+    background-color: #8BC34A;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+.buy-again-btn:hover {
+    background-color: #218838;
+}
+ 
+.shipped-btn {
+    background: #e4a300;
+  
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.shipped-btn:hover {
+    background-color:  #b38204;
+}
+.modify-btn {
+    padding: 8px;
+    margin-top: 5px;
+    background-color: #AB47BC;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+}
+
+.modify-btn:hover {
+    background-color: #7b238a;
+}
+.mrpflex { 
+    display: flex
+;
+    justify-content: flex-start;
+}
+/* Overlay to lock the screen */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000; /* Make sure it's above all other content */
+    display: none; /* Hidden by default */
+}
+
+/* Spinner for the busy indicator */
+#loadingSpinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #ff3385; /* Pink */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+    z-index: 1100; /* Make sure the spinner is above the overlay */
+    display: none; /* Hidden by default */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.checkout-img {
+  width: 75px;
+  height:75px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.qty-input {
+    padding: 8px 12px;
+    font-size: 15px;
+    border-radius: 20px;
+    border: 3px solid #ff3385;
+    width: 60px;
+    transition: width 0.3s ease;
+}
+
+.qty-input:focus {
+    width: 100px;
+    outline: none;
+    border-color: #ea7302;
+}
+
+.qty-save-btn {
+    background: #ff3385;
+    color: white;
+    border: none;
+    width: 70px;
+    height: 37px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 25px;
+}
+
+.mrpPB {
+    display: flex;
+    padding-bottom: 5px;
+}
+.product-priceOffer {
+    color: #7db43e;
+    font-size: 12px;
+    margin: 0px 0;
+    font-weight: bold;
+}
+.cos {
+    display: flex;
+    justify-content: space-between;
+}
+.delete-btn {
+    padding: 8px;
+    margin-top: 5px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+    position: absolute;
+    left: 90%;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.slot {
+    color: #607D8B;
+    font-size: 13px;
+    margin: 0px 0;
+    font-weight: bold;
+}
+    </style>
+ 
+</head>
+<body>
+ <!-- Loading Spinner -->
+ <div id="overlay"></div>
+ <div id="loadingSpinner"></div> 
+<div class="order-container">
+    <div id="order-details"></div>
+</div>
+
+
+ <!-- Floating Cart -->
+  <!-- Floating Cart -->
+  <div class="floating-cart" id="floatingCart" onclick="viewCart()">
+    <div>
+<div style="
+font-size: 15px;
+font-weight: bold;
+">
+    <span> View Cart</span> 
+</div>
+<div style="
+font-size: 12px;
+font-weight: bold;
+">
+    <span id="cartCount">0</span> Items
+</div>
+    
+</div>
+ <div style="
+ font-size: 20px;
+ width: 10px;
+">
+    <i class="fa-solid fa-angle-right"></i>
+ </div>
+ </div>
+  <!-- Clear cart Modal -->
+  <div id="clearCartModal" class="modal">
+    <div class="modal-content">
+        <h2>Switching Shops?</h2>
+        <p>Your cart contains items from another shop. Do you want to clear it and add new items?</p>
+        <div class="modal-buttons">
+            <button id="cancelClearCart" class="btn-secondary">Cancel</button>
+            <button id="confirmClearCart" class="btn-primary">Yes, Clear Cart</button>
+        </div>
+    </div>
+  </div>
+
+<!-- Custom Confirmation Modal -->
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <p id="orderplaced">This product is already added in your cart</p>
+
+      <button class="cart-btn" onclick="closeConfirmModal()">Close</button>
+    </div>
+  </div>
+
+<script>
+function openConfirmModal() {
+  document.getElementById("confirmModal").style.display = "flex";
+}
+
+function closeConfirmModal() {
+  document.getElementById("confirmModal").style.display = "none";
+}
+
+const userData = JSON.parse(localStorage.getItem('user'));
+const orderDetail = JSON.parse(localStorage.getItem('selectedOrder'));
+
+if (userData) {
+
+    var API_URL = `/odata/v4/order/Orders('${orderDetail.orderId}')?$expand=user,shop,orderItems($expand=product($expand=medias))`;
+}
+fetchOrders(); 
+// Fetch products from API
+async function fetchOrders() {
+    try {
+        loadingSpinner.style.display = 'block';
+        const response = await fetch(API_URL, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
+            }
+        });
+
+        if (!response.ok) throw new Error(`Error fetching products: ${response.status}`);
+
+        const data = await response.json();
+        var selectedOrder = data;
+    
+        loadOrders(selectedOrder);
+        loadingSpinner.style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    } catch (error) {
+        console.error("Failed to load products:", error);
+        loadingSpinner.style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    } finally {
+        loadingSpinner.style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+}
+
+// function loadOrders(selectedOrder) {
+//     // Load order details from localStorage
+//     //const selectedOrder = JSON.parse(localStorage.getItem("selectedOrder"));
+
+//     if (!selectedOrder) {
+//         document.getElementById("order-details").innerHTML = "<p>No order selected.</p>";
+//     } else { 
+//         const orderDetailsDiv = document.getElementById("order-details");
+//         var orderStatus = selectedOrder.status;
+//         orderDetailsDiv.innerHTML = `
+//             <div class="order-header">
+//                 <span>Order No:${selectedOrder.orderId}</span>
+//                 <span class="order-status ${selectedOrder.status}">${selectedOrder.status}</span>
+//             </div>
+//             <div class="order-header">
+//                 <span>${selectedOrder.user.firstName}</span>
+//                 <span><a href="tel:+91${selectedOrder.user_phoneNumber}">${selectedOrder.user_phoneNumber}</a></span>
+//             </div>
+//             <div class="order-details">
+//                 <span class="shipping-address">${selectedOrder.shippingAddress}</span>
+//                 <span> ${selectedOrder.shop.distance} KM</span>
+//             </div>
+//             <div class="order-amount order-header">
+               
+//                 <span>Total: ₹${selectedOrder.totalAmount}</span>
+                 
+//                 ${selectedOrder.status === "Pending" || selectedOrder.status === "Shipped" ? 
+//                     `<button class="cancel-btn" onclick="event.stopPropagation(); cancelOrder('${selectedOrder.orderId}')">Cancel Order</button>` 
+//                     : ''
+//                 }
+                
+//             </div>
+//              <div class="order-header">
+//                 <span>Payment: ₹${selectedOrder.paymentMethod}</span>
+//                 <span class="order-footer">Ordered on: ${new Date(selectedOrder.createdAt).toLocaleString()}</span>
+//             </div>
+//            <div class="order-header">
+//              ${selectedOrder.status === "Pending" ? 
+//                     `<button class="buy-again-btn" onclick="event.stopPropagation(); deliverOrder('${selectedOrder.orderId}')">Delivered</button>
+//                     <button class="shipped-btn" onclick="event.stopPropagation(); shippingOrder('${selectedOrder.orderId}')">Shipped</button>` 
+//                     : ''
+//             }
+//             ${selectedOrder.status === "Shipped" ? 
+//                     `<button class="buy-again-btn" onclick="event.stopPropagation(); deliverOrder('${selectedOrder.orderId}')">Delivered</button>` 
+//                     : ''
+//             }
+                
+                
+            
+//                 </div>
+         
+//             <div class="order-items">
+             
+//                 ${selectedOrder.orderItems.map(item => `
+
+//                     <div class="checkout-item">
+//                     <img src="${item.product.medias[0].url}" alt="${item.productName} class="checkout-img" style="
+//                         width: 100px;
+//                         object-fit: cover;
+//                         border-radius: 5px;
+//                     ">
+//                     <div> 
+//                     <p class="product-title">${item.product.productName}</p>
+//                     <div class="cos">
+//                     <p class="product-price">₹${item.product.sellPrice.toFixed(2)}</p>
+//                     <p class="product-price">QTY ${item.quantity}</p>
+//                      </div>
+//                     <div class="mrpPB">
+//                     <p class="product-priceMRP">MRP ₹${item.product.mrp.toFixed(2)}</p>
+//                     <p class="product-priceOffer">(${Math.round(((item.product.mrp - item.product.sellPrice) / item.product.mrp) * 100)}% Off)</p>
+//                     </div>
+//                     <input class="qty-input" type="number" placeholder="${item.quantity}" id="idQTY" min="0" required>
+//                     <button class="qty-save-btn" onclick="saveQty('${item.order_orderId}', ${item.itemId})">Save</button>
+
+//                     </div>
+//                     </div>
+
+//                 `).join('')}
+//             </div>
+            
+//         `;
+//     }
+// }
+
+
+//change qty and save
+
+
+function loadOrders(selectedOrder) {
+    // Check if selectedOrder is undefined or missing properties
+    if (!selectedOrder || !selectedOrder.status) {
+        console.error('selectedOrder or selectedOrder.status is undefined');
+        document.getElementById("order-details").innerHTML = "<p>No order selected or status unavailable.</p>";
+        return;
+    }
+
+    const orderDetailsDiv = document.getElementById("order-details");
+    var orderStatus = selectedOrder.status;
+    if(selectedOrder.shop.type==="Services"){
+        localStorage.setItem('action', "manage-ser-ord-detail"); 
+    }else{
+        localStorage.setItem('action', "manage-shop-ord-detail"); 
+    }
+    // Log selectedOrder for debugging
+    console.log(selectedOrder);
+   
+    orderDetailsDiv.innerHTML = `
+  <div class="order-header">
+    <span>Order No: ${selectedOrder.orderId}</span>
+    <span class="order-status ${selectedOrder.status}">${selectedOrder.status}</span>
+    ${
+      selectedOrder.status === "Pending" || selectedOrder.status === "Shipped"
+        ? `<button class="cancel-btn" onclick="event.stopPropagation(); cancelOrder('${selectedOrder.orderId}')">Cancel Order</button>`
+        : ""
+    }
+  </div>
+
+  <div class="order-header">
+    <span>${selectedOrder.user.firstName} (<a href="tel:+91${selectedOrder.user_phoneNumber}">${selectedOrder.user_phoneNumber}</a>)</span>
+  </div>
+
+  <div class="order-details">
+    <span class="shipping-address">${selectedOrder.shippingAddress}</span>
+    <span>${selectedOrder.shop.distance} KM</span>
+  </div>
+
+  <div class="order-amount order-header">
+    <span>Total: ₹${selectedOrder.totalAmount}</span>
+    <span>Payment: ${selectedOrder.paymentMethod}</span>
+  </div>
+
+  <div class="order-header">
+    <span class="order-footer">Ordered on: ${new Date(selectedOrder.createdAt).toLocaleString()}</span>
+  </div>
+
+  <div class="order-header">
+    ${
+      selectedOrder.status === "Pending" && selectedOrder.shop.type === "Shops"
+        ? `
+          <button class="buy-again-btn" onclick="event.stopPropagation(); deliverOrder('${selectedOrder.orderId}')">Delivered</button>
+          <button class="shipped-btn" onclick="event.stopPropagation(); shippingOrder('${selectedOrder.orderId}','${selectedOrder.shop.type}')">Shipped</button>
+        `
+        : ""
+    }
+    ${
+      selectedOrder.status === "Pending" && selectedOrder.shop.type === "Services"
+        ? `
+          <button class="buy-again-btn" onclick="event.stopPropagation(); deliverOrder('${selectedOrder.orderId}')">Delivered</button>
+          <button class="shipped-btn" onclick="event.stopPropagation(); shippingOrder('${selectedOrder.orderId}','${selectedOrder.shop.type}')">InProgress</button>
+        `
+        : ""
+    }
+    ${
+      selectedOrder.status === "Shipped" || selectedOrder.status === "InProgress"
+        ? `<button class="buy-again-btn" onclick="event.stopPropagation(); deliverOrder('${selectedOrder.orderId}')">Delivered</button>`
+        : ""
+    }
+  </div>
+
+  <div class="order-items">
+    ${selectedOrder.orderItems
+      .map(
+        (item) => `
+      <div class="checkout-item" id="item-${item.itemId}">
+        <img src="${item.product.medias[0].url}" alt="${item.product.productName}" class="checkout-img" style="width: 100px; object-fit: cover; border-radius: 5px;">
+        <div style="width: 100%;">
+          <p class="product-title">${item.product.productName}</p>
+          <div class="cos">
+            <p class="product-price">₹${item.product.sellPrice.toFixed(2)} / ${item.product.unit}</p>
+            <p class="product-price">QTY ${item.quantity}</p>
+          </div>
+          <div class="mrpPB">
+            <p class="product-priceMRP">MRP ₹${item.product.mrp.toFixed(2)}</p>
+            <p class="product-priceOffer">(${Math.round(((item.product.mrp - item.product.sellPrice) / item.product.mrp) * 100)}% Off)</p>
+             </div>
+             <div class="mrpPB">
+            ${
+              selectedOrder.status === "Pending"  && selectedOrder.shop.type ==="Services"
+                ? `
+                <p class="slot">${item.product.color}</p>
+                <button class="delete-btn" onclick="deleteOrderItem('${item.order_orderId}','${item.itemId}')">X</button>`
+                : ""
+            }
+                ${
+              (selectedOrder.status === "InProgress" || selectedOrder.status === "Delivered" || selectedOrder.status === "Cancelled")  && selectedOrder.shop.type ==="Services"
+                ? `
+                <p class="slot">${item.product.color}</p>`
+                : ""
+            }
+            ${
+              selectedOrder.status === "Pending" && selectedOrder.shop.type ==="Shops"
+                ? `
+              
+                <button class="delete-btn" onclick="deleteOrderItem('${item.order_orderId}','${item.itemId}')">X</button>`
+                : ""
+            }
+          </div>
+          ${
+            selectedOrder.status === "Pending"
+              ? `
+              <input class="qty-input" type="number" placeholder="${item.quantity}" id="qty-${item.itemId}" min="0" required>
+              <button class="qty-save-btn" onclick="saveQty('${item.order_orderId}', '${item.itemId}')">Save</button>
+            `
+              : ""
+          }
+        </div>
+      </div>
+    `
+      )
+      .join("")}
+  </div>
+`;
+
+}
+
+
+function saveQty(orderId, itemId) {
+   
+    const newQty = document.getElementById('qty-'+itemId).value;
+
+    const requestBody = {
+    orderId: orderId,
+    itemId: itemId.toString(),
+    newQuantity: parseInt(newQty)
+    };
+
+
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/order/updateOrderItemQuantity', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    fetchOrders();
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+}
+
+
+function deleteOrderItem(orderId, itemId) {
+   const requestBody = {
+   orderId: orderId,
+   itemId: itemId.toString(),
+   };
+
+
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/order/deleteOrderItem', {
+   method: 'POST',
+   body: JSON.stringify(requestBody),
+   headers: { 'Content-Type': 'application/json' ,
+   'Authorization': `Bearer ${token}`  // Send token in request
+   }
+})
+.then(response => response.json())
+.then(data => {
+  
+   fetchOrders();
+})
+.catch(error => {
+   //showSection('userInfoEdit');
+   document.getElementById('overlay').style.display = 'none';
+   document.getElementById('loadingSpinner').style.display = 'none';
+})
+}
+
+
+
+// Function to cancel an order
+function cancelOrder(orderId) {
+      //  alert(`Order ${orderId} has been canceled!`);
+const requestBody = {
+    orderId: orderId
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/order/cancelOrder', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    fetchOrders();
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+}
+
+// Function to Shipping an order
+function shippingOrder(orderId,type) {
+      //  alert(`Order ${orderId} has been canceled!`);
+  
+if(type && type=="Shops"){
+    var requestBody = {
+    orderId: orderId,
+    status: "Shipped"
+};
+}else{
+    var requestBody = {
+    orderId: orderId,
+    status: "InProgress"
+};
+}
+
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/order/updateOrderStatus', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    fetchOrders();
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+}
+
+// Function to Shipping an order
+function deliverOrder(orderId) {
+      //  alert(`Order ${orderId} has been canceled!`);
+const requestBody = {
+    orderId: orderId,
+    status: "Delivered"
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/odata/v4/order/updateOrderStatus', {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    fetchOrders();
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+}
+
+
+
+
+
+
+
+
+document.addEventListener("click", function () {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+
+
+
+// Login
+// document.addEventListener("DOMContentLoaded", function () {
+//     const token = localStorage.getItem('refreshToken');
+//     const user = localStorage.getItem('user');
+// if(!token && !user){
+//     window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+//     const url="./iframe/login.html";
+//     loadContent(url);
+// }
+// });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+@server = http://localhost:4004
+@auth = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDAiLCJpYXQiOjE3Mzk5Nzc1ODAsImV4cCI6MTc0MDU4MjM4MH0.s1uuVwBGh_pUCMnuZl1_gEy3ao3pjNu_G0_mYpt357A
+
+
+
+### Users
+# @name Users_GET
+GET {{server}}/odata/v4/user-profile/$batch
+{{auth}}
+
+### updateUserProfile
+# @name updateUserProfile_POST
+POST http://localhost:4004/odata/v4/user-profile/updateUserProfile
+Content-Type: application/json
+{{auth}}
+
+{
+ "input": {
+             "firstName": "Shyam",
+             "lastName": "Ji",
+             "email": "jjhjhjane.doe@example.com"
+         }
+}
+
+
+### getUserProfile
+# @name getUserProfile_GET
+GET http://localhost:4004/odata/v4/user-profile/getUserProfile()
+Content-Type: application/json
+{{auth}}
+
+

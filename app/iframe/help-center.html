@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Help Center - Dukan Mitra</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ff3385, #ff9068);
+    padding: 20px;
+    color: #fff;
+}
+
+/* Container */
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Card sections */
+.card {
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+/* Bold text */
+.bold {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Buttons */
+.button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    background-color: #ebf5cb;
+    color: #256f3a;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.button:hover {
+    background-color: #ffe0b0;
+}
+
+/* Overlay & spinner */
+#overlay {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.5);
+    display:none;
+    z-index: 1000;
+}
+
+#loadingSpinner {
+    position: fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #ff3385;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+    display:none;
+    z-index: 1100;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Popup modal */
+.popup-modal {
+    display: none;
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+}
+
+.popup-modal-content {
+    background: #fff;
+    padding: 20px;
+    width: 90%;
+    max-width: 350px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.2);
+    color: #333;
+}
+
+.popup-btn {
+    background: #ff3385;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.popup-btn:hover {
+    opacity: 0.9;
+}
+
+/* Responsive */
+@media (max-width: 480px){
+    h2 {
+        font-size: 20px;
+    }
+    .button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="overlay"></div>
+<div id="loadingSpinner"></div>
+
+<div class="container">
+    <h2>Help Center</h2>
+
+    <div class="card">
+        <span class="bold">Contact Information</span>
+        <p>Dukan Mitra,</p>
+        <p>Maharajganj, Uttar Pradesh</p>
+        <p>273303</p>
+        <p>Tel.: +91 8800755400</p>
+        <p>Email id: info@dukanmitra.com</p>
+    </div>
+
+    <a href="https://wa.me/919044524467?text=Hello" class="button">Send a WhatsApp Message</a>
+    <a href="tel:+919044524467" class="button">Call Customer Care</a>
+</div>
+
+<div id="confirmModal" class="popup-modal">
+    <div class="popup-modal-content">
+        <p id="popupmess"></p>
+        <button id="popupbtn" class="popup-btn" onclick="closeConfirmModal()">Close</button>
+    </div>
+</div>
+
+<script>
+function openConfirmModal(mess, btntext){
+    document.getElementById("popupmess").textContent = mess;
+    document.getElementById("popupbtn").textContent = btntext;
+    document.getElementById("confirmModal").style.display = "flex";
+}
+
+function closeConfirmModal(){
+    document.getElementById("confirmModal").style.display = "none";
+}
+</script>
+
+</body>
+</html>

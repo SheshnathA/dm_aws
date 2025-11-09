@@ -1,0 +1,49 @@
+@server = http://localhost:4004
+@auth = Authorization: Basic alice:
+
+
+### Category
+# @name Category_GET
+GET {{server}}/category-server/Category
+{{auth}}
+
+
+### Category
+# @name Category_POST
+POST {{server}}/category-server/Category
+Content-Type: application/json
+{{auth}}
+
+{
+  "categoryId": 23105252,
+  "categoryName": "categoryName-23105252",
+  "description": "description-23105252",
+  "createdAt": "2021-07-05T18:30:00.000Z",
+  "createdBy": "createdBy.dr84k@example.com",
+  "modifiedAt": "2010-09-18T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.dr84k@example.org"
+}
+
+
+### Category
+# @name Category_PATCH
+PATCH {{server}}/category-server/Category/23105252
+Content-Type: application/json
+{{auth}}
+
+{
+  "categoryId": 23105252,
+  "categoryName": "categoryName-23105252",
+  "description": "description-23105252",
+  "createdAt": "2021-07-05T18:30:00.000Z",
+  "createdBy": "createdBy.dr84k@example.com",
+  "modifiedAt": "2010-09-18T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.dr84k@example.org"
+}
+
+
+### Category
+# @name Category_DELETE
+DELETE {{server}}/category-server/Category/23105252
+Content-Type: application/json
+{{auth}}

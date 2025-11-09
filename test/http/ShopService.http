@@ -1,0 +1,59 @@
+@server = http://localhost:4004
+@auth = Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Ijg4MDA3NTU0MDEiLCJpYXQiOjE3Mzk0MzA3ODksImV4cCI6MTc0MDAzNTU4OX0.4c4tWZOcV5ifAMkzUbLmZnhb3BPzS27-LM0vGDLAzto
+### Shops
+# @name Shops_GET
+GET {{server}}/odata/v4/shop/Shops
+{{auth}}
+
+### Shops
+# @name Shops_GET
+GET {{server}}/odata/v4/shop/getUserShops()
+{{auth}}
+
+
+### createShop
+# @name createShop_POST
+POST {{server}}/odata/v4/shop/createShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shop": {
+    "shopName": "SriRam Cloths",
+    "shopAddress": "123 Main Street, City",
+    "shopType": "Cloths",
+    "shopOffer": "10",
+    "shopLocation": "Dharampur Chauraha",
+    "shopCity": "Maharajaganj"
+  }
+}
+
+
+### updateShop
+# @name updateShop_POST
+POST {{server}}/odata/v4/shop/updateShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "24700208-a743-4c62-a745-65809ddbd2a4",
+  "shop": {
+    "shopName": "shopName-24700208",
+    "shopAddress": "shopAddress-24700208",
+    "shopType": "shopType-24700208",
+    "shopOffer": "shopOffer-24700208",
+    "shopLocation": "shopLocation-24700208",
+    "shopCity": "shopCity-24700208"
+  }
+}
+
+
+### deleteShop
+# @name deleteShop_POST
+POST {{server}}/odata/v4/shop/deleteShop
+Content-Type: application/json
+{{auth}}
+
+{
+  "shopId": "e7e5fd5c-2300-44e0-a09f-4548a1f8d635"
+}

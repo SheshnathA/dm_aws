@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop</title>
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f7f7f7;
+          margin: 0;
+          padding: 20px;
+          text-align: center;
+        }
+        .subheaderSearch {
+    background: #fff;
+    position: fixed;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    padding: 10px 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    z-index: 998;
+    overflow-x: auto;
+}
+.subheader {
+background: #fff;
+position: fixed;
+top: 110px;
+left: 0;
+width: 100%;
+padding: 10px 0;
+display: flex;
+gap: 15px;
+align-items: center;
+box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+z-index: 998;
+overflow-x: auto;
+white-space: nowrap;
+padding-left: 15px;
+scrollbar-width: none;
+}
+
+.subheader::-webkit-scrollbar {
+display: none; /* Hide scrollbar for Chrome, Safari */
+}
+.center-search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.search-input {
+    padding: 8px 10px;
+    font-size: 1rem;
+    border-radius: 20px;
+    border: 3px solid #ff3385;
+    width: 60%;
+    transition: width 0.3s ease;
+    margin-left: 5px;
+}
+
+.search-input:focus {
+    width: 62%;
+    outline: none;
+    border-color: #ea7302;
+}
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      justify-content: center;
+      margin: auto;
+    }
+    
+    .product-card {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      position: relative;
+      max-width: 167px;
+    }
+    
+    
+        .product-title {
+          font-size: 12px;
+          margin-top: 5px;
+          margin-bottom: 5px;
+        }
+        .product-price {
+          color: rgba(0, 0, 0, 0.8);
+          font-size: 16px;
+          margin: 0px 0;
+          font-weight: bold;
+        }
+        .product-priceOffer {
+          color: #ff3385;
+    font-size: 12px;
+    margin: 0px 0;
+    font-weight: bold;
+        }
+    .product-priceMRP {
+      color: rgba(0, 0, 0, 0.7);
+    font-size: 11px;
+    margin: 0px 0;
+    text-decoration-line: line-through;
+    padding-right: 5px;
+       }
+.mrpflex{
+  display: flex;
+}
+
+        .product-media-slider {
+          scroll-behavior: smooth;
+
+          display: flex;
+    overflow-x: auto;
+    gap: 5px;
+    max-width: 100%;
+    justify-content: flex-start; /* Ensure images start from the left */
+    padding-left: 0; /* Remove extra left padding */
+    scroll-padding-left: 10px; /* Adjust padding for proper visibility */
+    }
+
+    .product-media-slider img {
+      scroll-snap-align: start; /* Makes sure images snap properly */
+      width: 100px;
+      height: 100px;
+      object-fit: scale-down;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+
+
+
+        .product-img {
+          width: 100%;
+          height: auto;
+          cursor: pointer;
+          transition: transform 0.3s ease-in-out;
+        }
+    
+        .image-popup {
+          display: none;
+          position: fixed;
+          z-index: 1000;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.8);
+          justify-content: center;
+          align-items: center;
+        }
+    
+        .image-popup img {
+          max-width: 90%;
+          max-height: 90%;
+          border-radius: 10px;
+        }
+    
+        .close-popup {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          font-size: 30px;
+          color: white;
+          cursor: pointer;
+          font-weight: bold;
+        }
+    
+        .cart-controls {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          margin-top: 10px;
+        }
+    
+        .cart-btn {
+          background: #ff9800;
+          color: white;
+          border: none;
+          padding: 8px 10px;
+          font-size: 14px;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+    
+        .quantity-control {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+    
+        .quantity-btn {
+          background: #27ae60;
+          color: white;
+          border: none;
+          width: 30px;
+          height: 30px;
+          font-size: 18px;
+          cursor: pointer;
+          border-radius: 5px;
+        }
+    
+        .cart-quantity {
+          font-size: 16px;
+          min-width: 20px;
+        }
+    
+        .floating-cart {
+          position: fixed;
+          bottom: 60px;
+          right: 40px;
+          background: #27ae60;
+          color: white;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 50px;
+          display: none;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          z-index: 1500;
+        }
+    
+        .checkout-modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .checkout-content {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 500px;
+        text-align: left;
+        position: relative;
+        max-height: 80vh; /* Prevent modal from exceeding viewport height */
+        overflow-y: auto; /* Enable scrolling when content overflows */
+    }
+    
+    
+    .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    
+    .checkout-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .checkout-img {
+        width: 75px;
+        height:75px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+    
+    .billing-section {
+        margin-top: 20px;
+        padding: 10px;
+        background: #f9f9f9;
+        border-radius: 5px;
+    }
+    
+    .billing-section p {
+        margin: 5px 0;
+    }
+    .prodListShop{
+        margin-top: 15px;
+    }
+
+    
+    /* Overlay to lock the screen */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000; /* Make sure it's above all other content */
+    display: none; /* Hidden by default */
+}
+
+/* Spinner for the busy indicator */
+#loadingSpinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #ff3385; /* Pink */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+    z-index: 1100; /* Make sure the spinner is above the overlay */
+    display: none; /* Hidden by default */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.search-inputProduct {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 20px;
+    border: 3px solid #ff3385;
+    width: 55%;
+    margin-left: 10px;
+    transition: width 0.3sease;
+}
+
+/* Toggle Button Container - Positioned at the top right corner */
+.toggle-container {
+    width: 57px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 8px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    box-shadow: 0 0 5px 1px rgb(0 0 0 / 28%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    z-index: 10;
+    overflow: hidden;
+    transition: background-color 0.4s ease;
+}
+
+/* Toggle Text */
+.toggle-text {
+    flex: 1;
+    transition: transform 0.4s ease;
+    white-space: nowrap;
+}
+
+/* Toggle Circle Element */
+.toggle-circle {
+    margin-left: -6px;
+    margin-right: -8px;
+    width: 25px;
+    height: 25px;
+    background-color: #28a745;
+    border-radius: 50%;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.4s ease;
+    flex-shrink: 0;
+}
+
+/* Open state styling */
+.toggle-container.Show {
+    background-color: #ccc;
+    flex-direction: row-reverse; /* Text on left, circle on right */
+}
+.toggle-container.Show .toggle-text {
+    transform: translateX(0);
+    text-align: right;
+}
+.toggle-container.Show .toggle-circle {
+    transform: translateX(0);
+    background-color: #28a745;
+}
+
+/* Closed state styling */
+.toggle-container.Hide {
+    background-color: #ddd;
+    flex-direction: row; /* Text on right, circle on left */
+}
+.toggle-container.Hide .toggle-text {
+    transform: translateX(0);
+    text-align: left;
+}
+.toggle-container.Hide .toggle-circle {
+    transform: translateX(0);
+    background-color: #dc3545;
+}
+      </style>
+</head>
+<body class="noselect">
+    <!-- Loading Spinner -->
+    <div id="overlay"></div>
+    <div id="loadingSpinner"></div>  
+    <div class="center-search subheaderSearch">
+            <button class="cart-btn" onclick="addProductFromSample(event)"> + Samples</button>
+            <input type="text" id="searchInput" placeholder="Search..." class="search-input" autocomplete="off">
+              </div>
+
+    <button style="
+    margin-top: 95px;
+" class="cart-btn" onclick="addProduct(event)">Add New Products</button>
+    <!-- ================================ Fixed header information =========================================== -->
+
+
+ <!-- ============ PAGE UI START================================================================================== -->
+
+
+ <div class="product-list prodListShop" id="productList"></div>
+
+  <!-- Image Popup -->
+ <div class="image-popup" id="imagePopup" onclick="closePopup()">
+   <span class="close-popup">&times;</span>
+   <img id="popupImg" src="" alt="Product Image" />
+ </div>
+ <!-- ============ PAGE UI END================================================================================== -->
+    <script>
+
+//============ PAGE LOGIC START================================================================================== 
+
+
+function addProductFromSample(event){
+  localStorage.setItem('action', "manage-product-add"); 
+  window.location.href = './my-shop-product-sample.html';
+}
+
+function addProduct(event){
+  localStorage.setItem('action', "manage-product-add"); 
+  window.location.href = './createProduct.html';
+}
+
+function updateProduct(productData){
+const filteredProduct = products.find(product => product.productId === productData.getAttribute("data-product"));
+localStorage.setItem('product', JSON.stringify(filteredProduct));
+localStorage.setItem('action', "manage-product-edit"); 
+  window.location.href = './updateProduct.html';
+}
+
+// function deleteProduct(productData){
+//   //localStorage.setItem('productId', JSON.stringify(product.getAttribute("data-product")));
+
+// }
+
+function deleteProduct(productData) {
+ 
+      const token = localStorage.getItem('refreshToken');  // Retrieve token
+      // Show the loading spinner
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('loadingSpinner').style.display = 'block';
+      fetch("/products-server/Products('"+productData.getAttribute("data-product")+"')", {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' ,
+          'Authorization': `Bearer ${token}`  // Send token in request
+          }
+      })
+      .then(data => {
+          document.getElementById('overlay').style.display = 'none';
+          document.getElementById('loadingSpinner').style.display = 'none';
+          fetchProducts();
+      })
+      .catch(error => {
+          //showSection('userInfoEdit');
+          document.getElementById('overlay').style.display = 'none';
+          document.getElementById('loadingSpinner').style.display = 'none';
+      })
+    
+   
+}
+
+
+function addProductImage(productData){
+  localStorage.setItem('productId', JSON.stringify(productData.getAttribute("data-product")));
+  localStorage.setItem('action', "manage-product-image"); 
+  window.location.href = './uploadProductImage.html';
+}
+
+
+const productList = document.getElementById("productList");
+
+    const userData = JSON.parse(localStorage.getItem('user'));
+    const shopData = JSON.parse(localStorage.getItem('shop'));
+    if(userData && shopData){
+        var shopId = shopData.shopId;
+        var userId = userData.phoneNumber;
+    }
+    const API_URL = "/odata/v4/shop/Users('"+userId+"')/shops("+shopId+")/products?$expand=medias";
+    fetchProducts();
+// Fetch products from API
+async function fetchProducts() {
+    try {
+      document.getElementById('loadingSpinner').style.display = 'block';
+        const response = await fetch(API_URL, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error fetching products: ${response.status}`);
+        }
+
+        const data = await response.json();
+        products = data.value;
+        renderProducts();
+        document.getElementById('loadingSpinner').style.display = 'none';
+    } catch (error) {
+      document.getElementById('loadingSpinner').style.display = 'none';
+        console.error("Failed to load products:", error);
+    }
+}
+
+function renderProducts() {
+      productList.innerHTML = "";
+      products.forEach(product => {
+        const mediaUrls = product.medias.map(m => `${m.url}`);
+
+        const productCard = document.createElement("div");
+        productCard.classList.add("product-card");
+               // Create the Open/Closed toggle button in the top-right corner
+               const toggleContainer = document.createElement('div');
+            toggleContainer.classList.add('toggle-container', product.online); // default to open
+            toggleContainer.dataset.status = product.online;
+
+            const toggleText = document.createElement('div');
+            toggleText.classList.add('toggle-text');
+            toggleText.innerText = product.online === 'Show' ? 'Show' : 'Hide';
+
+            toggleContainer.appendChild(toggleText);
+
+            const toggleCircle = document.createElement('div');
+            toggleCircle.classList.add('toggle-circle');
+            toggleContainer.appendChild(toggleCircle); 
+
+            // Toggle function for Open/Closed state
+            toggleContainer.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (toggleContainer.dataset.status === "Show") {
+                    toggleContainer.dataset.status = "Hide";
+                    toggleContainer.classList.remove('Show');
+                    toggleContainer.classList.add("Hide");
+                    toggleText.innerText = "Hide";
+                } else {
+                    toggleContainer.dataset.status = "Show";
+                    toggleContainer.classList.remove("Shide");
+                    toggleContainer.classList.add('Show');
+                    toggleText.innerText = "Show";
+                }
+                // Optionally, trigger an API call or update shop data here
+                // Call your function with the new status
+                updateproductStatus(toggleContainer.dataset.status, product.productId);
+            });
+
+        
+        productCard.innerHTML = `
+          <div class="product-media-slider">
+            ${mediaUrls.map((url, index) => `
+              <img src="${url}"  
+                   alt="${product.productName}" 
+                   onclick="openPopup(event)">
+            `).join('')}
+          </div>
+          <p class="product-title">${product.productName}</p>
+          <p class="product-price">₹${product.sellPrice.toFixed(2)} / ${product.unit}</p>
+          <div class="mrpflex">
+          <p class="product-priceMRP">MRP ₹${product.mrp.toFixed(2)} </p>
+          <p class="product-priceOffer"> (${Math.round(((product.mrp.toFixed(2)-product.sellPrice.toFixed(2))/product.mrp.toFixed(2))*100)} % Off)</p>
+          </div>
+          <button class="cart-btn" onclick="updateProduct(this)"  data-product='${product.productId}'>Edit</button>
+          <button class="cart-btn" onclick="addProductImage(this)" data-product='${product.productId}'><i class="fas fa-camera edit-camera-icon"></i></button>
+          <button class="cart-btn" onclick="deleteProduct(this)" data-product='${product.productId}'><i class="fa-solid fa-trash"></i></button>
+        `;
+        productCard.appendChild(toggleContainer);
+        productList.appendChild(productCard);
+        
+      });
+    
+
+    }
+function updateproductStatus(productStatus,productId) {
+
+if(productStatus==="Show"){
+  productStatus = "Show"
+}else{
+  productStatus = "Hide"  
+}
+
+
+const requestBody = {
+  online: productStatus
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch('/products-server/Products/'+productId, {
+    method: 'PATCH',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+   // showSection('shops');
+   fetchProducts();
+   document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+
+async function fetchProductsFromSearch(query) {
+
+        if(searchInput){
+          
+        url = `/odata/v4/shop/Users('${userId}')/shops(${shopId})/products?$filter=contains(productName,'${query}')&$expand=medias`;
+        //url = `/odata/v4/no-auth/Shops(${shopId})?$expand=products($expand=medias;$filter=contains(productName,'${query}'))`;
+
+        const subheader = document.getElementById("productList"); // Ensure this element exists
+        subheader.innerHTML = "";
+
+        }else{
+          url = `/odata/v4/shop/Users('${userId}')/shops(${shopId})/products?$expand=medias`;
+          const subheader = document.getElementById("productList"); // Ensure this element exists
+        subheader.innerHTML = "";
+
+        } 
+  
+  try {
+      document.getElementById('loadingSpinner').style.display = 'block';
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error fetching products: ${response.status}`);
+        }
+
+        const data = await response.json();
+        products = data.value;
+        renderProducts();
+        document.getElementById('loadingSpinner').style.display = 'none';
+    } catch (error) {
+      document.getElementById('loadingSpinner').style.display = 'none';
+        console.error("Failed to load products:", error);
+    }
+}
+
+//=================search=======
+// Attach event listeners
+document.getElementById('searchInput').addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+        searchTriggered = true; // Mark search triggered
+        triggerSearch();
+    }
+
+});
+// Trigger search when Enter key or button is clicked
+function triggerSearch() {
+    const query = document.getElementById('searchInput').value.trim();
+        fetchProductsFromSearch(query);
+
+}
+//==============================
+    // function renderProducts() {
+    //   productList.innerHTML = "";
+    //   products.forEach(product => {
+    //     const productCard = document.createElement("div");
+    //     productCard.classList.add("product-card");
+
+    //     productCard.innerHTML = `
+    //       <img src="${product.medias[0].mediaUrl}" 
+    //            alt="${product.productName}" 
+    //            class="product-img" 
+    //            onclick="openPopup('${product.medias[0].mediaUrl}')">
+    //       <h2 class="product-title">${product.productName}</h2>
+    //       <p class="product-price">₹${product.sellPrice.toFixed(2)}</p>
+    //       <div id="cartControls-${product.productId}" class="cart-controls">
+    //         <button class="cart-btn" onclick="addToCart('${product.productId}')">Add to Cart</button>
+    //       </div>
+    //     `;
+    //     productList.appendChild(productCard);
+    //   });
+
+    //   updateCartUI();
+    // }
+
+    function openPopup(event) {
+      document.getElementById("popupImg").src = event.currentTarget.currentSrc;
+      document.getElementById("imagePopup").style.display = "flex";
+    }
+
+    function closePopup() {
+      document.getElementById("imagePopup").style.display = "none";
+    }
+
+
+    renderProducts();
+
+
+//============ PAGE LOGIC END================================================================================== 
+
+
+//=================Fixed header information ============================================================================
+// function searchTiles() {
+//     const searchInput = document.getElementById('searchInput').value.toLowerCase();
+//     const tiles = document.querySelectorAll('.tile');
+    
+//     tiles.forEach(tile => {
+//         const title = tile.querySelector('.shop-info span:first-child').textContent.toLowerCase();
+//         const location = tile.querySelector('.bottom-info span:first-child').textContent.toLowerCase();
+        
+//         if (title.includes(searchInput) || location.includes(searchInput)) {
+//             tile.style.display = '';
+//         } else {
+//             tile.style.display = 'none';
+//         }
+//     });
+// }
+document.addEventListener("click", function () {
+    window.parent.postMessage("iframe-clicked", "*");
+});
+// Login
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem('refreshToken');
+    const user = localStorage.getItem('user');
+if(!token && !user){
+    window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+    const url="./iframe/login.html";
+    loadContent(url);
+}
+});
+    </script>
+</body>
+</html>
