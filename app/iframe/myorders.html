@@ -305,6 +305,7 @@ async function fetchOrdersByDateRange(framDate,toDate) {
 
         const data = await response.json();
         orders = data.value;
+        document.getElementById('idOrderCount').textContent=orders.length;
         loadOrders();
     } catch (error) {
         console.error("Failed to load products:", error);
@@ -376,7 +377,8 @@ fetch('/odata/v4/order/cancelOrder', {
 .then(data => {
    
    // showSection('shops');
-    const url="./iframe/shop-orders.html";
+   // const url="./iframe/shop-orders.html";
+   fetchOrders();
     loadContent(url);
 })
 .catch(error => {
