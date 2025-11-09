@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop</title>
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/mainHeader.css">
+</head>
+<body >
+    <!-- Loading Spinner -->
+    <div id="overlay"></div>
+    <div id="loadingSpinner"></div>
+    <header class="app-header">
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <div style="display: flex; flex-direction: column;">
+            <span style="font-weight: bold; font-size: 20px;">Dukan Mitra</span>
+            <span>Local to Vocal</span>
+        </div>
+        <div id="headerRight">
+            <!-- Back Button (Initially Hidden) -->
+            <button id="backButton" onclick="goBack()">
+                <i class="fa-solid fa-arrow-left"></i>
+           </button>
+           <div id="userProfileHeader" id="cartContainer">
+               <img id="userProfileHeaderImage" src="image/user.png" alt="profile" class="logo">
+           </div>
+         
+           <button id="loginButton" class="login-btn" onclick="redirectToLogin()" style="display: none;">
+               Login
+           </button>
+       </div>
+    </header>
+    <nav class="mobile-menu" id="mobileMenu">
+        <div class="profile">
+            <img id="profilePic" src="image/user.png" alt="User Profile">
+            <h3 id="username">Dukan Mitra</h3>
+            <p id="userphone">📞 +91 880-0755-400</p>
+        </div>
+        <ul class="menu-items">
+            <li onclick="loadContent('./iframe/myprofile.html')" ><a href="#"><i class="fa-solid fa-circle-user"></i> Profile</a></li>
+            <li onclick="loadContent('./iframe/myshops.html')" ><a href="#"><i class="fa-solid fa-circle-user"></i> My Shops</a></li>
+            <li onclick="loadContent('./iframe/myorders.html')"><a href="#"><i class='fas fa-file-invoice'></i> Orders</a></li>
+            <li onclick="loadContent('./iframe/mycart.html')"><a href="#"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+            <li onclick="loadContent('./iframe/my-liked-shops.html')"><a href="#"><i class="fa-solid fa-heart"></i> Favorite</a></li>
+            <li onclick="loadContent('./iframe/my-address.html')"><a href="#"><i class="fa-solid fa-home"></i> Address</a></li>
+          
+            
+   
+           <li onclick="loadContent('./iframe/refere-your-friends.html')"><a href="#"><i class="fa-solid fa-share"></i> Refer Your Friend</a></li>
+            <li onclick="loadContent('./iframe/help-center.html')"><a href="#"><i class="fa-solid fa-headphones"></i> Help Center</a></li>
+
+
+            <li onclick="loadContent('./iframe/about-us.html')"><a href="#"><i class="fa-solid fa-home"></i> About Us</a></li>
+
+            <li id="logoutBtn"><a href="#" onclick="logout()" ><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>   
+ <!-- ============ PAGE UI START================================================================================== -->
+
+ <div id="content"></div>
+ 
+ <!-- ============ PAGE UI END================================================================================== -->
+ <script>
+//============ PAGE LOGIC START================================================================================== 
+
+//============ PAGE LOGIC END================================================================================== 
+// menu
+
+document.addEventListener("DOMContentLoaded", function () {
+    const menu = document.getElementById("mobileMenu");
+    const menuButton = document.querySelector(".menu-toggle");
+
+    function toggleMenu(event) {
+        event.stopPropagation();
+        menu.classList.toggle("open");
+    }
+
+    function closeMenu(event) {
+        if (!menu.contains(event.target) && !menuButton.contains(event.target)) {
+            menu.classList.remove("open");
+        }
+    }
+
+    // Open/Close menu on button click
+    menuButton.addEventListener("click", toggleMenu);
+
+    // Close menu when clicking anywhere outside of it in the parent document
+    document.addEventListener("click", closeMenu);
+
+    // Prevent closing when clicking inside the menu
+    menu.addEventListener("click", function (event) {
+        event.stopPropagation();
+    });
+
+    // Close the menu when clicking a link inside it
+    menu.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => {
+            menu.classList.remove("open");
+        });
+    });
+
+    // Listen for messages from the iframe to close the menu
+    window.addEventListener("message", function (event) {
+        if (event.data === "iframe-clicked") {
+            menu.classList.remove("open");
+        }
+    });
+});
+
+
+// Login
+document.addEventListener("DOMContentLoaded", function () {
+    const token = localStorage.getItem('refreshToken');
+    const user = localStorage.getItem('user');
+    const loginButton = document.getElementById("loginButton");
+   // const cartContainer = document.getElementById("cartContainer");
+    
+    if (!token && !user) {
+        loginButton.style.display = "block";  // Show login button
+        document.getElementById("logoutBtn").style.display = 'none';
+    } else {
+       // cartContainer.style.display = "block"; // Show cart if user is logged in
+        const userInfo = JSON.parse(user);
+        document.getElementById("username").textContent = userInfo.firstName;
+        document.getElementById("userphone").textContent = userInfo.phoneNumber;
+        document.getElementById("profilePic").src = "/odata/v4/user-profile/Users('"+userInfo.phoneNumber+"')/profilePicture";
+        document.getElementById("userProfileHeaderImage").src = "/odata/v4/user-profile/Users('"+userInfo.phoneNumber+"')/profilePicture";
+        
+        document.getElementById("logoutBtn").style.display = 'block';
+       // redirectToLogin(); // go to login page
+    }
+    const mainUrl = "./iframe/mainPage.html";
+    document.getElementById('content').innerHTML = '<iframe src="' + mainUrl + '" style="width:100%; height: 100%; border:none;"></iframe>';
+    document.getElementById('content').style.display = 'block';
+});
+function redirectToLogin() {
+    document.getElementById('loginButton').style.display = 'none'; //  login button
+    const url="./iframe/login.html";
+    loadContent(url);
+   // window.location.href = "./iframe/login.html"; // Redirect to login page
+}
+function logout() {
+
+    //  localStorage.removeItem('refreshToken');  // Remove invalid token
+    //  localStorage.removeItem('user');  // Remove invalid token
+    localStorage.clear(); // Clears all stored data
+     const url="./iframe/login.html";
+     loadContent(url);
+    // window.location.href = './iframe/login.html';  // Redirect to login
+     document.getElementById("logoutBtn").style.display = 'none';
+     
+}
+ 
+  
+function loadContent(url) {    
+            document.getElementById('userProfileHeader').style.display = 'none'; // Hide Cart Icon
+            document.getElementById('backButton').classList.add('show'); // Animate Back Button
+            document.getElementById('content').innerHTML = '<iframe src="' + url + '" style="width:100%; height: 100%; border:none;"></iframe>';
+           // document.querySelector('.container').style.display = 'none';
+         
+        }
+
+function goBack() {
+//     document.getElementById('userProfileHeader').style.display = 'block'; // Show Cart Icon
+//     document.getElementById('backButton').classList.remove('show'); // Hide with Animation
+//     document.getElementById('content').style.display = 'none';
+//   //  document.querySelector('.container').style.display = 'grid';
+//   window.location.href = '/index.html'; 
+
+
+
+const iframe = document.querySelector("#content iframe");
+    // document.getElementById('userProfileHeader').style.display = 'block'; // Show Cart Icon
+    // document.getElementById('backButton').classList.remove('show'); // Hide with Animation
+    // document.getElementById('content').style.display = 'none';
+const currentURL = iframe.getAttribute("src");
+const action = localStorage.getItem('action');
+if(action && action=="manage-shop"){
+    loadContent('/iframe/myshops.html')
+    localStorage.removeItem('action'); 
+  }else if(action && action=="manage-product"){
+    loadContent('/iframe/myshops.html')
+    localStorage.removeItem('action');
+  }else if(action && action=="manage-address"){
+    loadContent('/iframe/my-address.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-product-image"){
+    loadContent('/iframe/my-shop-products.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-product-add"){
+    loadContent('/iframe/my-shop-products.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-product-edit"){
+    loadContent('/iframe/my-shop-products.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-ser-image"){
+    loadContent('/iframe/my-service-products.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-ser-add"){
+    loadContent('/iframe/my-service-products.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-ser-edit"){
+    loadContent('/iframe/my-service-products.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-service"){
+    loadContent('/iframe/myservices.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-ser-ord-detail"){
+    loadContent('/iframe/shop-orders.html')
+    localStorage.setItem('action', "manage-ser-ord"); 
+  
+}else if(action && action=="manage-shop-ord-detail"){
+    loadContent('/iframe/shop-orders.html')
+    localStorage.setItem('action', "manage-shop-ord"); 
+  
+}else if(action && action=="manage-ser-ord"){
+    loadContent('/iframe/myservices.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-shop-ord"){
+    loadContent('/iframe/myshops.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-ser-product"){
+    loadContent('/iframe/myservices.html')
+    localStorage.removeItem('action');
+ 
+}else if(action && action=="manage-service" && currentURL == "./iframe/shop-orders.html"){
+    loadContent('/iframe/myservices.html')
+    localStorage.removeItem('action');
+  
+}else if(action && action=="manage-shop" && currentURL == "./iframe/shop-orders.html"){
+    loadContent('/iframe/myshops.html')
+    localStorage.removeItem('action');
+  
+}else if(currentURL == "./iframe/myprofile.html" || currentURL == "/iframe/myprofile.html"){
+    loadContent('/iframe/mainPage.html')
+    document.getElementById('backButton').classList.remove('show');
+     document.getElementById('userProfileHeader').style.display = 'block';
+}else if(currentURL == "./iframe/myshops.html" || currentURL == "/iframe/myshops.html"){
+    loadContent('./iframe/mainPage.html')
+    document.getElementById('backButton').classList.remove('show');
+     document.getElementById('userProfileHeader').style.display = 'block';
+}else if(currentURL == "./iframe/my-shop-products.html" || currentURL == "/iframe/my-shop-products.html"){
+    loadContent('./iframe/myshops.html')
+}else if(currentURL == "./iframe/myservices.html" || currentURL == "/iframe/myservices.html"){
+    loadContent('/iframe/myshops.html')
+}else if(currentURL =="./iframe/profile-section.html" || currentURL =="/iframe/profile-section.html"){
+    loadContent('/iframe/mainPage.html')
+    document.getElementById('backButton').classList.remove('show');
+     document.getElementById('userProfileHeader').style.display = 'block';
+    document.getElementById('userProfileHeader').style.display = 'block';
+    document.getElementById('backButton').classList.remove('show');
+    localStorage.removeItem('action');
+}
+
+
+else{
+    document.getElementById('userProfileHeader').style.display = 'block';
+    document.getElementById('backButton').classList.remove('show');
+    window.location.href = '../';
+}
+
+}
+// else if(action=="mainpage"){
+//     loadContent('/iframe/mainPage.html')
+//     document.getElementById('userProfileHeader').style.display = 'block';
+//     document.getElementById('backButton').classList.remove('show');
+//     localStorage.removeItem('action');
+//   }
+// Login
+// document.addEventListener("DOMContentLoaded", function () {
+//     const token = localStorage.getItem('refreshToken');
+//     const user = localStorage.getItem('user');
+// if(!token && !user){
+//     window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
+//     const url="./iframe/login.html";
+//     loadContent(url);
+// }
+// });
+</script>
+</body>
+</html>
