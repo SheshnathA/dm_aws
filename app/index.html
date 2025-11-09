@@ -65,6 +65,33 @@
  <script>
 //============ PAGE LOGIC START================================================================================== 
 
+getCurrentUserGeoLocation();
+
+function getCurrentUserGeoLocation(){
+    if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(function(position) {
+    // Success callback
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    
+    console.log("Latitude: " + latitude);
+    console.log("Longitude: " + longitude);
+    const currentUserLocation  = {
+        latitude:latitude,
+        longitude:longitude
+    }
+    localStorage.setItem("currentLocation", JSON.stringify(currentUserLocation));
+
+  }, function(error) {
+    // Error callback
+    console.error("Error code: " + error.code);
+  });
+} else {
+  console.log("Geolocation is not supported by this browser.");
+}
+}
+//=========================
+
 //============ PAGE LOGIC END================================================================================== 
 // menu
 
@@ -288,6 +315,8 @@ else{
 //     loadContent(url);
 // }
 // });
+
+
 </script>
 </body>
 </html>
