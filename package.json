@@ -43,7 +43,7 @@
     "typescript": "5.7.3"
   },
   "scripts": {
-    "start": "cds run --port 80",
+    "start": "cds run --port 4001",
     "deploy": "cds-mysql-deploy",
     "watch-project1": "cds watch --open project1/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-usermanagement": "cds watch --open usermanagement/webapp/index.html?sap-ui-xx-viewCache=false"
