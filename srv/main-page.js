@@ -1,3 +1,4 @@
+const { functions } = require('@newdash/newdash');
 const cds = require('@sap/cds');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.REFRESH_SECRET;
@@ -205,7 +206,7 @@ return uniqueResults;
                 };
             }
 
-            }else if(req.event=='likeShop' || req.event=='dislikeShop'){
+            }else if(req.event=='likeShop' || req.event=='dislikeShop' || req.event=='getPlace'){
                 return await next();
             }
         else{
@@ -636,5 +637,69 @@ srv.on('getUsersWhoLikedProduct', async (req) => {
 
 
     //===================================
+
+
+
+srv.on("getPlace", async (req) => {
+  const { lat, lon } = req.data;
+  const apiKey = "AIzaSyATVmIadukqW06P2S6ddjDk-3QYazrlbzo";
+
+  try {
+    const res = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${parseFloat(lat)},${parseFloat(lon)}&key=${apiKey}`
+    );
+    const data = await res.json();
+
+    if (!data.results || data.results.length === 0) {
+      return "No address found.";
+    }
+
+    // pick the most detailed (non-plus-code) result
+    const address =
+      data.results.find(
+        (r) =>
+          r.types.includes("street_address") ||
+          r.types.includes("premise") ||
+          r.types.includes("route")
+      ) ||
+      data.results[1] ||
+      data.results[0];
+
+    const components = address.address_components;
+
+    const street = components.find((c) => c.types.includes("route"))?.long_name ?? "";
+    const neighborhood = components.find((c) => c.types.includes("sublocality"))?.long_name ?? "";
+    const village = components.find((c) => c.types.includes("locality"))?.long_name ?? "";
+    const district = components.find((c) => c.types.includes("administrative_area_level_2"))?.long_name ?? "";
+    const state = components.find((c) => c.types.includes("administrative_area_level_1"))?.long_name ?? "";
+    const postal = components.find((c) => c.types.includes("postal_code"))?.long_name ?? "";
+    const country = components.find((c) => c.types.includes("country"))?.long_name ?? "";
+
+    const details = { street, neighborhood, village, district, state, postal, country };
+
+    // remove empty values
+    const filtered = Object.fromEntries(
+      Object.entries(details).filter(([_, v]) => v && v.trim() !== "")
+    );
+
+    console.log("Cleaned Address:", filtered);
+
+    // Return first available locality (neighborhood → village → district)
+    const bestMatch = neighborhood || village || district || state || country || "";
+
+    // return to CAPM action result
+    return bestMatch || "Unknown Location";
+
+  } catch (error) {
+    console.error("Error fetching place:", error);
+    return "Error while fetching location";
+  }
+});
+
+
+
+
+  
+     
 
 };
