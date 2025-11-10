@@ -7,6 +7,49 @@
     -ms-user-select: none;
     user-select: none;
 } */
+#userProfileHeader {
+    display: flex
+;
+    align-items: center;
+    gap: 8px;
+    border-radius: 30px;
+    padding: 6px 12px;
+    box-shadow: 0px 0px 14px 0px rgba(0, 0, 0, 0.1);
+    width: fit-content;
+}
+
+#userProfileHeaderPlace {
+  font-weight: 600;
+  font-size: 13px;
+      color: #ececec;
+          max-width: 160px;
+}
+
+#idUpdatePlace {
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 5px;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    background: #ff3385;
+;
+    border-color: antiquewhite;
+}
+
+#idUpdatePlace:hover {
+  transform: scale(1.1) rotate(10deg);
+}
+
+#idUpdatePlace img {
+  width: 18px;
+  height: 18px;
+filter: brightness(0) invert(1);
+}
+
+
 
 .center-search {
     display: flex;
