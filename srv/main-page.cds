@@ -59,7 +59,7 @@ service NoAuthService {
 
 
 
-        entity Likes as projection on dukanmitra.Likes;
+    entity Likes as projection on dukanmitra.Likes;
 
     action likeShop(shopId: UUID) returns Boolean;
     action dislikeShop(shopId: UUID) returns Boolean;
@@ -76,4 +76,6 @@ service NoAuthService {
 
     action getShopLikes(shopId: UUID) returns Integer;
     action getProductLikes(productId: UUID) returns Integer;
+action getPlace(lat : String, lon : String) returns String;
+
 }
