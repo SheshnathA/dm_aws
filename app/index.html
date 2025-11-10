@@ -23,9 +23,13 @@
             <button id="backButton" onclick="goBack()">
                 <i class="fa-solid fa-arrow-left"></i>
            </button>
-           <div id="userProfileHeader" id="cartContainer">
-               <img id="userProfileHeaderImage" src="image/user.png" alt="profile" class="logo">
-           </div>
+         <div id="userProfileHeader">
+  <span id="userProfileHeaderPlace">📍 Detecting Location...</span>
+  <button id="idUpdatePlace" title="Update your location">
+    <img src="image/location-icon.svg" alt="Update Location" />
+  </button>
+</div>
+
          
            <button id="loginButton" class="login-btn" onclick="redirectToLogin()" style="display: none;">
                Login
@@ -81,6 +85,7 @@ function getCurrentUserGeoLocation(){
         longitude:longitude
     }
     localStorage.setItem("currentLocation", JSON.stringify(currentUserLocation));
+    setPlace(latitude,longitude);
 
   }, function(error) {
     // Error callback
@@ -90,12 +95,57 @@ function getCurrentUserGeoLocation(){
   console.log("Geolocation is not supported by this browser.");
 }
 }
+
+function setPlace(lat,lon) {
+       const requestBody = {
+                lat           : lat.toString(),
+                lon          : lon.toString()
+};
+const token = localStorage.getItem('refreshToken');  // Retrieve token
+
+// Show the loading spinner
+document.getElementById('overlay').style.display = 'block';
+document.getElementById('loadingSpinner').style.display = 'block';
+fetch("/odata/v4/no-auth/getPlace", {
+    method: 'POST',
+    body: JSON.stringify(requestBody),
+    headers: { 'Content-Type': 'application/json' ,
+    'Authorization': `Bearer ${token}`  // Send token in request
+    }
+})
+.then(response => response.json())
+.then(data => {
+   
+    localStorage.setItem("place", data.value);
+    
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+
+})
+.catch(error => {
+    //showSection('userInfoEdit');
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+})
+    
+   
+}
+
+document.getElementById("idUpdatePlace").addEventListener("click", async () => {
+  getCurrentUserGeoLocation();
+});
+
+
 //=========================
 
 //============ PAGE LOGIC END================================================================================== 
 // menu
 
 document.addEventListener("DOMContentLoaded", function () {
+
+
+    document.getElementById("userProfileHeaderPlace").textContent = localStorage.getItem("place");
+
     const menu = document.getElementById("mobileMenu");
     const menuButton = document.querySelector(".menu-toggle");
 
@@ -153,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("username").textContent = userInfo.firstName;
         document.getElementById("userphone").textContent = userInfo.phoneNumber;
         document.getElementById("profilePic").src = "/odata/v4/user-profile/Users('"+userInfo.phoneNumber+"')/profilePicture";
-        document.getElementById("userProfileHeaderImage").src = "/odata/v4/user-profile/Users('"+userInfo.phoneNumber+"')/profilePicture";
+        //document.getElementById("userProfileHeaderImage").src = "/odata/v4/user-profile/Users('"+userInfo.phoneNumber+"')/profilePicture";
         
         document.getElementById("logoutBtn").style.display = 'block';
        // redirectToLogin(); // go to login page
