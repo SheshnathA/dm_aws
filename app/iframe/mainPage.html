@@ -1343,7 +1343,10 @@ if (shop.online === "Closed" || shop.status === "Closed") {
     } finally {
         isFetching = false;
     }
-    updateCartUI();
+    if(localStorage.getItem('cartProducts')){
+      updateCartUI();
+    }
+    
 }
 
 // Like/Dislike Function
@@ -1626,7 +1629,9 @@ if (shop.online === "Closed" || shop.status === "Closed") {
                 console.error('Error fetching shops:', error);
                 document.getElementById('loadingSpinner').style.display = 'none';
             }
-            updateCartUI();
+            if(localStorage.getItem('cartProducts')){
+      updateCartUI();
+    }
         }
 
 
@@ -1819,7 +1824,9 @@ if (shop.online === "Closed" || shop.status === "Closed") {
         document.getElementById('loadingSpinner').style.display = 'none';
         shopTiles.innerHTML = `<p>Error loading shops.</p>`;
     }
-    updateCartUI();
+    if(localStorage.getItem('cartProducts')){
+      updateCartUI();
+    }
 }
 
 let searchTimeout;   
@@ -2092,7 +2099,9 @@ function changeQuantity(productId, change) {
   
      
     saveCart();
-    updateCartUI();
+    if(localStorage.getItem('cartProducts')){
+      updateCartUI();
+    }
 
     if (document.getElementById("checkoutModal").style.display === "flex") viewCart();
 }
