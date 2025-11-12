@@ -69,7 +69,10 @@
  <script>
 //============ PAGE LOGIC START================================================================================== 
 
-getCurrentUserGeoLocation();
+//getCurrentUserGeoLocation();
+if(!localStorage.getItem('place')){
+    getCurrentUserGeoLocation();
+}
 
 function getCurrentUserGeoLocation(){
     if (navigator.geolocation) {
