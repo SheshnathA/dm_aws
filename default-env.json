@@ -12,7 +12,7 @@
             "port": "3306",
             "user" : "sesji_dukanmitra",
             "password" : "Sesji2025@dukanmitra@kittu&shilpa@99",
-            "database" : "dukanmitra_qa", 
+            "database" : "dukanmitra_prd", 
             "waitForConnections": true,
             "connectionLimit": 100,
             "queueLimit": 0,

@@ -169,12 +169,11 @@ display: none; /* Hide scrollbar for Chrome, Safari */
     
         .close-popup {
           position: absolute;
-          top: 20px;
-          right: 20px;
-          font-size: 30px;
-          color: white;
-          cursor: pointer;
-          font-weight: bold;
+    top: 60px;
+    right: 20px;
+    font-size: 50px;
+    color: white;
+    cursor: pointer;
         }
     
         .cart-controls {
@@ -292,7 +291,7 @@ display: none; /* Hide scrollbar for Chrome, Safari */
         margin: 5px 0;
     }
     .prodList{
-        margin-top: 90px;
+        margin-top: 20px;
     }
 
     
@@ -404,7 +403,11 @@ display: none; /* Hide scrollbar for Chrome, Safari */
     margin-top: 31px;
 }
 
-
+.center-search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .outofStock {
     display: flex
 ;
@@ -427,12 +430,13 @@ display: none; /* Hide scrollbar for Chrome, Safari */
 
 <body class="noselect">
     <header class="app-header">
-        <div class="subheaderSearch">
-            <input type="text" id="searchInput" placeholder="Search..." class="search-input" autocomplete="off">
-            <button class="searchbtn" id="searchButton">🔍</button>
-     
-        
-        </div>
+         
+            <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search..." class="search-input" autocomplete="off">
+                    <button class="searchbtn" id="searchButton">🔍</button>
+                    
+                
+                </div>
 
     </header>
     <!-- Loading Spinner -->

@@ -689,14 +689,15 @@ fetch('/odata/v4/order/deleteOrderItem', {
 function cancelOrder(orderId) {
       //  alert(`Order ${orderId} has been canceled!`);
 const requestBody = {
-    orderId: orderId
+ orderId: orderId,
+    status: "Cancelled"
 };
 const token = localStorage.getItem('refreshToken');  // Retrieve token
 
 // Show the loading spinner
 document.getElementById('overlay').style.display = 'block';
 document.getElementById('loadingSpinner').style.display = 'block';
-fetch('/odata/v4/order/cancelOrder', {
+fetch('/odata/v4/order/updateOrderStatus', {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: { 'Content-Type': 'application/json' ,
