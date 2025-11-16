@@ -858,8 +858,12 @@ function fetchCategories() {
 
             const iconDiv = document.createElement('div');
             iconDiv.classList.add('icon');
-            iconDiv.style.backgroundImage = `url("/odata/v4/no-auth/Category(${category.categoryId})/categoryPicture")`;
-            const categoryName = document.createElement('span');
+           // iconDiv.style.backgroundImage = `url("/odata/v4/no-auth/Category(${category.categoryId})/categoryPicture")`;
+           iconDiv.style.backgroundImage = `url("https://sdk.dukanmitra.com/lbs/Category/${category.categoryName}.jpg")`;
+
+           
+ 
+           const categoryName = document.createElement('span');
             categoryName.textContent = category.categoryName; // Assuming category object contains 'name'
             // Append icon and name to category link
             categoryLink.appendChild(iconDiv);
