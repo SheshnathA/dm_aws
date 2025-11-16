@@ -1,4 +1,4 @@
-@server = http://localhost:4004
+@server = http://localhost:4001
 
 
 @protocol = http
@@ -15,10 +15,11 @@ POST {{server}}/odata/v4/auth/register
 Content-Type: application/json
 
 {
-  "phoneNumber": "8800755400",
-  "firstName": "Ram Kumar",
+  "phoneNumber": "8800755406",
+  "firstName": "Ram6 Kumar",
   "lastName": "Agrahari",
-  "password": "1234"
+  "password": "1234",
+  "email": "sheshnath.a@gmail.com"
 }
 
 ### login

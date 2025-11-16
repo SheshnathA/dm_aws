@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin CRUD — CAP Dukanmitra (All fields, dropdown associations)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .tbl th, .tbl td { padding:8px 10px; border-bottom:1px solid #eee; font-size:13px; text-align:left; vertical-align:middle; }
+  .lightbox { position: fixed; inset:0; display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75); }
+  .lightbox img{ max-width:90%; max-height:90%; border-radius:8px }
+  .badge{ background:#eef2ff; color:#3730a3; padding:4px 8px;border-radius:999px;font-size:12px }
+</style>
+</head>
+<body class="bg-gray-50 p-6">
+  <div class="max-w-8xl mx-auto bg-white rounded shadow p-6">
+    <div class="flex items-start justify-between gap-4 mb-4">
+      <div>
+        <h1 class="text-2xl font-bold">Admin Console — CAP dukanmitra (All fields)</h1>
+        <p class="text-sm text-gray-600 mt-1">Create / Read / Update / Delete; dropdown association pickers; media preview & upload.</p>
+      </div>
+      <div class="flex gap-2">
+        <select id="entitySelect" class="border px-3 py-2 rounded">
+          <option>Users</option><option>Shops</option><option>Products</option><option>Orders</option>
+          <option>OrderItems</option><option>Media</option><option>Category</option>
+        </select>
+        <button id="createBtn" class="bg-green-600 text-white px-3 py-2 rounded">Create</button>
+        <button id="refreshBtn" class="bg-blue-600 text-white px-3 py-2 rounded">Refresh</button>
+      </div>
+    </div>
+
+    <div class="overflow-auto border rounded mb-4">
+      <table id="dataTable" class="min-w-full tbl w-full"><thead id="tableHead" class="bg-gray-50"></thead><tbody id="tableBody"></tbody></table>
+    </div>
+
+    <div id="status" class="text-sm text-gray-600"></div>
+  </div>
+
+  <!-- FORM MODAL -->
+  <div id="formModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center pt-12 z-40">
+    <div class="bg-white rounded-lg p-6 w-[95%] max-w-6xl max-h-[85vh] overflow-auto shadow">
+      <div class="flex justify-between items-center mb-4">
+        <h2 id="formTitle" class="text-lg font-semibold"></h2>
+        <div class="flex gap-2">
+          <button id="deleteBtn" class="hidden bg-red-600 text-white px-3 py-2 rounded">Delete</button>
+          <button id="closeForm" class="text-gray-700 px-3 py-2 rounded">Close</button>
+        </div>
+      </div>
+
+      <form id="entityForm" class="grid grid-cols-2 gap-4">
+        <div id="formFields" class="col-span-2 grid grid-cols-2 gap-4"></div>
+
+        <div class="col-span-2 flex justify-end gap-2">
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW MODAL -->
+  <div id="viewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded p-6 w-[95%] max-w-4xl max-h-[80vh] overflow-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold">Record</h3>
+        <button id="closeView" class="text-gray-700 px-2">Close</button>
+      </div>
+      <pre id="viewContent" class="text-sm bg-gray-100 p-3 rounded"></pre>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="hidden lightbox z-50" onclick="hideLightbox()"><img id="lightboxImg" src="" alt="preview"/></div>
+
+<script>
+/* -------------------- CONFIG -------------------- */
+const SERVICE_BASE = 'http://localhost:4004/odata/v4/admin'; // change if needed
+const PAGE_SIZE = 500;
+
+/* -------------------- ENTITY FIELD DEFINITIONS (all fields) --------------------
+   We include all fields from your schema. For associations we list the target entity so we can build dropdowns.
+*/
+const entitySchemas = {
+  Users: {
+    key: 'phoneNumber',
+    fields: [
+      {name:'phoneNumber', type:'string'},
+      {name:'firstName', type:'string'},
+      {name:'lastName', type:'string'},
+      {name:'email', type:'string'},
+      {name:'passwordHash', type:'string'},
+      {name:'username', type:'string'},
+      {name:'profilePicture', type:'binary'},
+      {name:'isVerified', type:'boolean'},
+      {name:'dateOfBirth', type:'date'},
+      {name:'role', type:'string'},
+      {name:'lastLogin', type:'datetime'},
+      {name:'refreshToken', type:'string'},
+      {name:'otp', type:'string'},
+      {name:'otpExpiry', type:'datetime'},
+      {name:'mediaLimit', type:'number'},
+      // compositions omitted from editable fields list (shops/products/medias) - those are managed separately
+    ],
+    associations:{}
+  },
+
+  Address: {
+    key: 'addressId',
+    fields: [
+      {name:'addressId', type:'string'},
+      {name:'addressPhone', type:'assoc', target:'Users'},
+      {name:'completeAddress', type:'string'},
+      {name:'locality', type:'string'},
+      {name:'latitude', type:'string'},
+      {name:'longitude', type:'string'}
+    ]
+  },
+
+  Shops: {
+    key: 'shopId',
+    fields: [
+      {name:'shopId', type:'string'},
+      {name:'ownerPhone', type:'assoc', target:'Users'},
+      {name:'shopName', type:'string'},
+      {name:'shopAddress', type:'string'},
+      {name:'shopLocation', type:'string'},
+      {name:'shopCity', type:'string'},
+      {name:'shopType', type:'string'},
+      {name:'type', type:'string'},
+      {name:'shopOffer', type:'string'},
+      {name:'isVerified', type:'boolean'},
+      {name:'rating', type:'string'},
+      {name:'online', type:'string'},
+      {name:'latitude', type:'string'},
+      {name:'longitude', type:'string'},
+      {name:'distance', type:'string'},
+      {name:'category', type:'assoc', target:'Category'},
+      {name:'totalLikes', type:'number'}
+    ]
+  },
+
+  Products: {
+    key: 'productId',
+    fields: [
+      {name:'productId', type:'string'},
+      {name:'category', type:'assoc', target:'Category'},
+      {name:'userProducts', type:'assoc', target:'Users'},
+      {name:'shopProducts', type:'assoc', target:'Shops'},
+      {name:'productName', type:'string'},
+      {name:'description', type:'string'},
+      {name:'mrp', type:'number'},
+      {name:'stockQuantity', type:'number'},
+      {name:'sellPrice', type:'number'},
+      {name:'isVerified', type:'boolean'},
+      {name:'online', type:'string'},
+      {name:'unit', type:'string'},
+      {name:'color', type:'string'},
+      {name:'rating', type:'string'},
+      {name:'minQtyToBuy', type:'number'},
+      {name:'totalLikes', type:'number'}
+    ]
+  },
+
+  Likes: {
+    key: 'likeid',
+    fields: [
+      {name:'likeid', type:'string'},
+      {name:'userLike', type:'assoc', target:'Users'},
+      {name:'shopLike', type:'assoc', target:'Shops'},
+      {name:'productLike', type:'assoc', target:'Products'}
+    ]
+  },
+
+  Category: {
+    key: 'categoryId',
+    fields: [
+      {name:'categoryId', type:'number'},
+      {name:'categoryName', type:'string'},
+      {name:'description', type:'string'},
+      {name:'type', type:'string'},
+      {name:'categoryPicture', type:'binary'}
+    ]
+  },
+
+  Orders: {
+    key: 'orderId',
+    fields: [
+      {name:'orderId', type:'string'},
+      {name:'user', type:'assoc', target:'Users'},
+      {name:'shop', type:'assoc', target:'Shops'},
+      {name:'totalAmount', type:'number'},
+      {name:'paymentMethod', type:'string'},
+      {name:'shippingAddress', type:'string'},
+      {name:'latitude', type:'string'},
+      {name:'longitude', type:'string'},
+      {name:'status', type:'string'}
+    ]
+  },
+
+  OrderItems: {
+    key: 'itemId',
+    fields: [
+      {name:'itemId', type:'string'},
+      {name:'order', type:'assoc', target:'Orders'},
+      {name:'product', type:'assoc', target:'Products'},
+      {name:'quantity', type:'number'}
+    ]
+  },
+
+  Media: {
+    key: 'mediaId',
+    fields: [
+      {name:'mediaId', type:'string'},
+      {name:'ownerMedia', type:'assoc', target:'Users'},
+      {name:'shopMedia', type:'assoc', target:'Shops'},
+      {name:'productMedia', type:'assoc', target:'Products'},
+      {name:'categoryMedia', type:'assoc', target:'Category'},
+      {name:'isVerified', type:'boolean'},
+      {name:'mediaCategory', type:'string'},
+      {name:'mediaType', type:'string'},
+      {name:'content', type:'binary'}, // file input -> upload to /Media(key)/content
+      {name:'fileName', type:'string'},
+      {name:'applicationName', type:'string'},
+      {name:'url', type:'string'}
+    ]
+  }
+};
+
+/* -------------------- LOOKUPS (for dropdowns) -------------------- */
+const lookups = {
+  Users: [],
+  Shops: [],
+  Products: [],
+  Category: []
+};
+
+/* -------------------- HELPERS -------------------- */
+function toUrl(entity, qs=''){ return `${SERVICE_BASE}/${entity}${qs||''}`; }
+
+function encodeODataKey(key){
+  if (key === null || key === undefined) return null;
+  if (typeof key === 'object') {
+    return Object.entries(key).map(([k,v]) => `${k}=${encodeODataKey(v)}`).join(',');
+  }
+  if (typeof key === 'number') return key;
+  // numeric string?
+  if (/^-?\d+$/.test(String(key))) return String(key);
+  const s = String(key).replace(/'/g,"''");
+  return `'${s}'`;
+}
+
+function log(...args){ console.log('[admin]', ...args); }
+function esc(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
+
+/* Get raw key value for record */
+function findKeyForEntity(entity, rec){
+  const schema = entitySchemas[entity];
+  if(schema && rec && rec[schema.key] !== undefined) return rec[schema.key];
+  // try common field names
+  if(rec && rec.id !== undefined) return rec.id;
+  if(rec && rec.mediaId !== undefined) return rec.mediaId;
+  if(rec && rec.productId !== undefined) return rec.productId;
+  const keys = Object.keys(rec || {});
+  return keys.length ? rec[keys[0]] : null;
+}
+
+/* -------------------- UI ELEMENTS -------------------- */
+const entitySelect = document.getElementById('entitySelect');
+const createBtn = document.getElementById('createBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+const tableHead = document.getElementById('tableHead');
+const tableBody = document.getElementById('tableBody');
+const statusEl = document.getElementById('status');
+
+const formModal = document.getElementById('formModal');
+const formTitle = document.getElementById('formTitle');
+const formFields = document.getElementById('formFields');
+const entityForm = document.getElementById('entityForm');
+const deleteBtn = document.getElementById('deleteBtn');
+const closeForm = document.getElementById('closeForm');
+
+const viewModal = document.getElementById('viewModal');
+const viewContent = document.getElementById('viewContent');
+const closeView = document.getElementById('closeView');
+
+let currentEntity = entitySelect.value;
+let currentData = [];
+let currentMode = null; // Create|Edit
+let currentRec = null;
+
+/* -------------------- LOAD LOOKUPS -------------------- */
+async function loadLookups(){
+  // Load Users, Shops, Products, Category for dropdown lists
+  try{
+    const [uRes, sRes, pRes, cRes] = await Promise.all([
+      fetch(toUrl('Users', `?$top=${PAGE_SIZE}`)).then(r=> r.ok? r.json(): Promise.reject(r)),
+      fetch(toUrl('Shops', `?$top=${PAGE_SIZE}`)).then(r=> r.ok? r.json(): Promise.reject(r)),
+      fetch(toUrl('Products', `?$top=${PAGE_SIZE}`)).then(r=> r.ok? r.json(): Promise.reject(r)),
+      fetch(toUrl('Category', `?$top=${PAGE_SIZE}`)).then(r=> r.ok? r.json(): Promise.reject(r))
+    ]);
+    lookups.Users = uRes.value || [];
+    lookups.Shops = sRes.value || [];
+    lookups.Products = pRes.value || [];
+    lookups.Category = cRes.value || [];
+    log('Lookups loaded', { users: lookups.Users.length, shops: lookups.Shops.length, products: lookups.Products.length, category: lookups.Category.length });
+  }catch(e){
+    console.warn('Lookup load failed', e);
+  }
+}
+
+/* -------------------- FETCH & RENDER -------------------- */
+entitySelect.addEventListener('change', ()=>{
+  currentEntity = entitySelect.value;
+  fetchAll(currentEntity);
+});
+
+createBtn.addEventListener('click', ()=> openForm('Create', null));
+refreshBtn.addEventListener('click', ()=> fetchAll(currentEntity));
+closeForm.addEventListener('click', ()=> formModal.classList.add('hidden'));
+closeView.addEventListener('click', ()=> viewModal.classList.add('hidden'));
+
+async function fetchAll(entity){
+  statusEl.textContent = 'Loading...';
+  await loadLookups(); // ensure dropdown data available
+  try{
+    const res = await fetch(toUrl(entity, `?$top=${PAGE_SIZE}`), { headers:{ Accept:'application/json' } });
+    if(!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    currentData = data.value || [];
+    renderTable();
+    statusEl.textContent = `Loaded ${currentData.length} ${entity}`;
+  }catch(e){
+    statusEl.textContent = 'Load failed: ' + e.message;
+    tableBody.innerHTML = `<tr><td class="tbl" colspan="20">${esc(e.message)}</td></tr>`;
+    console.error(e);
+  }
+}
+
+function renderTable(){
+  const schema = entitySchemas[currentEntity];
+  const cols = schema ? schema.fields.map(f => f.name) : (currentData[0] ? Object.keys(currentData[0]) : []);
+  // header
+  tableHead.innerHTML = '<tr>' + cols.map(c=> `<th class="tbl">${esc(c)}</th>`).join('') + '<th class="tbl">Preview</th><th class="tbl">Actions</th></tr>';
+  // rows
+  if(!currentData.length){
+    tableBody.innerHTML = `<tr><td class="tbl" colspan="${cols.length + 2}">No records</td></tr>`;
+    return;
+  }
+  tableBody.innerHTML = currentData.map(rec => {
+    const cells = cols.map(c => {
+      let v = rec[c];
+      if(v === null || v === undefined) return `<td class="tbl">-</td>`;
+      // association objects: show first primitive value
+      if(typeof v === 'object'){
+        const val = Object.values(v)[0];
+        v = val ?? JSON.stringify(v);
+      }
+      // for binary fields or content show placeholder
+      const fld = schema.fields.find(f=>f.name===c);
+      if(fld && fld.type === 'binary') return `<td class="tbl">[binary]</td>`;
+      return `<td class="tbl">${esc(String(v))}</td>`;
+    }).join('');
+    const preview = renderPreview(rec);
+    const recJson = JSON.stringify(rec).replaceAll('</','\\u003c/');
+    return `<tr>${cells}<td class="tbl">${preview}</td><td class="tbl">
+      <button class="text-blue-600 mr-2" onclick='openView(${recJson})'>View</button>
+      <button class="text-indigo-700 mr-2" onclick='openEdit(${recJson})'>Edit</button>
+      <button class="text-red-600" onclick='removeRecord(${recJson})'>Delete</button>
+    </td></tr>`;
+  }).join('');
+}
+
+function renderPreview(rec){
+  if(currentEntity === 'Media'){
+    const url = rec.url;
+    if(url) return `<img src="${esc(url)}" class="h-16 w-28 object-cover rounded cursor-pointer" onclick="showLightbox('${esc(url)}')">`;
+    const mid = rec.mediaId;
+    if(mid){
+      const contentUrl = `${SERVICE_BASE}/Media(${encodeODataKey(mid)})/content`;
+      return `<img src="${contentUrl}" class="h-16 w-28 object-cover rounded cursor-pointer" onclick="showLightbox('${contentUrl}')">`;
+    }
+    return '';
+  }
+  // if record has medias array or medias nested in rec, try to display first
+  if(Array.isArray(rec.medias) && rec.medias.length){
+    const m = rec.medias[0];
+    if(m.url) return `<img src="${esc(m.url)}" class="h-16 w-28 object-cover rounded cursor-pointer" onclick="showLightbox('${esc(m.url)}')">`;
+    if(m.mediaId){
+      const contentUrl = `${SERVICE_BASE}/Media(${encodeODataKey(m.mediaId)})/content`;
+      return `<img src="${contentUrl}" class="h-16 w-28 object-cover rounded cursor-pointer" onclick="showLightbox('${contentUrl}')">`;
+    }
+  }
+  return '';
+}
+
+/* -------------------- FORM BUILDING -------------------- */
+function openForm(mode, rec){
+  currentMode = mode;
+  currentRec = rec;
+  formTitle.textContent = `${mode} ${currentEntity}`;
+  formFields.innerHTML = '';
+  const schema = entitySchemas[currentEntity];
+  const fields = schema ? schema.fields : (rec ? Object.keys(rec) : []);
+  fields.forEach(f=>{
+    const name = f.name;
+    const type = f.type;
+    let value = rec && rec[name] !== undefined ? rec[name] : '';
+    if(typeof value === 'object' && value !== null) { value = Object.values(value)[0] ?? ''; }
+    const id = `fld_${name}`;
+    // association => dropdown
+    if(type === 'assoc'){
+      const target = f.target;
+      const list = lookups[target] || [];
+      let options = `<option value="">-</option>` + list.map(item=>{
+        const key = findKeyForEntity(target, item);
+        return `<option value="${esc(String(key))}" ${String(key) == String(value)? 'selected':''}>${esc(String(key))} ${item.shopName? '- '+esc(item.shopName): ''}${item.firstName? '- '+esc(item.firstName): ''}${item.productName? '- '+esc(item.productName): ''}</option>`;
+      }).join('');
+      formFields.innerHTML += `<div><label class="block text-sm font-medium mb-1">${esc(name)}</label><select id="${id}" name="${name}" class="w-full border rounded px-3 py-2">${options}</select></div>`;
+      return;
+    }
+    // binary => file input
+    if(type === 'binary'){
+      formFields.innerHTML += `<div class="col-span-2"><label class="block text-sm font-medium mb-1">${esc(name)}</label><input id="${id}" name="${name}" type="file" class="w-full" /></div>`;
+      return;
+    }
+    // boolean -> checkbox
+    if(type === 'boolean'){
+      formFields.innerHTML += `<div><label class="block text-sm font-medium mb-1">${esc(name)}</label><div class="flex items-center gap-2"><input id="${id}" name="${name}" type="checkbox" ${value? 'checked':''} /> <span class="text-sm">${esc(name)}</span></div></div>`;
+      return;
+    }
+    // date/datetime/number/string fallback
+    let inputType = 'text';
+    if(type === 'number') inputType = 'number';
+    if(type === 'date') inputType = 'date';
+    if(type === 'datetime') inputType = 'datetime-local';
+    formFields.innerHTML += `<div><label class="block text-sm font-medium mb-1">${esc(name)}</label><input id="${id}" name="${name}" type="${inputType}" value="${esc(value)}" class="w-full border rounded px-3 py-2" /></div>`;
+  });
+
+  // show delete on Edit
+  deleteBtn.style.display = (mode === 'Edit') ? 'inline-block' : 'none';
+  formModal.classList.remove('hidden');
+  formModal.scrollTop = 0;
+}
+
+/* wrapper for openEdit/openView used in table buttons */
+function openEdit(rec){ openForm('Edit', rec); }
+function openView(rec){ viewContent.textContent = JSON.stringify(rec, null, 2); viewModal.classList.remove('hidden'); }
+
+/* -------------------- FORM SUBMIT -------------------- */
+entityForm.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const schema = entitySchemas[currentEntity];
+  const fd = new FormData(entityForm);
+  // Build payload and association binding properties
+  const payload = {};
+  for(const f of (schema? schema.fields: [])){
+    const key = f.name;
+    if(f.type === 'binary') continue; // file handled separately
+    if(f.type === 'assoc'){
+      const selected = fd.get(key);
+      if(selected){
+        // use odata bind: NavigationProperty@odata.bind : "/Target(<key>)"
+        payload[`${key}@odata.bind`] = `/${f.target}(${encodeODataKey(selected)})`;
+      }
+      continue;
+    }
+    // boolean handling
+    const el = entityForm.querySelector(`[name="${key}"]`);
+    if(el && el.type === 'checkbox'){
+      payload[key] = !!el.checked;
+    } else {
+      let v = fd.get(key);
+      if(v === null || v === '') payload[key] = null;
+      else if(f.type === 'number') payload[key] = Number(v);
+      else payload[key] = v;
+    }
+  }
+
+  try{
+    if(currentMode === 'Create'){
+      // POST
+      const url = toUrl(currentEntity);
+      log('POST', url, payload);
+      const res = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error(await res.text());
+      const created = await res.json().catch(()=>null);
+
+      // handle file upload for binary fields (Media.content, Users.profilePicture, Category.categoryPicture)
+      await uploadFilesAfterCreate(schema, created);
+
+      alert('Created');
+      formModal.classList.add('hidden');
+      fetchAll(currentEntity);
+
+    } else {
+      // PATCH
+      const keyVal = findKeyForEntity(currentEntity, currentRec);
+      if(keyVal === null || keyVal === undefined) throw new Error('No key found for record');
+      const url = `${toUrl(currentEntity)}/${keyVal}`;
+      // Note: make sure URL uses parentheses not extra slashes
+      // Build final fetch path like /AdminService/Media('id')
+      //const patchUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})`;
+      log('PATCH', url, payload);
+      const res = await fetch(url, { method:'PATCH', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error(await res.text());
+
+      // handle file upload on edit
+      await uploadFilesAfterEdit(schema, currentRec);
+
+      alert('Saved');
+      formModal.classList.add('hidden');
+      fetchAll(currentEntity);
+    }
+  }catch(err){
+    alert('Save failed: ' + err.message);
+    console.error(err);
+  }
+});
+
+/* Upload files for create: uses created record to get key for media upload */
+async function uploadFilesAfterCreate(schema, created){
+  if(!schema) return;
+  // check binary fields in schema: for Users.profilePicture, Category.categoryPicture, Media.content
+  // find file inputs in form
+  const files = entityForm.querySelectorAll('input[type="file"]');
+  for(const fi of files){
+    if(fi.files && fi.files[0]){
+      // determine which binary field
+      const fieldName = fi.name;
+      // If entity is Media -> upload content to /Media(key)/content
+      if(currentEntity === 'Media'){
+        const mid = created && (created.mediaId || created.MediaId);
+        const file = fi.files[0];
+        if(mid) await uploadMediaContent(mid, file);
+      } else if(currentEntity === 'Users' && fieldName === 'profilePicture'){
+        // Many CAP setups don't have special endpoint for profile picture; if your Users entity exposes /Users(key)/profilePicture/content change accordingly.
+        // We'll attempt PUT to /Users(key)/profilePicture/content if available; else try /Users(key)/content (you might adapt to your API).
+        const keyVal = created && findKeyForEntity(currentEntity, created);
+        if(keyVal){
+          const putUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})/profilePicture/$value`;
+          try{
+            await fetch(putUrl, { method:'PUT', body: fi.files[0], headers:{ 'Content-Type': fi.files[0].type } });
+          }catch(e){ console.warn('profilePicture upload failed', e); }
+        }
+      } else if(currentEntity === 'Category' && fieldName === 'categoryPicture'){
+        const keyVal = created && findKeyForEntity(currentEntity, created);
+        if(keyVal){
+          const putUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})/categoryPicture/$value`;
+          try{ await fetch(putUrl, { method:'PUT', body: fi.files[0], headers:{ 'Content-Type': fi.files[0].type } }); }catch(e){ console.warn('categoryPicture upload failed', e); }
+        }
+      }
+    }
+  }
+}
+
+/* Upload files after edit (currentRec available) */
+async function uploadFilesAfterEdit(schema, rec){
+  if(!schema) return;
+  const files = entityForm.querySelectorAll('input[type="file"]');
+  for(const fi of files){
+    if(fi.files && fi.files[0]){
+      const fieldName = fi.name;
+      if(currentEntity === 'Media'){
+        const mid = rec && (rec.mediaId || rec.MediaId);
+        if(mid) await uploadMediaContent(mid, fi.files[0]);
+      } else if(currentEntity === 'Users' && fieldName === 'profilePicture'){
+        const keyVal = findKeyForEntity(currentEntity, rec);
+        if(keyVal){
+          const putUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})/profilePicture/$value`;
+          try{ await fetch(putUrl, { method:'PUT', body: fi.files[0], headers:{ 'Content-Type': fi.files[0].type } }); }catch(e){ console.warn('profilePicture upload failed', e); }
+        }
+      } else if(currentEntity === 'Category' && fieldName === 'categoryPicture'){
+        const keyVal = findKeyForEntity(currentEntity, rec);
+        if(keyVal){
+          const putUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})/categoryPicture/$value`;
+          try{ await fetch(putUrl, { method:'PUT', body: fi.files[0], headers:{ 'Content-Type': fi.files[0].type } }); }catch(e){ console.warn('categoryPicture upload failed', e); }
+        }
+      }
+    }
+  }
+}
+
+/* Upload media content via PUT to /Media(key)/content or /Media(key)/$value depending on service */
+async function uploadMediaContent(mediaId, file){
+  if(!mediaId) { console.warn('No mediaId to upload to'); return; }
+  // try content endpoint first
+  const contentUrl = `${toUrl('Media')}/${encodeODataKey(mediaId)}/content`;
+  try{
+    const res = await fetch(contentUrl, { method:'PUT', body: file, headers:{ 'Content-Type': file.type } });
+    if(!res.ok) {
+      // fallback to $value
+      const fallback = `${toUrl('Media')}(${encodeODataKey(mediaId)})/$value`;
+      const r2 = await fetch(fallback, { method:'PUT', body: file, headers:{ 'Content-Type': file.type } });
+      if(!r2.ok) throw new Error(`Upload failed: ${await r2.text()}`);
+    }
+    log('uploaded media content for', mediaId);
+  }catch(e){ console.error('uploadMediaContent failed', e); throw e; }
+}
+
+/* -------------------- DELETE SINGLE -------------------- */
+async function removeRecord(rec){
+  if(!confirm('Delete this record?')) return;
+  const key = findKeyForEntity(currentEntity, rec);
+  if(key === null || key === undefined) { alert('No key found'); return; }
+  const url = `${toUrl(currentEntity)}(${encodeODataKey(key)})`;
+  try{
+    const res = await fetch(url, { method:'DELETE' });
+    if(!res.ok) throw new Error(await res.text());
+    alert('Deleted');
+    fetchAll(currentEntity);
+  }catch(e){ alert('Delete failed: ' + e.message); console.error(e); }
+}
+
+/* -------------------- FORM DELETE BUTTON -------------------- */
+deleteBtn.addEventListener('click', async ()=>{
+  if(!currentRec) return;
+  if(!confirm('Delete this record?')) return;
+  const key = findKeyForEntity(currentEntity, currentRec);
+  if(key === null || key === undefined) { alert('No key'); return; }
+  const url = `${toUrl(currentEntity)}(${encodeODataKey(key)})`;
+  try{
+    const res = await fetch(url, { method:'DELETE' });
+    if(!res.ok) throw new Error(await res.text());
+    alert('Deleted');
+    formModal.classList.add('hidden');
+    fetchAll(currentEntity);
+  }catch(e){ alert('Delete failed: ' + e.message); console.error(e); }
+});
+
+/* -------------------- VIEW / LIGHTBOX -------------------- */
+function showLightbox(src){ document.getElementById('lightboxImg').src = src; document.getElementById('lightbox').classList.remove('hidden'); }
+function hideLightbox(){ document.getElementById('lightbox').classList.add('hidden'); }
+
+/* -------------------- INIT -------------------- */
+window.openEdit = openEdit;
+window.openView = openView;
+window.removeRecord = removeRecord;
+window.showLightbox = showLightbox;
+window.hideLightbox = hideLightbox;
+
+/* Start by loading lookups and first entity */
+(async ()=>{ await loadLookups(); fetchAll(currentEntity); })();
+
+</script>
+</body>
+</html>
