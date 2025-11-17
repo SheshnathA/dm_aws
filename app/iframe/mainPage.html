@@ -791,7 +791,38 @@ font-weight: bold;
 </div>
  <!-- ============ PAGE UI END================================================================================== -->
     <script> 
+var currentPage = 0;  // Track the current page
+const pageSize = 20;  // Number of items per request
+var isFetching = false;
+const currentLocationstr = localStorage.getItem('currentLocation');
+const currentLocation = JSON.parse(currentLocationstr);
+if (!currentLocation) {
+    getCurrentUserGeoLocation();
+}
 
+function getCurrentUserGeoLocation(){
+    if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(function(position) {
+    // Success callback
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+    
+    console.log("Latitude: " + latitude);
+    console.log("Longitude: " + longitude);
+    const currentUserLocation  = {
+        latitude:latitude,
+        longitude:longitude
+    }
+    localStorage.setItem("currentLocation", JSON.stringify(currentUserLocation));
+     generateTiles();
+  }, function(error) {
+    // Error callback
+    console.error("Error code: " + error.code);
+  });
+} else {
+  console.log("Geolocation is not supported by this browser.");
+}
+}
 
 
 //============ PAGE LOGIC START================================================================================== 
@@ -839,7 +870,7 @@ function fetchCategories() {
     })
     .then(data => {
         // Hide loading spinner after fetching categories
-        document.getElementById('loadingSpinner').style.display = 'none';
+        //document.getElementById('loadingSpinner').style.display = 'none';
 
         // Assuming the categories are in data.categories (adjust if the API response format is different)
         const categories = data.value;
@@ -878,301 +909,12 @@ function fetchCategories() {
     });
 }
 
-// async function generateTiles() {
-//             // Show loading spinner while fetching data
-//             const selectCat= document.getElementById('electCat-MainPage').value;
-//     var url = "";
-//     if(!selectCat){
-//         // **Clear previous categories before adding new ones**
-//         const subheader = document.getElementById("tiles-container"); // Ensure this element exists
-//         subheader.innerHTML = "";
-//         url = '/odata/v4/no-auth/Shops?$skip=0&$top=1&$expand=medias';
-//     }else{
-//         url = `/odata/v4/no-auth/Shops?$skip=0&$top=1&$filter=shopType eq '${selectCat}'&$expand=medias`;
-//             // **Clear previous categories before adding new ones**
-//             const subheader = document.getElementById("tiles-container"); // Ensure this element exists
-//             subheader.innerHTML = "";
-//     }
-//             document.getElementById('loadingSpinner').style.display = 'block';
-//             try {
-//                 // Fetch data from the API
-//                 const response = await fetch(url, {
-//                     method: 'GET',
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                         'Authorization': `Bearer ${localStorage.getItem('refreshToken')}` // Adjust if needed
-//                     }
-//                 });
-
-//                 if (!response.ok) {
-//                     throw new Error('Failed to fetch shops');
-//                 }
-
-//                 // Get the response JSON data
-//                 const data = await response.json();
-                
-//                 // Hide loading spinner after data is fetched
-//                 document.getElementById('loadingSpinner').style.display = 'none';
-//                 console.log('Fetched shops:', data.value);  // Check the fetched data
-//                 const tilesContainer = document.getElementById('tiles-container');
-//                 // Loop through each shop in the API response
-//                 data.value.forEach(shop => {
-//                     const tile = document.createElement('div');
-//                     tile.classList.add('tile');
-
-//                      // Add click event on tile to show 'shopCreate' section (if needed)
-//             tile.addEventListener('click', (event) => {
-//                 // Prevent triggering tile click when a button inside is clicked
-//                 if (event.target.closest('button')) return;
-//                 localStorage.setItem('shop', JSON.stringify(shop));
-//                 loadContent('./iframe/products.html');
-//             });
-//                     // Create a wrapper for the carousel images
-//                     const carouselWrapper = document.createElement('div');
-//                     carouselWrapper.classList.add('carousel-wrapper');
-//                     tile.appendChild(carouselWrapper);
-//                     // Create a container for the carousel dots
-//                     const dotsContainer = document.createElement('div');
-//                     dotsContainer.classList.add('carousel-dots');
-//                     tile.appendChild(dotsContainer);
-//                     // Create the previous and next buttons
-//                     const prevButton = document.createElement('button');
-//                     prevButton.classList.add('prev');
-//                     prevButton.innerText = '❮';
-//                     const nextButton = document.createElement('button');
-//                     nextButton.classList.add('next');
-//                     nextButton.innerText = '❯';
-//                     tile.appendChild(prevButton);
-//                     tile.appendChild(nextButton);
-//                     // Loop through each media item (image) for the shop
-//                     shop.medias.forEach((media, index) => {
-//                         const img = document.createElement('img');
-//                         img.src = `${media.url}`;
-//                         img.classList.add('carousel-image');
-//                         if (index === 0) img.classList.add('active');  // Set the first image as active
-//                         carouselWrapper.appendChild(img);
-//                         // Create a dot for each image
-//                         const dot = document.createElement('div');
-//                         dot.classList.add('dot');
-//                         if (index === 0) dot.classList.add('active');  // Set the first dot as active
-//                         dot.addEventListener('click', () => showImage(index));  // Add event listener to dot
-//                         dotsContainer.appendChild(dot);
-//                     });
-//                     // Shop information (title)
-//                     const shopInfo = document.createElement('div');
-//                     shopInfo.classList.add('shop-info');
-//                     shopInfo.innerHTML = `<span><strong>${shop.shopName}</strong></span>`;
-//                     // Bottom information (location, offer)
-//                     const bottomInfo = document.createElement('div');
-//                     bottomInfo.classList.add('bottom-info');
-//                     bottomInfo.innerHTML = `
-//                     <span>${shop.shopLocation} - ${shop.shopCity}</span>
-//                     <span>🟢 ${shop.distance} km</span>
-//                     <span class="offer">
-//                         ${shop.shopOffer ? `${shop.shopOffer}% OFF` : 'No Offer'}
-//                     </span>
-//                 `;                 
-//                     // Append the information to the tile
-//                     tile.appendChild(shopInfo);
-//                     tile.appendChild(bottomInfo);
-//                     // Append the tile to the container
-//                     tilesContainer.appendChild(tile);
-//                     // Start carousel for multiple images
-//                     let imageIndex = 0;
-//                     function showImage(index) {
-//                         const carouselImages = carouselWrapper.getElementsByClassName('carousel-image');
-//                         const dots = dotsContainer.getElementsByClassName('dot');
-//                         // Hide all images
-//                         Array.from(carouselImages).forEach(img => img.classList.remove('active'));
-//                         // Remove active class from all dots
-//                         Array.from(dots).forEach(dot => dot.classList.remove('active'));
-//                         // Show the selected image
-//                         carouselImages[index].classList.add('active');
-//                         dots[index].classList.add('active');
-//                     }
-
-//                     // Automatically rotate images every 3 seconds
-//                     // setInterval(() => {
-//                     //     imageIndex = (imageIndex + 1) % shop.medias.length;
-//                     //     showImage(imageIndex);
-//                     // }, 3000); // Change image every 3 seconds
-
-//                     // Manual navigation buttons (Previous/Next)
-//                     prevButton.addEventListener('click', () => {
-//                         imageIndex = (imageIndex - 1 + shop.medias.length) % shop.medias.length;
-//                         showImage(imageIndex);
-//                     });
-
-//                     nextButton.addEventListener('click', () => {
-//                         imageIndex = (imageIndex + 1) % shop.medias.length;
-//                         showImage(imageIndex);
-//                     });
-//                 });
-//             } catch (error) {
-//                 console.error('Error fetching shops:', error);
-//                 document.getElementById('loadingSpinner').style.display = 'none';
-//             }
-//             updateCartUI();
-//         }
-
-
-//==========with pagination=========
-
-
-
-// async function generateTiles() {
-//     if (isFetching) return; // Prevent multiple requests
-//     isFetching = true;
-
-//     // Show loading spinner while fetching data
-//     document.getElementById('loadingSpinner').style.display = 'block';
-
-//     const selectCat = document.getElementById('electCat-MainPage').value;
-//     let url = "";
-//     const skip = currentPage * pageSize;
-
-//     if (!selectCat) {
-//         url = `/odata/v4/no-auth/Shops?$skip=${skip}&$top=${pageSize}&$expand=medias`;
-//     } else {
-//         url = `/odata/v4/no-auth/Shops?$skip=${skip}&$top=${pageSize}&$filter=shopType eq '${selectCat}'&$expand=medias`;
-//     }
-
-//     try {
-//         const response = await fetch(url, {
-//             method: 'GET',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
-//             }
-//         });
-
-//         if (!response.ok) {
-//             throw new Error('Failed to fetch shops');
-//         }
-
-//         const data = await response.json();
-        
-//         // Hide loading spinner after data is fetched
-//         document.getElementById('loadingSpinner').style.display = 'none';
-
-//         console.log('Fetched shops:', data.value);  
-//         const tilesContainer = document.getElementById('tiles-container');
-
-//         if (data.value.length === 0) {
-//             // Stop fetching if no more data is available
-//             window.removeEventListener('scroll', handleScroll);
-//             return;
-//         }
-
-//         // Loop through each shop in the API response
-//         data.value.forEach(shop => {
-//             const tile = document.createElement('div');
-//             tile.classList.add('tile');
-
-//             // Click event to load shop details
-//             tile.addEventListener('click', (event) => {
-//                 if (event.target.closest('button')) return; 
-//                 localStorage.setItem('shop', JSON.stringify(shop));
-//                 loadContent('./iframe/products.html');
-//             });
-
-//             // Create a wrapper for the images
-//             const carouselWrapper = document.createElement('div');
-//             carouselWrapper.classList.add('carousel-wrapper');
-//             tile.appendChild(carouselWrapper);
-
-//             // Dots container for carousel
-//             const dotsContainer = document.createElement('div');
-//             dotsContainer.classList.add('carousel-dots');
-//             tile.appendChild(dotsContainer);
-
-//             // Navigation buttons
-//             const prevButton = document.createElement('button');
-//             prevButton.classList.add('prev');
-//             prevButton.innerText = '❮';
-//             const nextButton = document.createElement('button');
-//             nextButton.classList.add('next');
-//             nextButton.innerText = '❯';
-//             tile.appendChild(prevButton);
-//             tile.appendChild(nextButton);
-
-//             // Loop through images
-//             shop.medias.forEach((media, index) => {
-//                 const img = document.createElement('img');
-//                 img.src = `${media.url}`;
-//                 img.classList.add('carousel-image');
-//                 if (index === 0) img.classList.add('active');
-//                 carouselWrapper.appendChild(img);
-
-//                 // Dots for navigation
-//                 const dot = document.createElement('div');
-//                 dot.classList.add('dot');
-//                 if (index === 0) dot.classList.add('active');
-//                 dot.addEventListener('click', () => showImage(index));
-//                 dotsContainer.appendChild(dot);
-//             });
-
-//             // Shop information
-//             const shopInfo = document.createElement('div');
-//             shopInfo.classList.add('shop-info');
-//             shopInfo.innerHTML = `<span><strong>${shop.shopName}</strong></span>`;
-
-//             // Bottom details
-//             const bottomInfo = document.createElement('div');
-//             bottomInfo.classList.add('bottom-info');
-//             bottomInfo.innerHTML = `
-//                 <span>${shop.shopLocation} - ${shop.shopCity}</span>
-//                 <span>🟢 ${shop.distance} km</span>
-//                 <span class="offer">
-//                     ${shop.shopOffer ? `${shop.shopOffer}% OFF` : 'No Offer'}
-//                 </span>
-//             `;
-
-//             // Append to tile
-//             tile.appendChild(shopInfo);
-//             tile.appendChild(bottomInfo);
-//             tilesContainer.appendChild(tile);
-
-//             // Image Carousel Logic
-//             let imageIndex = 0;
-//             function showImage(index) {
-//                 const carouselImages = carouselWrapper.getElementsByClassName('carousel-image');
-//                 const dots = dotsContainer.getElementsByClassName('dot');
-
-//                 Array.from(carouselImages).forEach(img => img.classList.remove('active'));
-//                 Array.from(dots).forEach(dot => dot.classList.remove('active'));
-
-//                 carouselImages[index].classList.add('active');
-//                 dots[index].classList.add('active');
-//             }
-
-//             prevButton.addEventListener('click', () => {
-//                 imageIndex = (imageIndex - 1 + shop.medias.length) % shop.medias.length;
-//                 showImage(imageIndex);
-//             });
-
-//             nextButton.addEventListener('click', () => {
-//                 imageIndex = (imageIndex + 1) % shop.medias.length;
-//                 showImage(imageIndex);
-//             });
-//         });
-
-//         // Increase page count after successful data fetch
-//         currentPage++;
-//     } catch (error) {
-//         console.error('Error fetching shops:', error);
-//         document.getElementById('loadingSpinner').style.display = 'none';
-//     } finally {
-//         isFetching = false;
-//     }
-// }
-
-// **Infinite Scroll Handler**
-
-
-var currentPage = 0;  // Track the current page
-const pageSize = 20;  // Number of items per request
-let isFetching = false;  // Prevent multiple API calls
+if(!localStorage.getItem('currentLocation')){
+         getCurrentUserGeoLocation();
+    }else{
+        generateTiles();
+    }
+  // Prevent multiple API calls
 async function generateTiles() {
     if (isFetching) return; // Prevent multiple requests
     isFetching = true;
@@ -1189,7 +931,6 @@ async function generateTiles() {
     } else {
         url = `/odata/v4/no-auth/Shops?$skip=${skip}&$top=${pageSize}&$filter=type eq '${selectCat}'&$expand=medias`;
     }
-
     try {
         const response = await fetch(url, {
             method: 'GET',
@@ -1207,7 +948,7 @@ async function generateTiles() {
         const data = await response.json();
         
         // Hide loading spinner after data is fetched
-        document.getElementById('loadingSpinner').style.display = 'none';
+        
 
         console.log('Fetched shops:', data.value);  
         const tilesContainer = document.getElementById('tiles-container');
@@ -1338,7 +1079,7 @@ if (shop.online === "Closed" || shop.status === "Closed") {
                 showImage(imageIndex);
             });
         });
-
+         document.getElementById('loadingSpinner').style.display = 'none';
         // Increase page count after successful data fetch
         currentPage++;
     } catch (error) {
@@ -1481,7 +1222,7 @@ window.addEventListener('scroll', handleScroll);
 
 //==================================
 
-document.addEventListener('DOMContentLoaded', generateTiles);
+//document.addEventListener('DOMContentLoaded', generateTiles);
 
 
 async function generateTilesByCatIcon(category) {
@@ -2252,36 +1993,6 @@ document.getElementById("electCat-MainPage").addEventListener("change", function
 
 // Check if geolocation is available
 
-const currentLocationstr = localStorage.getItem('currentLocation');
-const currentLocation = JSON.parse(currentLocationstr);
-if (!currentLocation) {
-    getCurrentUserGeoLocation();
-}
-
-
-function getCurrentUserGeoLocation(){
-    if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(function(position) {
-    // Success callback
-    var latitude = position.coords.latitude;
-    var longitude = position.coords.longitude;
-    
-    console.log("Latitude: " + latitude);
-    console.log("Longitude: " + longitude);
-    const currentUserLocation  = {
-        latitude:latitude,
-        longitude:longitude
-    }
-    localStorage.setItem("currentLocation", JSON.stringify(currentUserLocation));
-
-  }, function(error) {
-    // Error callback
-    console.error("Error code: " + error.code);
-  });
-} else {
-  console.log("Geolocation is not supported by this browser.");
-}
-}
 //=========================
 
 

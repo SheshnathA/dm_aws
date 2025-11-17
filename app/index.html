@@ -66,15 +66,17 @@
  <div id="content"></div>
  
  <!-- ============ PAGE UI END================================================================================== -->
- <script>
+ <!-- <script>
 //============ PAGE LOGIC START================================================================================== 
 
 //getCurrentUserGeoLocation();
 if(!localStorage.getItem('place')){
-    getCurrentUserGeoLocation();
+     getCurrentUserGeoLocation();
+}else{
+  document.getElementById("userProfileHeaderPlace").textContent = localStorage.getItem("place");  
 }
 
-function getCurrentUserGeoLocation(){
+ function getCurrentUserGeoLocation(){
     if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(function(position) {
     // Success callback
@@ -99,7 +101,7 @@ function getCurrentUserGeoLocation(){
 }
 }
 
-function setPlace(lat,lon) {
+async function setPlace(lat,lon) {
        const requestBody = {
                 lat           : lat.toString(),
                 lon          : lon.toString()
@@ -109,7 +111,7 @@ const token = localStorage.getItem('refreshToken');  // Retrieve token
 // Show the loading spinner
 document.getElementById('overlay').style.display = 'block';
 document.getElementById('loadingSpinner').style.display = 'block';
-fetch("/odata/v4/no-auth/getPlace", {
+await fetch("/odata/v4/no-auth/getPlace", {
     method: 'POST',
     body: JSON.stringify(requestBody),
     headers: { 'Content-Type': 'application/json' ,
@@ -120,7 +122,11 @@ fetch("/odata/v4/no-auth/getPlace", {
 .then(data => {
    
     localStorage.setItem("place", data.value);
-    
+    if(localStorage.getItem("place")){
+      document.getElementById("userProfileHeaderPlace").textContent = localStorage.getItem("place");
+    }else{
+        document.getElementById("userProfileHeaderPlace").textContent = localStorage.getItem("LOGIN TO APP");
+    }
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('loadingSpinner').style.display = 'none';
 
@@ -135,7 +141,12 @@ fetch("/odata/v4/no-auth/getPlace", {
 }
 
 document.getElementById("idUpdatePlace").addEventListener("click", async () => {
-  getCurrentUserGeoLocation();
+  if(localStorage.getItem('refreshToken')){
+    getCurrentUserGeoLocation();
+  }else{
+    redirectToLogin();
+  }
+  
 });
 
 
@@ -145,10 +156,7 @@ document.getElementById("idUpdatePlace").addEventListener("click", async () => {
 // menu
 
 document.addEventListener("DOMContentLoaded", function () {
-
-
-    document.getElementById("userProfileHeaderPlace").textContent = localStorage.getItem("place");
-
+    
     const menu = document.getElementById("mobileMenu");
     const menuButton = document.querySelector(".menu-toggle");
 
@@ -219,16 +227,11 @@ function redirectToLogin() {
     document.getElementById('loginButton').style.display = 'none'; //  login button
     const url="./iframe/login.html";
     loadContent(url);
-   // window.location.href = "./iframe/login.html"; // Redirect to login page
 }
 function logout() {
-
-    //  localStorage.removeItem('refreshToken');  // Remove invalid token
-    //  localStorage.removeItem('user');  // Remove invalid token
     localStorage.clear(); // Clears all stored data
      const url="./iframe/login.html";
      loadContent(url);
-    // window.location.href = './iframe/login.html';  // Redirect to login
      document.getElementById("logoutBtn").style.display = 'none';
      
 }
@@ -238,23 +241,12 @@ function loadContent(url) {
             document.getElementById('userProfileHeader').style.display = 'none'; // Hide Cart Icon
             document.getElementById('backButton').classList.add('show'); // Animate Back Button
             document.getElementById('content').innerHTML = '<iframe src="' + url + '" style="width:100%; height: 100%; border:none;"></iframe>';
-           // document.querySelector('.container').style.display = 'none';
+     
          
         }
 
 function goBack() {
-//     document.getElementById('userProfileHeader').style.display = 'block'; // Show Cart Icon
-//     document.getElementById('backButton').classList.remove('show'); // Hide with Animation
-//     document.getElementById('content').style.display = 'none';
-//   //  document.querySelector('.container').style.display = 'grid';
-//   window.location.href = '/index.html'; 
-
-
-
 const iframe = document.querySelector("#content iframe");
-    // document.getElementById('userProfileHeader').style.display = 'block'; // Show Cart Icon
-    // document.getElementById('backButton').classList.remove('show'); // Hide with Animation
-    // document.getElementById('content').style.display = 'none';
 const currentURL = iframe.getAttribute("src");
 const action = localStorage.getItem('action');
 if(action && action=="manage-shop"){
@@ -352,24 +344,242 @@ else{
 }
 
 }
-// else if(action=="mainpage"){
-//     loadContent('/iframe/mainPage.html')
-//     document.getElementById('userProfileHeader').style.display = 'block';
-//     document.getElementById('backButton').classList.remove('show');
-//     localStorage.removeItem('action');
-//   }
-// Login
-// document.addEventListener("DOMContentLoaded", function () {
-//     const token = localStorage.getItem('refreshToken');
-//     const user = localStorage.getItem('user');
-// if(!token && !user){
-//     window.parent.document.getElementById('loginButton').style.display = 'none'; //  login button
-//     const url="./iframe/login.html";
-//     loadContent(url);
-// }
-// });
 
 
+
+</script> -->
+
+
+<script>
+// ===================== LOCATION FLOW (ASYNC) =====================
+
+// Run when page is loaded
+document.addEventListener("DOMContentLoaded", async () => {
+    initializeUI();
+    await initLocationFlow();
+    loadMainPage(); 
+});
+
+// Initialize page UI (login, menu, etc.)
+function initializeUI() {
+    const token = localStorage.getItem('refreshToken');
+    const user = localStorage.getItem('user');
+    const loginButton = document.getElementById("loginButton");
+
+    if (!token || !user) {
+        loginButton.style.display = "block";
+        document.getElementById("logoutBtn").style.display = 'none';
+    } else {
+        const userInfo = JSON.parse(user);
+        document.getElementById("username").textContent = userInfo.firstName;
+        document.getElementById("userphone").textContent = userInfo.phoneNumber;
+        document.getElementById("profilePic").src =
+            "/odata/v4/user-profile/Users('" + userInfo.phoneNumber + "')/profilePicture";
+
+        document.getElementById("logoutBtn").style.display = 'block';
+    }
+}
+
+// Main location initialization
+async function initLocationFlow() {
+    if (!localStorage.getItem('place')) {
+        try {
+            const pos = await getCurrentUserGeoLocation();
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            await setPlace(lat, lon);
+        } catch (err) {
+            console.error("Location error:", err);
+            document.getElementById("userProfileHeaderPlace").textContent = "📍 Location unavailable";
+        }
+    } else {
+        document.getElementById("userProfileHeaderPlace").textContent = localStorage.getItem("place");
+    }
+}
+
+// Convert geolocation into Promise
+function getCurrentUserGeoLocation() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject("Geolocation not supported");
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+}
+
+// API call to set place
+async function setPlace(lat, lon) {
+    const requestBody = {
+        lat: lat.toString(),
+        lon: lon.toString()
+    };
+    const token = localStorage.getItem('refreshToken');
+
+    // Spinner show
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('loadingSpinner').style.display = 'block';
+
+    try {
+        const response = await fetch("/odata/v4/no-auth/getPlace", {
+            method: 'POST',
+            body: JSON.stringify(requestBody),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+        localStorage.setItem("place", data.value);
+
+        document.getElementById("userProfileHeaderPlace").textContent =
+            localStorage.getItem("place") || "LOGIN TO APP";
+
+    } catch (error) {
+        console.error("Error updating place:", error);
+    }
+
+    // Spinner hide
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('loadingSpinner').style.display = 'none';
+}
+
+// Location update button
+document.getElementById("idUpdatePlace").addEventListener("click", async () => {
+    if (!localStorage.getItem('refreshToken')) {
+        redirectToLogin();
+        return;
+    }
+
+    try {
+        const pos = await getCurrentUserGeoLocation();
+        await setPlace(pos.coords.latitude, pos.coords.longitude);
+    } catch (err) {
+        alert("Unable to fetch location");
+    }
+});
+
+// ===================== MAIN PAGE LOAD ======================
+
+function loadMainPage() {
+    const mainUrl = "./iframe/mainPage.html";
+    document.getElementById('content').innerHTML =
+        `<iframe src="${mainUrl}" style="width:100%; height:100%; border:none;"></iframe>`;
+    document.getElementById('content').style.display = 'block';
+}
+
+// ===================== MENU TOGGLE ======================
+
+document.addEventListener("DOMContentLoaded", function () {
+    const menu = document.getElementById("mobileMenu");
+    const menuButton = document.querySelector(".menu-toggle");
+
+    function toggleMenu(event) {
+        event.stopPropagation();
+        menu.classList.toggle("open");
+    }
+
+    function closeMenu(event) {
+        if (!menu.contains(event.target) && !menuButton.contains(event.target)) {
+            menu.classList.remove("open");
+        }
+    }
+
+    menuButton.addEventListener("click", toggleMenu);
+    document.addEventListener("click", closeMenu);
+
+    menu.addEventListener("click", event => event.stopPropagation());
+
+    menu.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => menu.classList.remove("open"));
+    });
+
+    window.addEventListener("message", event => {
+        if (event.data === "iframe-clicked") {
+            menu.classList.remove("open");
+        }
+    });
+});
+
+// ===================== LOGIN / LOGOUT =====================
+
+function redirectToLogin() {
+    document.getElementById('loginButton').style.display = 'none';
+    loadContent("./iframe/login.html");
+}
+
+function logout() {
+    localStorage.clear();
+    loadContent("./iframe/login.html");
+    document.getElementById("logoutBtn").style.display = 'none';
+}
+
+// ===================== CONTENT LOADER =====================
+
+function loadContent(url) {
+    document.getElementById('userProfileHeader').style.display = 'none';
+    document.getElementById('backButton').classList.add('show');
+    document.getElementById('content').innerHTML =
+        `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
+}
+
+// ===================== BACK BUTTON =====================
+
+function goBack() {
+    const iframe = document.querySelector("#content iframe");
+    const currentURL = iframe.getAttribute("src");
+    const action = localStorage.getItem('action');
+
+    // Your existing back-navigation logic
+    if (action && action.startsWith("manage-")) {
+        handleManageBack(action);
+        return;
+    }
+
+    if (
+        currentURL.includes("myprofile.html") ||
+        currentURL.includes("myshops.html") ||
+        currentURL.includes("profile-section.html")
+    ) {
+        loadContent('/iframe/mainPage.html');
+        document.getElementById('backButton').classList.remove('show');
+        document.getElementById('userProfileHeader').style.display = 'block';
+        return;
+    }
+
+    // default fallback
+    document.getElementById('userProfileHeader').style.display = 'block';
+    document.getElementById('backButton').classList.remove('show');
+    window.location.href = '../';
+}
+
+function handleManageBack(action) {
+    const map = {
+        "manage-shop": "/iframe/myshops.html",
+        "manage-product": "/iframe/myshops.html",
+        "manage-address": "/iframe/my-address.html",
+        "manage-product-image": "/iframe/my-shop-products.html",
+        "manage-product-add": "/iframe/my-shop-products.html",
+        "manage-product-edit": "/iframe/my-shop-products.html",
+        "manage-ser-image": "/iframe/my-service-products.html",
+        "manage-ser-add": "/iframe/my-service-products.html",
+        "manage-ser-edit": "/iframe/my-service-products.html",
+        "manage-service": "/iframe/myservices.html",
+        "manage-ser-ord-detail": "/iframe/shop-orders.html",
+        "manage-shop-ord-detail": "/iframe/shop-orders.html",
+        "manage-ser-ord": "/iframe/myservices.html",
+        "manage-shop-ord": "/iframe/myshops.html",
+        "manage-ser-product": "/iframe/myservices.html"
+    };
+
+    const url = map[action];
+    if (url) {
+        loadContent(url);
+    }
+    localStorage.removeItem('action');
+}
 </script>
+
 </body>
 </html>
