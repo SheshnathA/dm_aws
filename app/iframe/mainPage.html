@@ -2038,7 +2038,7 @@ document.addEventListener("touchstart", (e) => {
 document.addEventListener("touchmove", (e) => {
     const currentY = e.touches[0].clientY;
 
-    if (currentY - startY > 100 && window.scrollY === 0 && !isPulled) {
+    if (currentY - startY > 150 && window.scrollY === 0 && !isPulled) {
         isPulled = true;
 
         // Refresh iframe
