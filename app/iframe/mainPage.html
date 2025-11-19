@@ -843,14 +843,14 @@ function fetchCategories() {
     var url = "";
     if(!selectCat){
         // **Clear previous categories before adding new ones**
-        const subheader = document.getElementById("idCategoryMainPage"); // Ensure this element exists
-        subheader.innerHTML = "";
+        // const subheader = document.getElementById("idCategoryMainPage"); // Ensure this element exists
+        // subheader.innerHTML = "";
         url = '/odata/v4/no-auth/Category';
     }else{
         url = `/odata/v4/no-auth/Category?$filter=type eq '${selectCat}'`;
             // **Clear previous categories before adding new ones**
-            const subheader = document.getElementById("idCategoryMainPage"); // Ensure this element exists
-            subheader.innerHTML = "";
+            // const subheader = document.getElementById("idCategoryMainPage"); // Ensure this element exists
+            // subheader.innerHTML = "";
     }
     document.getElementById('loadingSpinner').style.display = 'block';
     fetch(url, {
@@ -871,7 +871,8 @@ function fetchCategories() {
     .then(data => {
         // Hide loading spinner after fetching categories
         //document.getElementById('loadingSpinner').style.display = 'none';
-
+        const subheaderOld = document.getElementById("idCategoryMainPage"); // Ensure this element exists
+        subheaderOld.innerHTML = "";
         // Assuming the categories are in data.categories (adjust if the API response format is different)
         const categories = data.value;
         const subheader = document.querySelector('.subheader');
@@ -946,6 +947,7 @@ async function generateTiles() {
         }
 
         const data = await response.json();
+        
         document.getElementById('loadingSpinner').style.display = 'none';
         // Hide loading spinner after data is fetched
         
@@ -961,8 +963,10 @@ async function generateTiles() {
 
         // Load stored liked shops
         const likedShops = JSON.parse(localStorage.getItem('likedShops')) || [];
-
+   
         // Loop through each shop in the API response
+        const subheader = document.getElementById("tiles-container"); // Ensure this element exists
+        subheader.innerHTML = "";
         data.value.forEach(shop => {
             const tile = document.createElement('div');
             tile.classList.add('tile');
@@ -1402,15 +1406,15 @@ async function generateTilesFromSearch(searchInput,type) {
         
         //url = `/odata/v4/no-auth/Shops?$expand=products($expand=medias;$filter=productName eq ${searchInput})&$top=1`
        // url = `/odata/v4/no-auth/Shops?$search=${searchInput}&$expand=medias&$skip=0&$top=20`;
-        const subheader = document.getElementById("tiles-container"); // Ensure this element exists
-        subheader.innerHTML = "";
+        // const subheader = document.getElementById("tiles-container"); // Ensure this element exists
+        // subheader.innerHTML = "";
         }else{
             url = `/odata/v4/no-auth/Shops?$expand=medias,products($expand=medias;$filter=productName eq '${searchInput}')`;
         
         //url = `/odata/v4/no-auth/Shops?$expand=products($expand=medias;$filter=productName eq ${searchInput})&$top=1`
        // url = `/odata/v4/no-auth/Shops?$search=${searchInput}&$expand=medias&$skip=0&$top=20`;
-        const subheader = document.getElementById("tiles-container"); // Ensure this element exists
-        subheader.innerHTML = "";
+        // const subheader = document.getElementById("tiles-container"); // Ensure this element exists
+        // subheader.innerHTML = "";
         }
 
         
@@ -1436,6 +1440,8 @@ async function generateTilesFromSearch(searchInput,type) {
 
         // **Get the response JSON data**
         const data = await response.json();
+        const subheader = document.getElementById("tiles-container"); // Ensure this element exists
+        subheader.innerHTML = "";
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('loadingSpinner').style.display = 'none';
 
@@ -1978,8 +1984,8 @@ function viewCart(){
 
 document.getElementById("electCat-MainPage").addEventListener("change", function() {
       let selectedValue = this.value;
-      const subheader = document.getElementById("tiles-container"); // Ensure this element exists
-        subheader.innerHTML = "";
+    //   const subheader = document.getElementById("tiles-container"); // Ensure this element exists
+    //     subheader.innerHTML = "";
         currentPage = 0;
         fetchCategories();
         generateTiles();

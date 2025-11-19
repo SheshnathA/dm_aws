@@ -433,9 +433,9 @@ async function setPlace(lat, lon) {
 
         const data = await response.json();
         localStorage.setItem("place", data.value);
-
+        loadMainPage();
         document.getElementById("userProfileHeaderPlace").textContent =
-            localStorage.getItem("place") || "LOGIN TO APP";
+        localStorage.getItem("place") || "LOGIN TO APP";
 
     } catch (error) {
         console.error("Error updating place:", error);

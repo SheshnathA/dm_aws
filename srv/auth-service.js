@@ -72,8 +72,9 @@ async function userVerificationbyOTP(){
         const db = await cds.connect.to('db');
         try {
             const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
+            //const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber, isVerified: true }));
             //if (!user) return req.error(401, 'User not found');
-            if (!user) return req.error(401, 'User not found');
+            if (!user) return req.error(401, 'User not found or not verified');
            
             const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
             if (!isPasswordValid) return req.error(401, 'Invalid credentials');
