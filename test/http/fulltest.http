@@ -15,11 +15,33 @@ POST {{server}}/odata/v4/auth/register
 Content-Type: application/json
 
 {
-  "phoneNumber": "8800755406",
-  "firstName": "Ram6 Kumar",
+  "phoneNumber": "8800755420",
+  "firstName": "token9",
   "lastName": "Agrahari",
   "password": "1234",
-  "email": "sheshnath.a@gmail.com"
+  "email": "lanebazaar@gmail.com"
+}
+
+
+### verifiedRegistration
+# @name verifiedRegistration_POST
+POST {{server}}/odata/v4/auth/verifiedRegistration
+Content-Type: application/json
+
+
+{
+  "phoneNumber": "8800755420"
+}
+
+### verifiedUser
+# @name verifiedUser_POST
+POST {{server}}/odata/v4/auth/verifiedUser
+Content-Type: application/json
+
+
+{
+  "phoneNumber": "8800755420",
+  "otp": "695007"
 }
 
 ### login
@@ -28,8 +50,8 @@ POST {{server}}/odata/v4/auth/login
 Content-Type: application/json
 
 {
-  "phoneNumber": "8800755400",
-  "password": "123456"
+  "phoneNumber": "8800755420",
+  "password": "1234"
 }
 
 

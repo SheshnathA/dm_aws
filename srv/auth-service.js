@@ -12,15 +12,17 @@ module.exports = (srv) => {
     // User Registration
     srv.on('register', async (req) => {
         const { phoneNumber, firstName, lastName, email, password } = req.data;
+
+     // if(!phoneNumber || phoneNumber?.length !==10|| !email || password) return req.error(400, 'Please enter Mobile No., Email ID and Password');
+
         const db = await cds.connect.to('db');
        
        try {
         const existingUser = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
-        if (existingUser) return req.error(400, 'User with this phone number already exists');
-
+        if (existingUser) return req.error(400, 'Phone number '+phoneNumber+' already exists');
+        const existingUserEmail = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ email }));
+        if (existingUserEmail) return req.error(400, 'Email '+email+' already exists');
         const passwordHash = await bcrypt.hash(password, 10);
-
-    
         await db.run(
             INSERT.into('cap.dukanmitra.Users').entries({
                 phoneNumber,
@@ -35,7 +37,10 @@ module.exports = (srv) => {
         sendOTPForRegistration(phoneNumber);
         //return "User registered successfully!";
        } catch (err) {
+        if(err?.code==='ER_DUP_ENTRY')return req.error(403, 'User already registered');
         return req.error(403, 'Network issue, try later');
+        
+        
     }
 
 
@@ -44,8 +49,8 @@ module.exports = (srv) => {
 
 
 
-async function userVerificationbyOTP(){
-     const { phoneNumber, otp, newPassword } = req.data;
+srv.on('verifiedUser', async (req) => {
+     const { phoneNumber, otp } = req.data;
         const db = await cds.connect.to('db');
         try {
             const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
@@ -55,15 +60,15 @@ async function userVerificationbyOTP(){
             const now = new Date();
             if (new Date(user.otpExpiry) < now) return req.error(400, 'OTP has expired');
     
-            const newPasswordHash = await bcrypt.hash(newPassword, 10);
+           
     
-            await db.run(UPDATE('cap.dukanmitra.Users').set({ passwordHash: newPasswordHash, otp: null, otpExpiry: null }).where({ phoneNumber }));
+            await db.run(UPDATE('cap.dukanmitra.Users').set({ isVerified: true, otp: null, otpExpiry: null }).where({ phoneNumber }));
     
-            return "Password reset successfully!";
+            return "User verified successfully!, please login using your mobile no and password";
         } catch (err) {
             return req.error(403, 'Invalid or expired refresh token');
         }
-}
+});
 
 
     // User Login
@@ -71,13 +76,14 @@ async function userVerificationbyOTP(){
         const { phoneNumber, password } = req.data;
         const db = await cds.connect.to('db');
         try {
-            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
-            //const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber, isVerified: true }));
+            //const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
+            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber}));
             //if (!user) return req.error(401, 'User not found');
-            if (!user) return req.error(401, 'User not found or not verified');
+            if (!user) return req.error(404, 'User not found');
+            if (user && user.isVerified ===false) return req.error(401, 'User not verified');
            
             const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-            if (!isPasswordValid) return req.error(401, 'Invalid credentials');
+            if (!isPasswordValid) return req.error(404, 'Invalid credentials');
     
             const token = generateToken(user);
             const refreshToken = generateRefreshToken(user);
@@ -86,7 +92,7 @@ async function userVerificationbyOTP(){
     
             return { token, refreshToken, user };
         } catch (err) {
-            return req.error(403, 'Invalid credentials');
+            return req.error(403, 'Network error, please try latar');
         }
   
     });
@@ -98,7 +104,7 @@ async function userVerificationbyOTP(){
 
         try {
             const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
-            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber: decoded.phoneNumber }));
+            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber: decoded.phoneNumber, isVerified: true }));
 
             if (!user || user.refreshToken !== refreshToken) return req.error(403, 'Invalid refresh token');
 
@@ -110,6 +116,41 @@ async function userVerificationbyOTP(){
         }
     });
 
+srv.on('verifiedRegistration', async (req) => {
+    const { phoneNumber } = req.data;
+const db = await cds.connect.to('db');
+        try {
+            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
+            if (!user) return req.error(404, 'User not found');
+    
+            const otp = generateOTP();
+            //const expiryTime = new Date(Date.now() + 10 * 60 * 1000); // OTP expires in 10 minutes
+            const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    
+            await db.run(UPDATE('cap.dukanmitra.Users').set({ otp, otpExpiry: expiryTime }).where({ phoneNumber }));
+    
+            // Simulate sending OTP (replace this with an actual SMS API)
+            console.log(`OTP for ${phoneNumber}: ${otp}`);
+    
+            //return "OTP sent successfully. It is valid for 10 minutes.";
+
+
+
+  const email = user.email;
+  const html = `
+    <p>Your OTP for Dukan Mitra is: <strong>${otp}</strong></p>
+    <p>Valid for 24 Hours.</p>
+  `;
+  await sendMail(email, "Dukan Mitra OTP Verification", html);
+  return { message: `OTP sent to your registered email id` };
+
+
+
+
+        } catch (err) {
+            return req.error(403, 'Invalid or expired refresh token');
+        }
+});
 
     async function sendOTPForRegistration(phoneNumber) {
         // const { phoneNumber } = req.data;
@@ -152,7 +193,7 @@ async function userVerificationbyOTP(){
         const { phoneNumber } = req.data;
         const db = await cds.connect.to('db');
         try {
-            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
+            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber, isVerified: true }));
             if (!user) return req.error(404, 'User not found');
     
             const otp = generateOTP();
@@ -190,7 +231,7 @@ async function userVerificationbyOTP(){
         const { phoneNumber, otp, newPassword } = req.data;
         const db = await cds.connect.to('db');
         try {
-            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
+            const user = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber, isVerified: true }));
             if (!user) return req.error(404, 'User not found');
             if (user.otp !== otp) return req.error(400, 'Invalid OTP');
     
