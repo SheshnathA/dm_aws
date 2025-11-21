@@ -389,6 +389,11 @@ async function initLocationFlow() {
             const lat = pos.coords.latitude;
             const lon = pos.coords.longitude;
             await setPlace(lat, lon);
+            const currentUserLocation  = {
+                    latitude:lat,
+                    longitude:lon
+                }
+                localStorage.setItem("currentLocation", JSON.stringify(currentUserLocation));
         } catch (err) {
             console.error("Location error:", err);
             document.getElementById("userProfileHeaderPlace").textContent = "📍 Location unavailable";
@@ -411,6 +416,11 @@ function getCurrentUserGeoLocation() {
 
 // API call to set place
 async function setPlace(lat, lon) {
+    const currentUserLocation  = {
+        latitude:lat,
+        longitude:lon
+    }
+    localStorage.setItem("currentLocation", JSON.stringify(currentUserLocation));
     const requestBody = {
         lat: lat.toString(),
         lon: lon.toString()

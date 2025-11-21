@@ -15,11 +15,11 @@ POST {{server}}/odata/v4/auth/register
 Content-Type: application/json
 
 {
-  "phoneNumber": "8800755420",
+  "phoneNumber": "8800755428",
   "firstName": "token9",
   "lastName": "Agrahari",
   "password": "1234",
-  "email": "lanebazaar@gmail.com"
+  "email": "shesh.agr@gmail.com"
 }
 
 
@@ -50,7 +50,7 @@ POST {{server}}/odata/v4/auth/login
 Content-Type: application/json
 
 {
-  "phoneNumber": "8800755420",
+  "phoneNumber": "8800755428",
   "password": "1234"
 }
 

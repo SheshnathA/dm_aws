@@ -794,35 +794,35 @@ font-weight: bold;
 var currentPage = 0;  // Track the current page
 const pageSize = 20;  // Number of items per request
 var isFetching = false;
-const currentLocationstr = localStorage.getItem('currentLocation');
-const currentLocation = JSON.parse(currentLocationstr);
-if (!currentLocation) {
-    getCurrentUserGeoLocation();
-}
+// const currentLocationstr = localStorage.getItem('currentLocation');
+// const currentLocation = JSON.parse(currentLocationstr);
+// if (!currentLocation) {
+//     getCurrentUserGeoLocation();
+// }
 
-function getCurrentUserGeoLocation(){
-    if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(function(position) {
-    // Success callback
-    var latitude = position.coords.latitude;
-    var longitude = position.coords.longitude;
+// function getCurrentUserGeoLocation(){
+//     if (navigator.geolocation) {
+//   navigator.geolocation.getCurrentPosition(function(position) {
+//     // Success callback
+//     var latitude = position.coords.latitude;
+//     var longitude = position.coords.longitude;
     
-    console.log("Latitude: " + latitude);
-    console.log("Longitude: " + longitude);
-    const currentUserLocation  = {
-        latitude:latitude,
-        longitude:longitude
-    }
-    localStorage.setItem("currentLocation", JSON.stringify(currentUserLocation));
-     generateTiles();
-  }, function(error) {
-    // Error callback
-    console.error("Error code: " + error.code);
-  });
-} else {
-  console.log("Geolocation is not supported by this browser.");
-}
-}
+//     console.log("Latitude: " + latitude);
+//     console.log("Longitude: " + longitude);
+//     const currentUserLocation  = {
+//         latitude:latitude,
+//         longitude:longitude
+//     }
+//     localStorage.setItem("currentLocation", JSON.stringify(currentUserLocation));
+//      generateTiles();
+//   }, function(error) {
+//     // Error callback
+//     console.error("Error code: " + error.code);
+//   });
+// } else {
+//   console.log("Geolocation is not supported by this browser.");
+// }
+// }
 
 
 //============ PAGE LOGIC START================================================================================== 
@@ -910,12 +910,13 @@ function fetchCategories() {
     });
 }
 
-if(!localStorage.getItem('currentLocation')){
-         getCurrentUserGeoLocation();
-    }else{
-        generateTiles();
-    }
+// if(!localStorage.getItem('currentLocation')){
+//          getCurrentUserGeoLocation();
+//     }else{
+//         generateTiles();
+//     }
   // Prevent multiple API calls
+ generateTiles();
 async function generateTiles() {
     if (isFetching) return; // Prevent multiple requests
     isFetching = true;

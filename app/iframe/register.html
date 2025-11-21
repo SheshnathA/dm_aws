@@ -337,13 +337,13 @@ function register() {
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('loadingSpinner').style.display = 'none';
         const popupBtn = document.getElementById("popupbtn");
-        popupBtn.setAttribute("data-redirect", "./login.html");
-        openConfirmModal("Registration successful! Please login.", "Login here");
+        localStorage.setItem("reg_otp_mobileNo", phoneNumber);
+        popupBtn.setAttribute("data-redirect", "./otp-reg.html");
+        openConfirmModal(data.value.message+" ,Please check your email", "Click here for OTP Verify");
     })
     .catch(error => {
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('loadingSpinner').style.display = 'none';
-        console.error(error);
         openConfirmModal("Registration failed! Please try again later.", "Close");
     });
 }

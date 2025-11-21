@@ -244,16 +244,28 @@ function login(){
     .then(data=>{
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('loadingSpinner').style.display = 'none';
-        if(data.error){
+        if(data?.error){
             openPopup("Login Failed", data.error.message || "Invalid credentials");
             return;
         }
-        const user = JSON.stringify(data.value.user);
+
+        if(data?.value?.message){
+            localStorage.setItem("reg_otp_mobileNo", phoneNumber);
+            //popupBtn.setAttribute("data-redirect", "./otp-reg.html");
+            openPopup(data.value.message+" ,Please check your email", "Click OK for OTP Verify", "./otp-reg.html");
+        }
+
+
+        const user = JSON.stringify(data?.value?.user);
+        if(user){
+        
         localStorage.setItem('token', data.value.token);
         localStorage.setItem('refreshToken', data.value.refreshToken);
         localStorage.setItem('user', user);
         //openPopup("Login Successful", "Redirecting to dashboard...", "/");
         window.top.location.href = '/';
+        }
+        
     })
     .catch(error=>{
         document.getElementById('overlay').style.display = 'none';
