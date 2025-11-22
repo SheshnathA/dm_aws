@@ -262,6 +262,7 @@
 .mrpPB {
     display: flex;
     padding-bottom: 5px;
+    position: relative;
 }
 .product-priceOffer {
     color: #7db43e;
@@ -363,7 +364,23 @@ function closeConfirmModal() {
 }
 
 const userData = JSON.parse(localStorage.getItem('user'));
-const orderDetail = JSON.parse(localStorage.getItem('selectedOrder'));
+let orderDetail = null;
+
+// 1. Check URL parameter: ?orderId=123
+const urlParams = new URLSearchParams(window.location.search);
+let orderId = urlParams.get("orderId");
+
+if (orderId) {
+    // If orderId found in URL → create orderDetail object
+    orderDetail = { orderId: orderId };
+} else {
+    // Otherwise load stored object from localStorage
+    const localData = localStorage.getItem("selectedOrder");
+    if (localData) {
+        orderDetail = JSON.parse(localData);
+    }
+}
+//const orderDetail = JSON.parse(localStorage.getItem('selectedOrder'));
 
 if (userData) {
 
