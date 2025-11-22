@@ -6,6 +6,38 @@
 <title>Admin CRUD — CAP Dukanmitra (All fields, dropdown associations)</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
+  /* TABLE RESPONSIVE GRID ON MOBILE */
+@media (max-width: 640px) {
+  table.tbl thead {
+    display: none;
+  }
+.shadow {
+   margin-right: 66px !important;
+    margin-left: 5px !important;
+}
+  table.tbl tr {
+    display: block;
+    margin-bottom: 12px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+  }
+
+  table.tbl td {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px;
+    font-size: 14px;
+  }
+
+  table.tbl td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #555;
+  }
+}
+
   .tbl th, .tbl td { padding:8px 10px; border-bottom:1px solid #eee; font-size:13px; text-align:left; vertical-align:middle; }
   .lightbox { position: fixed; inset:0; display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75); }
   .lightbox img{ max-width:90%; max-height:90%; border-radius:8px }
@@ -13,6 +45,26 @@
 </style>
 </head>
 <body class="bg-gray-50 p-6">
+  <!-- SEARCH BAR -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+  <input 
+    id="searchInput"
+    type="text"
+    placeholder="Search by name, phone, shop, etc..."
+    class="w-full sm:w-80 border px-3 py-2 rounded"
+  />
+
+  <select id="filterField" class="border px-3 py-2 rounded w-full sm:w-48">
+    <option value="">Auto Detect Column</option>
+    <option value="phoneNumber">Phone Number</option>
+    <option value="firstName">First Name</option>
+    <option value="lastName">Last Name</option>
+    <option value="shopName">Shop Name</option>
+    <option value="shopCity">Shop City</option>
+    <option value="productName">Product Name</option>
+    <option value="categoryName">Category Name</option>
+  </select>
+</div>
   <div class="max-w-8xl mx-auto bg-white rounded shadow p-6">
     <div class="flex items-start justify-between gap-4 mb-4">
       <div>
@@ -87,17 +139,7 @@ const entitySchemas = {
       {name:'firstName', type:'string'},
       {name:'lastName', type:'string'},
       {name:'email', type:'string'},
-      {name:'passwordHash', type:'string'},
-      {name:'username', type:'string'},
-      {name:'profilePicture', type:'binary'},
-      {name:'isVerified', type:'boolean'},
-      {name:'dateOfBirth', type:'date'},
-      {name:'role', type:'string'},
-      {name:'lastLogin', type:'datetime'},
-      {name:'refreshToken', type:'string'},
-      {name:'otp', type:'string'},
-      {name:'otpExpiry', type:'datetime'},
-      {name:'mediaLimit', type:'number'},
+      {name:'isVerified', type:'boolean'}
       // compositions omitted from editable fields list (shops/products/medias) - those are managed separately
     ],
     associations:{}
@@ -118,21 +160,9 @@ const entitySchemas = {
   Shops: {
     key: 'shopId',
     fields: [
-      {name:'shopId', type:'string'},
       {name:'ownerPhone', type:'assoc', target:'Users'},
       {name:'shopName', type:'string'},
-      {name:'shopAddress', type:'string'},
-      {name:'shopLocation', type:'string'},
-      {name:'shopCity', type:'string'},
-      {name:'shopType', type:'string'},
-      {name:'type', type:'string'},
-      {name:'shopOffer', type:'string'},
       {name:'isVerified', type:'boolean'},
-      {name:'rating', type:'string'},
-      {name:'online', type:'string'},
-      {name:'latitude', type:'string'},
-      {name:'longitude', type:'string'},
-      {name:'distance', type:'string'},
       {name:'category', type:'assoc', target:'Category'},
       {name:'totalLikes', type:'number'}
     ]
@@ -639,6 +669,81 @@ window.hideLightbox = hideLightbox;
 
 /* Start by loading lookups and first entity */
 (async ()=>{ await loadLookups(); fetchAll(currentEntity); })();
+
+
+
+
+
+
+
+
+
+
+
+// SEARCH + FILTER
+document.getElementById("searchInput").addEventListener("input", applySearch);
+document.getElementById("filterField").addEventListener("change", applySearch);
+
+function applySearch() {
+  const text = document.getElementById("searchInput").value.toLowerCase();
+  const field = document.getElementById("filterField").value;
+
+  if (!text) return renderTable(); // reset
+
+  const schema = entitySchemas[currentEntity];
+  const cols = schema.fields.map(f => f.name);
+
+  currentDataFiltered = currentData.filter(rec => {
+    if (field) {
+      return String(rec[field] ?? "").toLowerCase().includes(text);
+    }
+
+    // AUTO DETECT: search in all fields
+    return cols.some(col =>
+      String(rec[col] ?? "").toLowerCase().includes(text)
+    );
+  });
+
+  renderFilteredTable(currentDataFiltered);
+}
+
+function renderFilteredTable(rows) {
+  const schema = entitySchemas[currentEntity];
+  const cols = schema.fields.map(f => f.name);
+
+  tableHead.innerHTML =
+    "<tr>" +
+    cols.map(c => `<th class="tbl">${esc(c)}</th>`).join("") +
+    "<th class='tbl'>Preview</th><th class='tbl'>Actions</th></tr>";
+
+  tableBody.innerHTML = rows
+    .map(rec => {
+      const cells = cols
+        .map(c => {
+          let v = rec[c];
+          if (v === null || v === undefined) v = "-";
+          if (typeof v === "object") {
+            v = Object.values(v)[0] ?? "";
+          }
+          return `<td class="tbl" data-label="${c}">${esc(String(v))}</td>`;
+        })
+        .join("");
+
+      return `<tr>${cells}<td class="tbl">${renderPreview(rec)}</td>
+        <td class="tbl">
+          <button class="text-blue-600 mr-2" onclick='openView(${JSON.stringify(
+            rec
+          )})'>View</button>
+          <button class="text-indigo-700 mr-2" onclick='openEdit(${JSON.stringify(
+            rec
+          )})'>Edit</button>
+          <button class="text-red-600" onclick='removeRecord(${JSON.stringify(
+            rec
+          )})'>Delete</button>
+        </td></tr>`;
+    })
+    .join("");
+}
 
 </script>
 </body>

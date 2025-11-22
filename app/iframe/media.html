@@ -6,6 +6,97 @@
 <title>Admin — Media Manager</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2/dist/tailwind.min.css" rel="stylesheet">
 <style>
+    <style>
+  .tbl th, .tbl td { 
+    padding: 8px 10px; 
+    border-bottom: 1px solid #eee; 
+    font-size: 13px; 
+    text-align: left; 
+    vertical-align: middle; 
+  }
+  .lightbox { 
+    position: fixed; 
+    inset:0; 
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.75); 
+  }
+  .lightbox img{ 
+    max-width:90%; 
+    max-height:90%; 
+    border-radius:8px 
+  }
+  .cursor-pointer{ cursor:pointer; }
+
+  /* ========= MOBILE RESPONSIVE FIXES ========= */
+  @media(max-width: 768px){
+
+    body {
+      padding: 10px;
+    }
+
+    .max-w-6xl {
+      padding: 12px !important;
+    }
+
+    table.tbl {
+      font-size: 12px;
+    }
+
+    .tbl th, .tbl td {
+      padding: 6px 8px;
+    }
+
+    /* Stack filter & refresh on small screens */
+    .filter-controls {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    #filterInput {
+      width: 100%;
+    }
+
+    #refreshBtn {
+      width: 100%;
+    }
+
+    /* Images smaller on mobile */
+    table img {
+      height: 60px;
+      width: 100px;
+    }
+
+    /* Stack actions vertically */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Force horizontal scroll */
+    .overflow-auto {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+
+  /* Extra small screens */
+  @media(max-width: 480px){
+    table img {
+      height: 50px;
+      width: 80px;
+    }
+
+    .tbl th, .tbl td {
+      font-size: 11px;
+      padding: 5px 6px;
+    }
+  }
+
+
   .tbl th, .tbl td { padding:8px 10px; border-bottom:1px solid #eee; font-size:13px; text-align:left; vertical-align:middle; }
   .lightbox { position: fixed; inset:0; display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75); }
   .lightbox img{ max-width:90%; max-height:90%; border-radius:8px }
@@ -14,7 +105,7 @@
 </head>
 <body class="bg-gray-50 p-6">
   <div class="max-w-6xl mx-auto bg-white rounded shadow p-6">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-4 filter-controls">
       <h1 class="text-xl font-bold">Media Manager — AdminService</h1>
       <div class="flex gap-2">
         <input id="filterInput" placeholder="Filter mediaId / fileName" class="border px-3 py-2 rounded" />
@@ -95,17 +186,17 @@ function renderTable(data){
   const q = filterInput.value.trim().toLowerCase();
 
   const filtered = data.filter(item =>
-     item.mediaId?.toLowerCase().includes(q) ||
-     item.fileName?.toLowerCase().includes(q) ||
-     item.ownerMedia_phoneNumber?.includes(q) ||
+    
+  
+          item.ownerMedia_phoneNumber?.includes(q) ||
      item.url?.toLowerCase().includes(q)
   );
 
   tableHead.innerHTML = `
     <tr>
-      <th>Media ID</th>
-      <th>File Name</th>
-      <th>Category</th>
+
+
+
       <th>Owner/Shop</th>
       <th>Preview</th>
       <th>isVerified</th>
@@ -117,9 +208,9 @@ function renderTable(data){
     const mid = esc(rec.mediaId);
     return `
       <tr>
-        <td>${mid}</td>
-        <td>${esc(rec.fileName)}</td>
-        <td>${esc(rec.mediaCategory)}</td>
+
+
+
         <td>${esc(rec.ownerMedia_phoneNumber)}</td>
 
         <td>${renderPreview(rec)}</td>
