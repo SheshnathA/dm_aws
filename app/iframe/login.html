@@ -252,7 +252,7 @@ function login(){
         if(data?.value?.message){
             localStorage.setItem("reg_otp_mobileNo", phoneNumber);
             //popupBtn.setAttribute("data-redirect", "./otp-reg.html");
-            openPopup(data.value.message+" ,Please check your email", "Click OK for OTP Verify", "./otp-reg.html");
+            openPopup("OTP sent!", data.value.message+" ,Please check your email", "./otp-reg.html");
         }
 
 

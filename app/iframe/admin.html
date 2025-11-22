@@ -1,645 +1,418 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Admin CRUD — CAP Dukanmitra (All fields, dropdown associations)</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  .tbl th, .tbl td { padding:8px 10px; border-bottom:1px solid #eee; font-size:13px; text-align:left; vertical-align:middle; }
-  .lightbox { position: fixed; inset:0; display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75); }
-  .lightbox img{ max-width:90%; max-height:90%; border-radius:8px }
-  .badge{ background:#eef2ff; color:#3730a3; padding:4px 8px;border-radius:999px;font-size:12px }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Full CRUD Manager (Enhanced)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* simple lightbox */
+    .lightbox { position: fixed; inset:0; display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75); }
+    .lightbox img{ max-width:90%; max-height:90%; border-radius:8px }
+    .badge{ background:#eef2ff; color:#3730a3; padding:4px 8px;border-radius:999px;font-size:12px }
+  </style>
 </head>
-<body class="bg-gray-50 p-6">
-  <div class="max-w-8xl mx-auto bg-white rounded shadow p-6">
-    <div class="flex items-start justify-between gap-4 mb-4">
-      <div>
-        <h1 class="text-2xl font-bold">Admin Console — CAP dukanmitra (All fields)</h1>
-        <p class="text-sm text-gray-600 mt-1">Create / Read / Update / Delete; dropdown association pickers; media preview & upload.</p>
-      </div>
-      <div class="flex gap-2">
-        <select id="entitySelect" class="border px-3 py-2 rounded">
-          <option>Users</option><option>Shops</option><option>Products</option><option>Orders</option>
-          <option>OrderItems</option><option>Media</option><option>Category</option>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-6">
+    <div class="flex justify-between items-center mb-6 gap-4">
+      <h1 class="text-2xl font-bold text-gray-800">Admin Console — CRUD Manager (Enhanced)</h1>
+      <div class="flex gap-2 items-center">
+        <select id="entitySelect" class="border rounded px-3 py-1">
+          <option value="Users">Users</option>
+          <option value="Shops">Shops</option>
+          <option value="Products">Products</option>
+          <option value="Orders">Orders</option>
+          <option value="OrderItems">OrderItems</option>
+          <option value="Media">Media</option>
+          <option value="Category">Category</option>
         </select>
-        <button id="createBtn" class="bg-green-600 text-white px-3 py-2 rounded">Create</button>
-        <button id="refreshBtn" class="bg-blue-600 text-white px-3 py-2 rounded">Refresh</button>
+        <button id="createBtn" class="bg-green-600 text-white px-4 py-2 rounded">Create</button>
+        <button id="bulkDeleteBtn" class="bg-red-600 text-white px-4 py-2 rounded">Bulk Delete</button>
+        <label class="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded cursor-pointer">
+          <input id="csvImport" type="file" accept="text/csv" class="hidden" />
+          <span class="text-sm">Import CSV</span>
+        </label>
+        <button id="exportCsvBtn" class="bg-indigo-600 text-white px-4 py-2 rounded">Export CSV</button>
+        <button id="refreshBtn" class="bg-blue-600 text-white px-4 py-2 rounded">Refresh</button>
       </div>
     </div>
 
-    <div class="overflow-auto border rounded mb-4">
-      <table id="dataTable" class="min-w-full tbl w-full"><thead id="tableHead" class="bg-gray-50"></thead><tbody id="tableBody"></tbody></table>
+    <div class="overflow-x-auto border rounded">
+      <table class="min-w-full">
+        <thead id="tableHead" class="bg-gray-50"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
     </div>
 
-    <div id="status" class="text-sm text-gray-600"></div>
+    <div id="pager" class="mt-4 flex justify-between items-center text-sm text-gray-600"></div>
   </div>
 
-  <!-- FORM MODAL -->
-  <div id="formModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center pt-12 z-40">
-    <div class="bg-white rounded-lg p-6 w-[95%] max-w-6xl max-h-[85vh] overflow-auto shadow">
+  <!-- Form Modal: Create / Edit -->
+  <div id="formModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-12 z-40">
+    <div class="bg-white p-6 rounded-lg max-w-4xl w-full shadow-xl overflow-auto max-h-[85vh]">
       <div class="flex justify-between items-center mb-4">
-        <h2 id="formTitle" class="text-lg font-semibold"></h2>
-        <div class="flex gap-2">
-          <button id="deleteBtn" class="hidden bg-red-600 text-white px-3 py-2 rounded">Delete</button>
-          <button id="closeForm" class="text-gray-700 px-3 py-2 rounded">Close</button>
+        <h2 id="formTitle" class="text-xl font-semibold"></h2>
+        <div class="flex gap-2 items-center">
+          <button id="deleteBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded">Delete</button>
+          <button id="closeForm" class="text-red-600 font-bold text-lg">✕</button>
         </div>
       </div>
-
-      <form id="entityForm" class="grid grid-cols-2 gap-4">
-        <div id="formFields" class="col-span-2 grid grid-cols-2 gap-4"></div>
-
-        <div class="col-span-2 flex justify-end gap-2">
+      <form id="entityForm" class="space-y-4">
+        <div id="formFields" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <div id="nestedEditors" class="mt-4"></div>
+        <div class="flex gap-2 justify-end">
           <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Save</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- VIEW MODAL -->
-  <div id="viewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded p-6 w-[95%] max-w-4xl max-h-[80vh] overflow-auto">
+  <!-- View Modal -->
+  <div id="viewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40">
+    <div class="bg-white p-6 rounded-lg max-w-4xl w-full shadow-xl overflow-auto max-h-[85vh]">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="font-semibold">Record</h3>
-        <button id="closeView" class="text-gray-700 px-2">Close</button>
+        <h2 class="text-xl font-semibold">Record</h2>
+        <button id="closeView" class="text-red-600 font-bold text-lg">✕</button>
       </div>
-      <pre id="viewContent" class="text-sm bg-gray-100 p-3 rounded"></pre>
+      <pre id="viewContent" class="bg-gray-100 p-4 rounded text-sm overflow-auto"></pre>
     </div>
   </div>
 
-  <!-- LIGHTBOX -->
-  <div id="lightbox" class="hidden lightbox z-50" onclick="hideLightbox()"><img id="lightboxImg" src="" alt="preview"/></div>
+  <!-- Lightbox -->
+  <div id="lightbox" class="hidden lightbox z-50" onclick="hideLightbox()"><img id="lightboxImg" src="" alt="image"/></div>
 
 <script>
-/* -------------------- CONFIG -------------------- */
-const SERVICE_BASE = 'http://localhost:4004/odata/v4/admin'; // change if needed
-const PAGE_SIZE = 500;
+const SERVICE_BASE = 'http://localhost:4004/odata/v4/admin';
+let currentEntity = 'Users';
+let currentData = [];
+let selectedForBulk = new Set();
+let pageTop = 0; const PAGE_SIZE = 50;
 
-/* -------------------- ENTITY FIELD DEFINITIONS (all fields) --------------------
-   We include all fields from your schema. For associations we list the target entity so we can build dropdowns.
-*/
+// Strong form schemas per-entity (customize fields, types, required, readonly, nested)
 const entitySchemas = {
   Users: {
     key: 'phoneNumber',
     fields: [
-      {name:'phoneNumber', type:'string'},
-      {name:'firstName', type:'string'},
-      {name:'lastName', type:'string'},
-      {name:'email', type:'string'},
-      {name:'passwordHash', type:'string'},
-      {name:'username', type:'string'},
-      {name:'profilePicture', type:'binary'},
-      {name:'isVerified', type:'boolean'},
-      {name:'dateOfBirth', type:'date'},
-      {name:'role', type:'string'},
-      {name:'lastLogin', type:'datetime'},
-      {name:'refreshToken', type:'string'},
-      {name:'otp', type:'string'},
-      {name:'otpExpiry', type:'datetime'},
-      {name:'mediaLimit', type:'number'},
-      // compositions omitted from editable fields list (shops/products/medias) - those are managed separately
+      {name:'phoneNumber', label:'Phone Number', type:'text', required:true},
+      {name:'firstName', label:'First Name', type:'text'},
+      {name:'lastName', label:'Last Name', type:'text'},
+      {name:'email', label:'Email', type:'email'},
+      {name:'username', label:'Username', type:'text'},
+      {name:'isVerified', label:'Verified', type:'checkbox'},
+      {name:'role', label:'Role', type:'select', options:['user','admin']}
     ],
-    associations:{}
+    nested: [{name:'shops',entity:'Shops'},{name:'products',entity:'Products'},{name:'orders',entity:'Orders'}]
   },
-
-  Address: {
-    key: 'addressId',
-    fields: [
-      {name:'addressId', type:'string'},
-      {name:'addressPhone', type:'assoc', target:'Users'},
-      {name:'completeAddress', type:'string'},
-      {name:'locality', type:'string'},
-      {name:'latitude', type:'string'},
-      {name:'longitude', type:'string'}
-    ]
-  },
-
   Shops: {
     key: 'shopId',
     fields: [
-      {name:'shopId', type:'string'},
-      {name:'ownerPhone', type:'assoc', target:'Users'},
-      {name:'shopName', type:'string'},
-      {name:'shopAddress', type:'string'},
-      {name:'shopLocation', type:'string'},
-      {name:'shopCity', type:'string'},
-      {name:'shopType', type:'string'},
-      {name:'type', type:'string'},
-      {name:'shopOffer', type:'string'},
-      {name:'isVerified', type:'boolean'},
-      {name:'rating', type:'string'},
-      {name:'online', type:'string'},
-      {name:'latitude', type:'string'},
-      {name:'longitude', type:'string'},
-      {name:'distance', type:'string'},
-      {name:'category', type:'assoc', target:'Category'},
-      {name:'totalLikes', type:'number'}
+      {name:'shopId', label:'Shop ID', type:'text', readonly:true},
+      {name:'shopName', label:'Shop Name', type:'text', required:true},
+      {name:'ownerPhone_phoneNumber', label:'Owner Phone', type:'text'},
+      {name:'shopCity', label:'City', type:'text'},
+      {name:'shopType', label:'Type', type:'text'},
+      {name:'isVerified', label:'Verified', type:'checkbox'}
     ]
   },
-
   Products: {
     key: 'productId',
     fields: [
-      {name:'productId', type:'string'},
-      {name:'category', type:'assoc', target:'Category'},
-      {name:'userProducts', type:'assoc', target:'Users'},
-      {name:'shopProducts', type:'assoc', target:'Shops'},
-      {name:'productName', type:'string'},
-      {name:'description', type:'string'},
-      {name:'mrp', type:'number'},
-      {name:'stockQuantity', type:'number'},
-      {name:'sellPrice', type:'number'},
-      {name:'isVerified', type:'boolean'},
-      {name:'online', type:'string'},
-      {name:'unit', type:'string'},
-      {name:'color', type:'string'},
-      {name:'rating', type:'string'},
-      {name:'minQtyToBuy', type:'number'},
-      {name:'totalLikes', type:'number'}
+      {name:'productId', label:'Product ID', type:'text', readonly:true},
+      {name:'productName', label:'Product Name', type:'text', required:true},
+      {name:'shopProducts_shopId', label:'Shop ID', type:'text'},
+      {name:'userProducts_phoneNumber', label:'Owner Phone', type:'text'},
+      {name:'mrp', label:'MRP', type:'number'},
+      {name:'sellPrice', label:'Sell Price', type:'number'},
+      {name:'stockQuantity', label:'Stock', type:'number'},
+      {name:'unit', label:'Unit', type:'text'}
     ]
   },
-
-  Likes: {
-    key: 'likeid',
-    fields: [
-      {name:'likeid', type:'string'},
-      {name:'userLike', type:'assoc', target:'Users'},
-      {name:'shopLike', type:'assoc', target:'Shops'},
-      {name:'productLike', type:'assoc', target:'Products'}
-    ]
-  },
-
-  Category: {
-    key: 'categoryId',
-    fields: [
-      {name:'categoryId', type:'number'},
-      {name:'categoryName', type:'string'},
-      {name:'description', type:'string'},
-      {name:'type', type:'string'},
-      {name:'categoryPicture', type:'binary'}
-    ]
-  },
-
   Orders: {
     key: 'orderId',
     fields: [
-      {name:'orderId', type:'string'},
-      {name:'user', type:'assoc', target:'Users'},
-      {name:'shop', type:'assoc', target:'Shops'},
-      {name:'totalAmount', type:'number'},
-      {name:'paymentMethod', type:'string'},
-      {name:'shippingAddress', type:'string'},
-      {name:'latitude', type:'string'},
-      {name:'longitude', type:'string'},
-      {name:'status', type:'string'}
-    ]
+      {name:'orderId', label:'Order ID', type:'text', readonly:true},
+      {name:'user_phoneNumber', label:'User Phone', type:'text'},
+      {name:'shop_shopId', label:'Shop ID', type:'text'},
+      {name:'totalAmount', label:'Total', type:'number'},
+      {name:'status', label:'Status', type:'select', options:['Pending','Confirmed','Delivered','Cancelled']}
+    ],
+    nested: [{name:'orderItems', entity:'OrderItems'}]
   },
-
-  OrderItems: {
-    key: 'itemId',
-    fields: [
-      {name:'itemId', type:'string'},
-      {name:'order', type:'assoc', target:'Orders'},
-      {name:'product', type:'assoc', target:'Products'},
-      {name:'quantity', type:'number'}
-    ]
-  },
-
-  Media: {
-    key: 'mediaId',
-    fields: [
-      {name:'mediaId', type:'string'},
-      {name:'ownerMedia', type:'assoc', target:'Users'},
-      {name:'shopMedia', type:'assoc', target:'Shops'},
-      {name:'productMedia', type:'assoc', target:'Products'},
-      {name:'categoryMedia', type:'assoc', target:'Category'},
-      {name:'isVerified', type:'boolean'},
-      {name:'mediaCategory', type:'string'},
-      {name:'mediaType', type:'string'},
-      {name:'content', type:'binary'}, // file input -> upload to /Media(key)/content
-      {name:'fileName', type:'string'},
-      {name:'applicationName', type:'string'},
-      {name:'url', type:'string'}
-    ]
-  }
+  OrderItems: { key:'orderItemId', fields:[{name:'orderItemId',label:'Item ID',type:'text',readonly:true},{name:'order_orderId',label:'Order ID',type:'text'},{name:'product_productId',label:'Product ID',type:'text'},{name:'quantity',label:'Quantity',type:'number'},{name:'price',label:'Price',type:'number'}] },
+  Media: { key:'mediaId', fields:[{name:'mediaId',label:'Media ID',type:'text',readonly:true},{name:'ownerMedia_phoneNumber',label:'Owner Phone',type:'text'},{name:'mediaCategory',label:'Category',type:'text'},{name:'fileName',label:'File Name',type:'text'},{name:'isVerified',label:'Verified',type:'checkbox'},{name:'url',label:'File',type:'file'}] },
+  Category: { key:'categoryId', fields:[{name:'categoryId',label:'Category ID',type:'text',readonly:true},{name:'categoryName',label:'Category Name',type:'text'}] }
 };
 
-/* -------------------- LOOKUPS (for dropdowns) -------------------- */
-const lookups = {
-  Users: [],
-  Shops: [],
-  Products: [],
-  Category: []
+const entityColumns = {
+  Users: ['_sel','phoneNumber','firstName','lastName','email','role','_mediaCount'],
+  Shops: ['_sel','shopId','shopName','ownerPhone_phoneNumber','shopCity','shopType','isVerified'],
+  Products: ['_sel','productId','productName','shopProducts_shopId','userProducts_phoneNumber','mrp','sellPrice','stockQuantity'],
+  Orders: ['_sel','orderId','user_phoneNumber','shop_shopId','totalAmount','status'],
+  OrderItems: ['_sel','orderItemId','order_orderId','product_productId','quantity','price'],
+  Media: ['_sel','mediaId','ownerMedia_phoneNumber','mediaCategory','fileName','isVerified','_preview'],
+  Category: ['_sel','categoryId','categoryName']
 };
 
-/* -------------------- HELPERS -------------------- */
-function toUrl(entity, qs=''){ return `${SERVICE_BASE}/${entity}${qs||''}`; }
+// helpers
+function q(s){ return encodeURIComponent(s); }
+function toUrl(entity, query=''){ return `${SERVICE_BASE}/${entity}${query}`; }
 
-function encodeODataKey(key){
+// Encode OData key: strings must be single quoted, with single quotes doubled inside the string per OData rules.
+// Non-strings are returned as-is (numbers, guids etc).
+function encodeODataKey(key) {
   if (key === null || key === undefined) return null;
-  if (typeof key === 'object') {
-    return Object.entries(key).map(([k,v]) => `${k}=${encodeODataKey(v)}`).join(',');
+  if (typeof key === 'string') {
+    // double single quotes to escape them inside OData string literal
+    const esc = key.replace(/'/g, "''");
+    return `'${esc}'`;
   }
-  if (typeof key === 'number') return key;
-  // numeric string?
-  if (/^-?\d+$/.test(String(key))) return String(key);
-  const s = String(key).replace(/'/g,"''");
-  return `'${s}'`;
+  return key;
 }
 
-function log(...args){ console.log('[admin]', ...args); }
-function esc(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;'); }
-
-/* Get raw key value for record */
-function findKeyForEntity(entity, rec){
-  const schema = entitySchemas[entity];
-  if(schema && rec && rec[schema.key] !== undefined) return rec[schema.key];
-  // try common field names
-  if(rec && rec.id !== undefined) return rec.id;
-  if(rec && rec.mediaId !== undefined) return rec.mediaId;
-  if(rec && rec.productId !== undefined) return rec.productId;
-  const keys = Object.keys(rec || {});
-  return keys.length ? rec[keys[0]] : null;
-}
-
-/* -------------------- UI ELEMENTS -------------------- */
-const entitySelect = document.getElementById('entitySelect');
-const createBtn = document.getElementById('createBtn');
-const refreshBtn = document.getElementById('refreshBtn');
-const tableHead = document.getElementById('tableHead');
-const tableBody = document.getElementById('tableBody');
-const statusEl = document.getElementById('status');
-
-const formModal = document.getElementById('formModal');
-const formTitle = document.getElementById('formTitle');
-const formFields = document.getElementById('formFields');
-const entityForm = document.getElementById('entityForm');
-const deleteBtn = document.getElementById('deleteBtn');
-const closeForm = document.getElementById('closeForm');
-
-const viewModal = document.getElementById('viewModal');
-const viewContent = document.getElementById('viewContent');
-const closeView = document.getElementById('closeView');
-
-let currentEntity = entitySelect.value;
-let currentData = [];
-let currentMode = null; // Create|Edit
-let currentRec = null;
-
-/* -------------------- LOAD LOOKUPS -------------------- */
-async function loadLookups(){
-  // Load Users, Shops, Products, Category for dropdown lists
+async function fetchEntity(entity){
+  currentEntity = entity;
+  const expand = entity==='Users' ? '?$expand=shops,medias,products,orders,userAddress,likes' : '?$top=' + PAGE_SIZE + '&$skip=' + pageTop;
+  const url = toUrl(entity, expand);
   try{
-    const [uRes, sRes, pRes, cRes] = await Promise.all([
-      fetch(toUrl('Users', `?$top=${PAGE_SIZE}`)).then(r=> r.ok? r.json(): Promise.reject(r)),
-      fetch(toUrl('Shops', `?$top=${PAGE_SIZE}`)).then(r=> r.ok? r.json(): Promise.reject(r)),
-      fetch(toUrl('Products', `?$top=${PAGE_SIZE}`)).then(r=> r.ok? r.json(): Promise.reject(r)),
-      fetch(toUrl('Category', `?$top=${PAGE_SIZE}`)).then(r=> r.ok? r.json(): Promise.reject(r))
-    ]);
-    lookups.Users = uRes.value || [];
-    lookups.Shops = sRes.value || [];
-    lookups.Products = pRes.value || [];
-    lookups.Category = cRes.value || [];
-    log('Lookups loaded', { users: lookups.Users.length, shops: lookups.Shops.length, products: lookups.Products.length, category: lookups.Category.length });
-  }catch(e){
-    console.warn('Lookup load failed', e);
-  }
-}
-
-/* -------------------- FETCH & RENDER -------------------- */
-entitySelect.addEventListener('change', ()=>{
-  currentEntity = entitySelect.value;
-  fetchAll(currentEntity);
-});
-
-createBtn.addEventListener('click', ()=> openForm('Create', null));
-refreshBtn.addEventListener('click', ()=> fetchAll(currentEntity));
-closeForm.addEventListener('click', ()=> formModal.classList.add('hidden'));
-closeView.addEventListener('click', ()=> viewModal.classList.add('hidden'));
-
-async function fetchAll(entity){
-  statusEl.textContent = 'Loading...';
-  await loadLookups(); // ensure dropdown data available
-  try{
-    const res = await fetch(toUrl(entity, `?$top=${PAGE_SIZE}`), { headers:{ Accept:'application/json' } });
-    if(!res.ok) throw new Error(await res.text());
+    const res = await fetch(url, { headers:{ 'Accept':'application/json' } });
+    if(!res.ok){ throw new Error(await res.text()); }
     const data = await res.json();
     currentData = data.value || [];
-    renderTable();
-    statusEl.textContent = `Loaded ${currentData.length} ${entity}`;
-  }catch(e){
-    statusEl.textContent = 'Load failed: ' + e.message;
-    tableBody.innerHTML = `<tr><td class="tbl" colspan="20">${esc(e.message)}</td></tr>`;
-    console.error(e);
-  }
+    renderTable(entity);
+  }catch(err){ console.error(err); document.getElementById('tableBody').innerHTML = `<tr><td colspan='20' class='p-4 text-red-600'>Failed to load: ${err.message}</td></tr>`; }
 }
 
-function renderTable(){
-  const schema = entitySchemas[currentEntity];
-  const cols = schema ? schema.fields.map(f => f.name) : (currentData[0] ? Object.keys(currentData[0]) : []);
-  // header
-  tableHead.innerHTML = '<tr>' + cols.map(c=> `<th class="tbl">${esc(c)}</th>`).join('') + '<th class="tbl">Preview</th><th class="tbl">Actions</th></tr>';
-  // rows
-  if(!currentData.length){
-    tableBody.innerHTML = `<tr><td class="tbl" colspan="${cols.length + 2}">No records</td></tr>`;
-    return;
-  }
-  tableBody.innerHTML = currentData.map(rec => {
-    const cells = cols.map(c => {
-      let v = rec[c];
-      if(v === null || v === undefined) return `<td class="tbl">-</td>`;
-      // association objects: show first primitive value
-      if(typeof v === 'object'){
-        const val = Object.values(v)[0];
-        v = val ?? JSON.stringify(v);
+function renderTable(entity){
+  const cols = entityColumns[entity] || [];
+  const thead = document.getElementById('tableHead');
+  thead.innerHTML = '<tr>' + cols.map(c=>`<th class="px-4 py-3 text-left text-sm text-gray-600">${c==='_sel'? '<input id="selectAll" type="checkbox"/>': escapeHtml(c.replace('_',''))}</th>`).join('') + '<th class="px-4 py-3">Actions</th></tr>';
+  document.getElementById('selectAll')?.addEventListener('change',(e)=>{ document.querySelectorAll('.rowSel').forEach(ch=> ch.checked = e.target.checked); updateBulkSelection(); });
+  const tbody = document.getElementById('tableBody');
+  if(!currentData.length){ tbody.innerHTML = `<tr><td colspan='${cols.length+1}' class='p-4 text-gray-500 text-center'>No records</td></tr>`; return; }
+  tbody.innerHTML = currentData.map(rec=>{
+    const cells = cols.map(col=>{
+      if(col==='_sel') {
+        const keyVal = getKeyValue(rec);
+        // ensure data-key is string
+        return `<td class='px-4 py-2'><input class='rowSel' data-key='${escapeHtml(String(keyVal))}' type='checkbox' onchange='updateBulkSelection()' /></td>`;
       }
-      // for binary fields or content show placeholder
-      const fld = schema.fields.find(f=>f.name===c);
-      if(fld && fld.type === 'binary') return `<td class="tbl">[binary]</td>`;
-      return `<td class="tbl">${esc(String(v))}</td>`;
+      if (col === '_preview') {
+        const mediaList = Array.isArray(rec.medias)
+          ? rec.medias
+          : rec.url
+            ? [{ url: rec.url }]
+            : [];
+
+        const imgs = mediaList
+          .filter(m => m.url)
+          .map(m => {
+            const imgUrl = m.url.startsWith('http')
+              ? m.url
+              : `http://localhost:4004${m.url}`;
+            return `
+              <img src="${imgUrl}"
+                   class="h-14 w-24 object-cover rounded cursor-pointer inline-block mr-1 border border-gray-200"
+                   onclick="showLightbox('${imgUrl}')"
+                   onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=160 height=100><rect width=160 height=100 fill=%23EEE /><text x=10 y=50 fill=%23999'>no image</text></svg>'"/>`;
+          })
+          .join('');
+
+        return `<td class="px-4 py-2">${imgs || ''}</td>`;
+      }
+
+      if(col==='_mediaCount'){
+        const count = (rec.medias && rec.medias.length) || 0; return `<td class='px-4 py-2'><span class='badge'>${count} medias</span></td>`;
+      }
+      const val = getNested(rec,col) ?? '';
+      return `<td class='px-4 py-2 text-sm'>${escapeHtml(String(val))}</td>`;
     }).join('');
-    const preview = renderPreview(rec);
-    const recJson = JSON.stringify(rec).replaceAll('</','\\u003c/');
-    return `<tr>${cells}<td class="tbl">${preview}</td><td class="tbl">
-      <button class="text-blue-600 mr-2" onclick='openView(${recJson})'>View</button>
-      <button class="text-indigo-700 mr-2" onclick='openEdit(${recJson})'>Edit</button>
-      <button class="text-red-600" onclick='removeRecord(${recJson})'>Delete</button>
+
+    // careful: use JSON.stringify but escape closing script issues
+    const recJson = JSON.stringify(rec).replace(/</g,'\\u003c');
+    return `<tr class='border-b hover:bg-gray-50'>${cells}<td class='px-4 py-2'>
+      <button class='text-blue-600 mr-2' onclick='openView(${recJson})'>View</button>
+      <button class='text-indigo-600 mr-2' onclick='openEdit(${recJson})'>Edit</button>
+      <button class='text-red-600' onclick='removeRecord(${recJson})'>Delete</button>
     </td></tr>`;
   }).join('');
 }
 
-function renderPreview(rec){
-  if(currentEntity === 'Media'){
-    const url = rec.url;
-    if(url) return `<img src="${esc(url)}" class="h-16 w-28 object-cover rounded cursor-pointer" onclick="showLightbox('${esc(url)}')">`;
-    const mid = rec.mediaId;
-    if(mid){
-      const contentUrl = `${SERVICE_BASE}/Media(${encodeODataKey(mid)})/content`;
-      return `<img src="${contentUrl}" class="h-16 w-28 object-cover rounded cursor-pointer" onclick="showLightbox('${contentUrl}')">`;
-    }
-    return '';
-  }
-  // if record has medias array or medias nested in rec, try to display first
-  if(Array.isArray(rec.medias) && rec.medias.length){
-    const m = rec.medias[0];
-    if(m.url) return `<img src="${esc(m.url)}" class="h-16 w-28 object-cover rounded cursor-pointer" onclick="showLightbox('${esc(m.url)}')">`;
-    if(m.mediaId){
-      const contentUrl = `${SERVICE_BASE}/Media(${encodeODataKey(m.mediaId)})/content`;
-      return `<img src="${contentUrl}" class="h-16 w-28 object-cover rounded cursor-pointer" onclick="showLightbox('${contentUrl}')">`;
-    }
-  }
-  return '';
-}
-
-/* -------------------- FORM BUILDING -------------------- */
-function openForm(mode, rec){
-  currentMode = mode;
-  currentRec = rec;
-  formTitle.textContent = `${mode} ${currentEntity}`;
-  formFields.innerHTML = '';
-  const schema = entitySchemas[currentEntity];
-  const fields = schema ? schema.fields : (rec ? Object.keys(rec) : []);
-  fields.forEach(f=>{
-    const name = f.name;
-    const type = f.type;
-    let value = rec && rec[name] !== undefined ? rec[name] : '';
-    if(typeof value === 'object' && value !== null) { value = Object.values(value)[0] ?? ''; }
-    const id = `fld_${name}`;
-    // association => dropdown
-    if(type === 'assoc'){
-      const target = f.target;
-      const list = lookups[target] || [];
-      let options = `<option value="">-</option>` + list.map(item=>{
-        const key = findKeyForEntity(target, item);
-        return `<option value="${esc(String(key))}" ${String(key) == String(value)? 'selected':''}>${esc(String(key))} ${item.shopName? '- '+esc(item.shopName): ''}${item.firstName? '- '+esc(item.firstName): ''}${item.productName? '- '+esc(item.productName): ''}</option>`;
-      }).join('');
-      formFields.innerHTML += `<div><label class="block text-sm font-medium mb-1">${esc(name)}</label><select id="${id}" name="${name}" class="w-full border rounded px-3 py-2">${options}</select></div>`;
-      return;
-    }
-    // binary => file input
-    if(type === 'binary'){
-      formFields.innerHTML += `<div class="col-span-2"><label class="block text-sm font-medium mb-1">${esc(name)}</label><input id="${id}" name="${name}" type="file" class="w-full" /></div>`;
-      return;
-    }
-    // boolean -> checkbox
-    if(type === 'boolean'){
-      formFields.innerHTML += `<div><label class="block text-sm font-medium mb-1">${esc(name)}</label><div class="flex items-center gap-2"><input id="${id}" name="${name}" type="checkbox" ${value? 'checked':''} /> <span class="text-sm">${esc(name)}</span></div></div>`;
-      return;
-    }
-    // date/datetime/number/string fallback
-    let inputType = 'text';
-    if(type === 'number') inputType = 'number';
-    if(type === 'date') inputType = 'date';
-    if(type === 'datetime') inputType = 'datetime-local';
-    formFields.innerHTML += `<div><label class="block text-sm font-medium mb-1">${esc(name)}</label><input id="${id}" name="${name}" type="${inputType}" value="${esc(value)}" class="w-full border rounded px-3 py-2" /></div>`;
-  });
-
-  // show delete on Edit
-  deleteBtn.style.display = (mode === 'Edit') ? 'inline-block' : 'none';
-  formModal.classList.remove('hidden');
-  formModal.scrollTop = 0;
-}
-
-/* wrapper for openEdit/openView used in table buttons */
-function openEdit(rec){ openForm('Edit', rec); }
-function openView(rec){ viewContent.textContent = JSON.stringify(rec, null, 2); viewModal.classList.remove('hidden'); }
-
-/* -------------------- FORM SUBMIT -------------------- */
-entityForm.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const schema = entitySchemas[currentEntity];
-  const fd = new FormData(entityForm);
-  // Build payload and association binding properties
-  const payload = {};
-  for(const f of (schema? schema.fields: [])){
-    const key = f.name;
-    if(f.type === 'binary') continue; // file handled separately
-    if(f.type === 'assoc'){
-      const selected = fd.get(key);
-      if(selected){
-        // use odata bind: NavigationProperty@odata.bind : "/Target(<key>)"
-        payload[`${key}@odata.bind`] = `/${f.target}(${encodeODataKey(selected)})`;
-      }
-      continue;
-    }
-    // boolean handling
-    const el = entityForm.querySelector(`[name="${key}"]`);
-    if(el && el.type === 'checkbox'){
-      payload[key] = !!el.checked;
-    } else {
-      let v = fd.get(key);
-      if(v === null || v === '') payload[key] = null;
-      else if(f.type === 'number') payload[key] = Number(v);
-      else payload[key] = v;
-    }
-  }
-
-  try{
-    if(currentMode === 'Create'){
-      // POST
-      const url = toUrl(currentEntity);
-      log('POST', url, payload);
-      const res = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
-      if(!res.ok) throw new Error(await res.text());
-      const created = await res.json().catch(()=>null);
-
-      // handle file upload for binary fields (Media.content, Users.profilePicture, Category.categoryPicture)
-      await uploadFilesAfterCreate(schema, created);
-
-      alert('Created');
-      formModal.classList.add('hidden');
-      fetchAll(currentEntity);
-
-    } else {
-      // PATCH
-      const keyVal = findKeyForEntity(currentEntity, currentRec);
-      if(keyVal === null || keyVal === undefined) throw new Error('No key found for record');
-      const url = `${toUrl(currentEntity)}/${keyVal}`;
-      // Note: make sure URL uses parentheses not extra slashes
-      // Build final fetch path like /AdminService/Media('id')
-      //const patchUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})`;
-      log('PATCH', url, payload);
-      const res = await fetch(url, { method:'PATCH', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
-      if(!res.ok) throw new Error(await res.text());
-
-      // handle file upload on edit
-      await uploadFilesAfterEdit(schema, currentRec);
-
-      alert('Saved');
-      formModal.classList.add('hidden');
-      fetchAll(currentEntity);
-    }
-  }catch(err){
-    alert('Save failed: ' + err.message);
-    console.error(err);
-  }
-});
-
-/* Upload files for create: uses created record to get key for media upload */
-async function uploadFilesAfterCreate(schema, created){
-  if(!schema) return;
-  // check binary fields in schema: for Users.profilePicture, Category.categoryPicture, Media.content
-  // find file inputs in form
-  const files = entityForm.querySelectorAll('input[type="file"]');
-  for(const fi of files){
-    if(fi.files && fi.files[0]){
-      // determine which binary field
-      const fieldName = fi.name;
-      // If entity is Media -> upload content to /Media(key)/content
-      if(currentEntity === 'Media'){
-        const mid = created && (created.mediaId || created.MediaId);
-        const file = fi.files[0];
-        if(mid) await uploadMediaContent(mid, file);
-      } else if(currentEntity === 'Users' && fieldName === 'profilePicture'){
-        // Many CAP setups don't have special endpoint for profile picture; if your Users entity exposes /Users(key)/profilePicture/content change accordingly.
-        // We'll attempt PUT to /Users(key)/profilePicture/content if available; else try /Users(key)/content (you might adapt to your API).
-        const keyVal = created && findKeyForEntity(currentEntity, created);
-        if(keyVal){
-          const putUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})/profilePicture/$value`;
-          try{
-            await fetch(putUrl, { method:'PUT', body: fi.files[0], headers:{ 'Content-Type': fi.files[0].type } });
-          }catch(e){ console.warn('profilePicture upload failed', e); }
-        }
-      } else if(currentEntity === 'Category' && fieldName === 'categoryPicture'){
-        const keyVal = created && findKeyForEntity(currentEntity, created);
-        if(keyVal){
-          const putUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})/categoryPicture/$value`;
-          try{ await fetch(putUrl, { method:'PUT', body: fi.files[0], headers:{ 'Content-Type': fi.files[0].type } }); }catch(e){ console.warn('categoryPicture upload failed', e); }
-        }
-      }
-    }
-  }
-}
-
-/* Upload files after edit (currentRec available) */
-async function uploadFilesAfterEdit(schema, rec){
-  if(!schema) return;
-  const files = entityForm.querySelectorAll('input[type="file"]');
-  for(const fi of files){
-    if(fi.files && fi.files[0]){
-      const fieldName = fi.name;
-      if(currentEntity === 'Media'){
-        const mid = rec && (rec.mediaId || rec.MediaId);
-        if(mid) await uploadMediaContent(mid, fi.files[0]);
-      } else if(currentEntity === 'Users' && fieldName === 'profilePicture'){
-        const keyVal = findKeyForEntity(currentEntity, rec);
-        if(keyVal){
-          const putUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})/profilePicture/$value`;
-          try{ await fetch(putUrl, { method:'PUT', body: fi.files[0], headers:{ 'Content-Type': fi.files[0].type } }); }catch(e){ console.warn('profilePicture upload failed', e); }
-        }
-      } else if(currentEntity === 'Category' && fieldName === 'categoryPicture'){
-        const keyVal = findKeyForEntity(currentEntity, rec);
-        if(keyVal){
-          const putUrl = `${toUrl(currentEntity)}(${encodeODataKey(keyVal)})/categoryPicture/$value`;
-          try{ await fetch(putUrl, { method:'PUT', body: fi.files[0], headers:{ 'Content-Type': fi.files[0].type } }); }catch(e){ console.warn('categoryPicture upload failed', e); }
-        }
-      }
-    }
-  }
-}
-
-/* Upload media content via PUT to /Media(key)/content or /Media(key)/$value depending on service */
-async function uploadMediaContent(mediaId, file){
-  if(!mediaId) { console.warn('No mediaId to upload to'); return; }
-  // try content endpoint first
-  const contentUrl = `${toUrl('Media')}/${encodeODataKey(mediaId)}/content`;
-  try{
-    const res = await fetch(contentUrl, { method:'PUT', body: file, headers:{ 'Content-Type': file.type } });
-    if(!res.ok) {
-      // fallback to $value
-      const fallback = `${toUrl('Media')}(${encodeODataKey(mediaId)})/$value`;
-      const r2 = await fetch(fallback, { method:'PUT', body: file, headers:{ 'Content-Type': file.type } });
-      if(!r2.ok) throw new Error(`Upload failed: ${await r2.text()}`);
-    }
-    log('uploaded media content for', mediaId);
-  }catch(e){ console.error('uploadMediaContent failed', e); throw e; }
-}
-
-/* -------------------- DELETE SINGLE -------------------- */
-async function removeRecord(rec){
-  if(!confirm('Delete this record?')) return;
-  const key = findKeyForEntity(currentEntity, rec);
-  if(key === null || key === undefined) { alert('No key found'); return; }
-  const url = `${toUrl(currentEntity)}(${encodeODataKey(key)})`;
-  try{
-    const res = await fetch(url, { method:'DELETE' });
-    if(!res.ok) throw new Error(await res.text());
-    alert('Deleted');
-    fetchAll(currentEntity);
-  }catch(e){ alert('Delete failed: ' + e.message); console.error(e); }
-}
-
-/* -------------------- FORM DELETE BUTTON -------------------- */
-deleteBtn.addEventListener('click', async ()=>{
-  if(!currentRec) return;
-  if(!confirm('Delete this record?')) return;
-  const key = findKeyForEntity(currentEntity, currentRec);
-  if(key === null || key === undefined) { alert('No key'); return; }
-  const url = `${toUrl(currentEntity)}(${encodeODataKey(key)})`;
-  try{
-    const res = await fetch(url, { method:'DELETE' });
-    if(!res.ok) throw new Error(await res.text());
-    alert('Deleted');
-    formModal.classList.add('hidden');
-    fetchAll(currentEntity);
-  }catch(e){ alert('Delete failed: ' + e.message); console.error(e); }
-});
-
-/* -------------------- VIEW / LIGHTBOX -------------------- */
 function showLightbox(src){ document.getElementById('lightboxImg').src = src; document.getElementById('lightbox').classList.remove('hidden'); }
 function hideLightbox(){ document.getElementById('lightbox').classList.add('hidden'); }
 
-/* -------------------- INIT -------------------- */
-window.openEdit = openEdit;
-window.openView = openView;
-window.removeRecord = removeRecord;
-window.showLightbox = showLightbox;
-window.hideLightbox = hideLightbox;
+function getNested(obj, path){ if(!path) return undefined; if(path.includes('.')) return path.split('.').reduce((o,p)=> o? o[p]: undefined, obj); return obj[path]; }
+function escapeHtml(unsafe){ return String(unsafe).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;"); }
 
-/* Start by loading lookups and first entity */
-(async ()=>{ await loadLookups(); fetchAll(currentEntity); })();
+// Return raw key value (no quotes). If schema not present, return first prop value.
+function getKeyValue(rec){
+  const schema = entitySchemas[currentEntity];
+  if(!schema) return Object.values(rec)[0];
+  const k = schema.key;
+  const v = rec[k] ?? rec[Object.keys(rec)[0]];
+  return v;
+}
 
+// Find raw key for rec (no quotes). Returns null if not found.
+function findKeyForEntity(rec){
+  const schema = entitySchemas[currentEntity];
+  if(schema && schema.key && (rec[schema.key] !== undefined)) return rec[schema.key];
+  const keys = Object.keys(rec);
+  if(keys.length) return rec[keys[0]];
+  return null;
+}
+
+function updateBulkSelection(){ selectedForBulk = new Set([...document.querySelectorAll('.rowSel')].filter(i=>i.checked).map(i=> i.dataset.key)); document.getElementById('bulkDeleteBtn').textContent = `Bulk Delete (${selectedForBulk.size})`; }
+
+// Create / Edit modal building using schema
+function openForm(mode, rec=null){
+  const modal = document.getElementById('formModal');
+  const title = document.getElementById('formTitle');
+  title.textContent = `${mode} ${currentEntity}`;
+  const fieldsEl = document.getElementById('formFields'); fieldsEl.innerHTML='';
+  const schema = entitySchemas[currentEntity];
+  if(!schema){ fieldsEl.innerHTML = '<div class="text-sm">No schema defined for this entity.</div>'; }
+  else{
+    schema.fields.forEach(f=>{
+      const value = rec && (rec[f.name] !== undefined) ? rec[f.name] : '';
+      if(f.type==='select'){
+        fieldsEl.innerHTML += `<div><label class='block text-sm font-medium mb-1'>${f.label}</label><select name='${f.name}' ${f.readonly? 'disabled':''} class='w-full border rounded px-3 py-2'>${(f.options||[]).map(o=>`<option value='${escapeHtml(o)}' ${o===value? 'selected':''}>${escapeHtml(o)}</option>`).join('')}</select></div>`;
+      } else if(f.type==='checkbox'){
+        fieldsEl.innerHTML += `<div class='flex items-center gap-2'><input type='checkbox' name='${f.name}' ${value? 'checked':''} ${f.readonly? 'disabled':''}/> <label>${f.label}</label></div>`;
+      } else if(f.type==='file'){
+        fieldsEl.innerHTML += `<div><label class='block text-sm font-medium mb-1'>${f.label}</label><input type='file' name='${f.name}' class='w-full' /></div>`;
+      } else {
+        fieldsEl.innerHTML += `<div><label class='block text-sm font-medium mb-1'>${f.label}</label><input name='${f.name}' value='${escapeHtml(value)}' ${f.readonly? 'readonly':''} class='w-full border rounded px-3 py-2' /></div>`;
+      }
+    });
+  }
+
+  // nested editors
+  const nestedEl = document.getElementById('nestedEditors'); nestedEl.innerHTML='';
+  if(schema && schema.nested && schema.nested.length){ schema.nested.forEach(n=>{
+    nestedEl.innerHTML += `<div class='mt-4'><h3 class='font-semibold mb-2'>Manage ${n.name}</h3><div id='nested_${n.name}'></div><button type='button' class='mt-2 bg-gray-100 px-3 py-1 rounded' onclick="openNestedCreate('${n.entity}','${n.name}')">Add ${n.entity}</button></div>`;
+  }); }
+
+  document.getElementById('deleteBtn').style.display = rec? 'inline-block' : 'none';
+  modal.dataset.mode = mode; modal.dataset.rec = rec? JSON.stringify(rec): '';
+  modal.classList.remove('hidden');
+
+  // populate nested lists if rec provided
+  if(rec && schema && schema.nested){ schema.nested.forEach(n=> renderNestedList(n.entity, n.name, rec[n.name] || [])); }
+}
+
+function openNestedCreate(entity,name){ const container = document.getElementById(`nested_${name}`); const schema = entitySchemas[entity]; const newId = 'new_' + Math.random().toString(36).slice(2,8); const row = document.createElement('div'); row.className='p-2 border rounded mb-2'; row.innerHTML = schema.fields.map(f=> `<div class='mb-1'><label class='text-xs'>${f.label}</label><input data-field='${f.name}' class='w-full border rounded px-2 py-1' /></div>`).join('') + `<div class='text-right'><button class='bg-green-600 text-white px-3 py-1 rounded' onclick="saveNestedTemp(this,'${entity}')">Save</button></div>`; container.prepend(row); }
+function saveNestedTemp(btn, entity){ const row = btn.closest('div'); const inputs = [...row.querySelectorAll('[data-field]')]; const obj = {}; inputs.forEach(i=> obj[i.dataset.field] = i.value); // append visually
+  const lis = row.parentElement; const item = document.createElement('div'); item.className='p-2 border rounded mb-2 bg-gray-50'; item.textContent = JSON.stringify(obj); row.replaceWith(item); }
+function renderNestedList(entity,name,arr){ const container = document.getElementById(`nested_${name}`); if(!container) return; container.innerHTML = arr.map(a=> `<div class='p-2 border rounded mb-2 bg-gray-50'><div class='text-sm'>${escapeHtml(JSON.stringify(a))}</div></div>`).join(''); }
+
+function openEdit(rec){ openForm('Edit', rec); }
+function openView(rec){ document.getElementById('viewContent').textContent = JSON.stringify(rec,null,2); document.getElementById('viewModal').classList.remove('hidden'); }
+
+// delete single record
+async function removeRecord(rec){
+  if(!confirm('Delete this record?')) return;
+  const key = findKeyForEntity(rec);
+  if(key === null || key === undefined){ alert('Unable to determine key'); return; }
+  const url = `${SERVICE_BASE}/${currentEntity}(${encodeODataKey(key)})`;
+  console.log('DELETE URL =>', url);
+  try{
+    const res = await fetch(url, { method:'DELETE' });
+    if(!res.ok) throw new Error(await res.text());
+    alert('Deleted');
+    fetchEntity(currentEntity);
+  }catch(err){ alert('Delete failed: '+err.message); console.error(err); }
+}
+
+// form submit
+document.getElementById('entityForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const modal = document.getElementById('formModal');
+  const mode = modal.dataset.mode;
+  const rec = modal.dataset.rec ? JSON.parse(modal.dataset.rec) : null;
+  const schema = entitySchemas[currentEntity];
+  const form = e.target;
+  const payload = {};
+  // collect values
+  (schema.fields||[]).forEach(f=>{
+    if(f.type==='checkbox'){
+      const el = form.querySelector(`[name="${f.name}"]`);
+      payload[f.name] = !!(el && el.checked);
+    }
+    else if(f.type==='file'){
+      // file handled separately
+      payload[f.name] = null;
+    }
+    else {
+      const el = form.querySelector(`[name="${f.name}"]`);
+      payload[f.name] = el ? (el.value === '' ? null : el.value) : null;
+    }
+  });
+
+  try{
+    if(mode==='Create'){
+      const res = await fetch(`${SERVICE_BASE}/${currentEntity}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error(await res.text());
+      const created = await res.json().catch(()=>null);
+      if(currentEntity==='Media') await handleMediaFileUpload(created || {}, form);
+      alert('Created');
+    } else {
+      const key = findKeyForEntity(rec);
+      if(key === null || key === undefined) throw new Error('No key for record');
+      const url = `${SERVICE_BASE}/${currentEntity}(${encodeODataKey(key)})`;
+      console.log('PATCH URL =>', url, 'payload =>', payload);
+      const res = await fetch(url, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if(!res.ok) throw new Error(await res.text());
+      if(currentEntity==='Media') await handleMediaFileUpload(rec, form);
+      alert('Saved');
+    }
+    modal.classList.add('hidden');
+    fetchEntity(currentEntity);
+  }catch(err){ alert('Save failed: '+err.message); console.error(err); }
+});
+
+async function handleMediaFileUpload(rec, form){ const fileInput = form.querySelector('input[type="file"]'); if(!fileInput || !fileInput.files.length) return; const file = fileInput.files[0]; const mediaId = rec.mediaId || rec.MediaId || rec.id; if(!mediaId) { console.warn('No media id'); return; } const contentUrl = `${SERVICE_BASE}/Media(${encodeODataKey(mediaId)})/content`; try{ console.log('UPLOAD URL =>', contentUrl); const res = await fetch(contentUrl, { method:'PUT', body: file, headers: { 'Content-Type': file.type } }); if(!res.ok) throw new Error(await res.text()); console.log('uploaded media content'); }catch(err){ console.error('media upload failed', err); }}
+
+// bulk delete
+document.getElementById('bulkDeleteBtn').addEventListener('click', async ()=>{
+  if(!selectedForBulk.size) return alert('No rows selected');
+  if(!confirm(`Delete ${selectedForBulk.size} records?`)) return;
+  for(const key of selectedForBulk){
+    try{
+      const url = `${SERVICE_BASE}/${currentEntity}(${encodeODataKey(key)})`;
+      console.log('Bulk DELETE =>', url);
+      const res = await fetch(url, { method:'DELETE' });
+      if(!res.ok) console.error('Failed', key, await res.text());
+    }catch(err){ console.error(err); }
+  }
+  alert('Bulk delete completed');
+  fetchEntity(currentEntity);
+});
+
+// CSV export (basic)
+document.getElementById('exportCsvBtn').addEventListener('click', ()=>{
+  if(!currentData.length) return alert('No data');
+  const cols = Object.keys(currentData[0]);
+  const rows = currentData.map(r=> cols.map(c=> `"${(r[c]??'').toString().replaceAll('"','""')}"`).join(','));
+  const csv = [cols.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = `${currentEntity}.csv`;
+  a.click();
+});
+
+// CSV import (very basic mapping by header -> properties)
+document.getElementById('csvImport').addEventListener('change', async (e)=>{
+  const file = e.target.files[0]; if(!file) return; const text = await file.text(); const lines = text.split(/\r?\n/).filter(Boolean); const headers = lines[0].split(',').map(h=> h.replaceAll('"','').trim()); for(let i=1;i<lines.length;i++){ const vals = lines[i].split(',').map(v=> v.replaceAll('"','').trim()); const obj = {}; headers.forEach((h,idx)=> obj[h]= vals[idx]?? null); try{ const res = await fetch(`${SERVICE_BASE}/${currentEntity}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(obj) }); if(!res.ok) console.error('Row failed', await res.text()); }catch(err){ console.error(err); } } alert('Import attempt finished'); fetchEntity(currentEntity); });
+
+// UI wiring
+document.getElementById('entitySelect').addEventListener('change', (e)=>{ pageTop=0; fetchEntity(e.target.value); });
+document.getElementById('refreshBtn').addEventListener('click', ()=> fetchEntity(currentEntity));
+document.getElementById('createBtn').addEventListener('click', ()=> openForm('Create'));
+document.getElementById('closeForm').addEventListener('click', ()=> document.getElementById('formModal').classList.add('hidden'));
+document.getElementById('closeView').addEventListener('click', ()=> document.getElementById('viewModal').classList.add('hidden'));
+
+// initial
+fetchEntity('Users');
 </script>
 </body>
 </html>

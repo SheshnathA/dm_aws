@@ -374,8 +374,13 @@ function initializeUI() {
         const userInfo = JSON.parse(user);
         document.getElementById("username").textContent = userInfo.firstName;
         document.getElementById("userphone").textContent = userInfo.phoneNumber;
-        document.getElementById("profilePic").src =
-            "/odata/v4/user-profile/Users('" + userInfo.phoneNumber + "')/profilePicture";
+        // document.getElementById("profilePic").src =
+        //     "/odata/v4/user-profile/Users('" + userInfo.phoneNumber + "')/profilePicture";
+        const img = document.getElementById("profilePic");
+img.src = `/odata/v4/user-profile/Users('${userInfo.phoneNumber}')/profilePicture`;
+img.onerror = () => {
+    img.src = "image/user.png";   // fallback image
+};
 
         document.getElementById("logoutBtn").style.display = 'block';
     }

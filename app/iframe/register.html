@@ -334,12 +334,19 @@ function register() {
     })
     .then(response => response.json())
     .then(data => {
+        if(data?.error){
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loadingSpinner').style.display = 'none';
+        openConfirmModal(data.error.message, "Close");
+        }else{
         document.getElementById('overlay').style.display = 'none';
         document.getElementById('loadingSpinner').style.display = 'none';
         const popupBtn = document.getElementById("popupbtn");
         localStorage.setItem("reg_otp_mobileNo", phoneNumber);
         popupBtn.setAttribute("data-redirect", "./otp-reg.html");
         openConfirmModal(data.value.message+" ,Please check your email", "Click here for OTP Verify");
+        }
+        
     })
     .catch(error => {
         document.getElementById('overlay').style.display = 'none';

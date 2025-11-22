@@ -88,14 +88,40 @@ srv.on('register', async (req) => {
 
     try {
         const existingUser = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ phoneNumber }));
-        if (existingUser) return req.error(400, `Phone number ${phoneNumber} already exists`);
+        if (existingUser && existingUser?.isVerified ===true) return req.error(400, `Phone number ${phoneNumber} already exists`);
 
         const existingUserEmail = await db.run(SELECT.one.from('cap.dukanmitra.Users').where({ email }));
-        if (existingUserEmail) return req.error(400, `Email ${email} already exists`);
+        if (existingUserEmail && existingUser?.isVerified ===true) return req.error(400, `Email ${email} already exists`);
+
+        if(!existingUser && existingUserEmail) return req.error(400, `Email ${email} already exists`);
+         //if(existingUser && existingUserEmail) return req.error(400, `Email ${email} already exists`);
+
+
+        if (existingUser && existingUser?.isVerified ===false) {
+                // const otpResponse = await sendOTPForRegistration(user);
+                //  return otpResponse; 
+                //return req.error(401, 'User not verified, OTP sent to your registered mail id');
+                const otp = generateOTP();
+    const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    //const email = newUser.email;
+    await db.run(
+        UPDATE('cap.dukanmitra.Users')
+            .set({ otp, otpExpiry: expiryTime })
+            .where({ phoneNumber })
+    );
+    const html = `
+        <p>Your OTP for Dukan Mitra is: <strong>${otp}</strong></p>
+        <p>Valid for 24 Hours.</p>
+    `;
+    await sendMail(email, "Dukan Mitra OTP Verification", html);
+    return { message: `OTP sent to ${email}` };
+            }
+
+
 
         const passwordHash = await bcrypt.hash(password, 10);
 
-        const createdUser = await db.run(
+        await db.run(
             INSERT.into('cap.dukanmitra.Users').entries({
                 phoneNumber,
                 firstName,
@@ -106,13 +132,20 @@ srv.on('register', async (req) => {
             })
         );
 
-        // 🔥 Return the result of sendOTP
-        const newUser = createdUser?.results[0]?.values[0];
-        if(newUser){
-        const otpResponse = await sendOTPForRegistration(newUser);
-        return otpResponse; 
-        }
-        
+    const otp = generateOTP();
+    const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    //const email = newUser.email;
+    await db.run(
+        UPDATE('cap.dukanmitra.Users')
+            .set({ otp, otpExpiry: expiryTime })
+            .where({ phoneNumber })
+    );
+    const html = `
+        <p>Your OTP for Dukan Mitra is: <strong>${otp}</strong></p>
+        <p>Valid for 24 Hours.</p>
+    `;
+    await sendMail(email, "Dukan Mitra OTP Verification", html);
+    return { message: `OTP sent to ${email}` };
 
     } catch (err) {
         return req.error(400, 'Network issue, try later');
@@ -129,22 +162,18 @@ async function sendOTPForRegistration(newUser) {
     const phoneNumber = newUser.phoneNumber;
     const otp = generateOTP();
     const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
     await db.run(
         UPDATE('cap.dukanmitra.Users')
             .set({ otp, otpExpiry: expiryTime })
             .where({ phoneNumber })
     );
-
+    
     const email = newUser.email;
-
     const html = `
         <p>Your OTP for Dukan Mitra is: <strong>${otp}</strong></p>
         <p>Valid for 24 Hours.</p>
     `;
-
     await sendMail(email, "Dukan Mitra OTP Verification", html);
-
     return { message: `OTP sent to ${email}` };
 }
 
@@ -182,9 +211,23 @@ srv.on('verifiedUser', async (req) => {
             //if (!user) return req.error(401, 'User not found');
             if (!user) return req.error(404, 'User not found');
             if (user && user.isVerified ===false) {
-                const otpResponse = await sendOTPForRegistration(user);
-                 return otpResponse; 
+                // const otpResponse = await sendOTPForRegistration(user);
+                //  return otpResponse; 
                 //return req.error(401, 'User not verified, OTP sent to your registered mail id');
+                    const otp = generateOTP();
+                    const expiryTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+                    //const email = newUser.email;
+                    await db.run(
+                        UPDATE('cap.dukanmitra.Users')
+                            .set({ otp, otpExpiry: expiryTime })
+                            .where({ phoneNumber })
+                    );
+                    const html = `
+                        <p>Your OTP for Dukan Mitra is: <strong>${otp}</strong></p>
+                        <p>Valid for 24 Hours.</p>
+                    `;
+                    await sendMail(user.email, "Dukan Mitra OTP Verification", html);
+                    return { message: `OTP sent to your registared mail id` };
             }
            
             const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
