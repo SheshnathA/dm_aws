@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin — Media Manager</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2/dist/tailwind.min.css" rel="stylesheet">
+<style>
+  .tbl th, .tbl td { padding:8px 10px; border-bottom:1px solid #eee; font-size:13px; text-align:left; vertical-align:middle; }
+  .lightbox { position: fixed; inset:0; display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.75); }
+  .lightbox img{ max-width:90%; max-height:90%; border-radius:8px }
+  .cursor-pointer{ cursor:pointer; }
+</style>
+</head>
+<body class="bg-gray-50 p-6">
+  <div class="max-w-6xl mx-auto bg-white rounded shadow p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-xl font-bold">Media Manager — AdminService</h1>
+      <div class="flex gap-2">
+        <input id="filterInput" placeholder="Filter mediaId / fileName" class="border px-3 py-2 rounded" />
+        <button id="refreshBtn" class="bg-blue-600 text-white px-3 py-2 rounded">Refresh</button>
+      </div>
+    </div>
+
+    <div class="overflow-auto border rounded mb-4">
+      <table id="dataTable" class="min-w-full tbl w-full">
+        <thead id="tableHead" class="bg-gray-50"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="status" class="text-sm text-gray-600"></div>
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="hidden z-50 cursor-pointer" onclick="hideLightbox()">
+      <img id="lightboxImg" />
+  </div>
+
+<script>
+/* ================= CONFIG ================= */
+const SERVICE_BASE = '/odata/v4/admin'; 
+const PAGE_SIZE = 500;
+
+/* ================= HELPERS ================= */
+function esc(s){ return String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function log(...a){ console.log('[media-admin]', ...a); }
+
+function encodeODataKey(key){
+  if (key === null || key === undefined) return null;
+  const s = String(key).replace(/'/g,"''");
+  return `'${s}'`;
+}
+
+function toUrl(path){ return `${SERVICE_BASE}/${path}`; }
+
+/* ================= CSRF ================= */
+let csrfToken = null;
+
+async function fetchCsrfToken(){
+  const res = await fetch(toUrl('$metadata'), { headers: { 'X-CSRF-Token': 'Fetch' } });
+  csrfToken = res.headers.get('x-csrf-token');
+}
+
+/* ================= UI ELEMENTS ================= */
+const tableHead = document.getElementById('tableHead');
+const tableBody = document.getElementById('tableBody');
+const statusEl = document.getElementById('status');
+const refreshBtn = document.getElementById('refreshBtn');
+const filterInput = document.getElementById('filterInput');
+
+refreshBtn.addEventListener('click', ()=> fetchList());
+filterInput.addEventListener('input', ()=> renderTable(lastData));
+
+let lastData = [];
+
+/* ================= FETCH LIST ================= */
+async function fetchList(){
+  statusEl.textContent = 'Loading...';
+  tableHead.innerHTML = '';
+  tableBody.innerHTML = '';
+
+  const res = await fetch(toUrl(`Media?$top=${PAGE_SIZE}`));
+  const json = await res.json();
+  lastData = json.value || [];
+
+  renderTable(lastData);
+  await fetchCsrfToken();
+
+  statusEl.textContent = `Loaded ${lastData.length} media records`;
+}
+
+/* ================= RENDER TABLE ================= */
+function renderTable(data){
+  const q = filterInput.value.trim().toLowerCase();
+
+  const filtered = data.filter(item =>
+     item.mediaId?.toLowerCase().includes(q) ||
+     item.fileName?.toLowerCase().includes(q) ||
+     item.ownerMedia_phoneNumber?.includes(q) ||
+     item.url?.toLowerCase().includes(q)
+  );
+
+  tableHead.innerHTML = `
+    <tr>
+      <th>Media ID</th>
+      <th>File Name</th>
+      <th>Category</th>
+      <th>Owner/Shop</th>
+      <th>Preview</th>
+      <th>isVerified</th>
+      <th>Actions</th>
+    </tr>
+  `;
+
+  tableBody.innerHTML = filtered.map(rec => {
+    const mid = esc(rec.mediaId);
+    return `
+      <tr>
+        <td>${mid}</td>
+        <td>${esc(rec.fileName)}</td>
+        <td>${esc(rec.mediaCategory)}</td>
+        <td>${esc(rec.ownerMedia_phoneNumber)}</td>
+
+        <td>${renderPreview(rec)}</td>
+
+        <td>
+          <input type="checkbox" data-mid="${mid}" class="verify-checkbox" ${rec.isVerified ? "checked":""}>
+        </td>
+
+        <td>
+          <button class="btn-save px-2 py-1 bg-green-600 text-white rounded mr-2" data-mid="${mid}">Save</button>
+          <button class="btn-delete px-2 py-1 bg-red-600 text-white rounded" data-mid="${mid}">Delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  attachButtonHandlers();
+}
+
+/* ================= ADD BUTTON LISTENERS ================= */
+function attachButtonHandlers(){
+  document.querySelectorAll(".btn-save").forEach(btn=>{
+    btn.addEventListener("click", ()=> saveVerify(btn.dataset.mid));
+  });
+
+  document.querySelectorAll(".btn-delete").forEach(btn=>{
+    btn.addEventListener("click", ()=> deleteMedia(btn.dataset.mid));
+  });
+}
+
+/* ================= PREVIEW ================= */
+function renderPreview(rec){
+  const url = rec.url 
+    ? esc(rec.url) 
+    : `${toUrl('Media')}(${encodeODataKey(rec.mediaId)})/$value`;
+
+  return `
+    <img src="${url}" 
+         class="h-16 w-28 object-cover rounded cursor-pointer"
+         onclick="showLightbox('${url}')">
+  `;
+}
+
+/* LIGHTBOX */
+function showLightbox(src){
+  document.getElementById("lightboxImg").src = src;
+  document.getElementById("lightbox").classList.remove("hidden");
+}
+
+function hideLightbox(){
+  document.getElementById("lightbox").classList.add("hidden");
+}
+
+/* ================= SAVE ================= */
+async function saveVerify(mediaId){
+  const checkbox = document.querySelector(`.verify-checkbox[data-mid="${mediaId}"]`);
+
+  const url = `${toUrl('Media')}(${encodeODataKey(mediaId)})`;
+
+  await fetch(url, {
+    method: "PATCH",
+    headers:{
+      "Content-Type":"application/json",
+      "X-CSRF-Token": csrfToken
+    },
+    body: JSON.stringify({ isVerified: checkbox.checked })
+  });
+
+  statusEl.textContent = `Saved ${mediaId}`;
+}
+
+/* ================= DELETE ================= */
+async function deleteMedia(mediaId){
+  if(!confirm(`Delete media ${mediaId}?`)) return;
+
+  const url = `${toUrl('Media')}(${encodeODataKey(mediaId)})`;
+
+  await fetch(url, {
+    method:"DELETE",
+    headers:{ "X-CSRF-Token": csrfToken }
+  });
+
+  statusEl.textContent = `Deleted ${mediaId}`;
+  fetchList();
+}
+
+/* ================= INIT ================= */
+fetchList();
+
+</script>
+</body>
+</html>
