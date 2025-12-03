@@ -82,7 +82,7 @@
   <div id="lightbox" class="hidden lightbox z-50" onclick="hideLightbox()"><img id="lightboxImg" src="" alt="image"/></div>
 
 <script>
-const SERVICE_BASE = 'http://localhost:4004/odata/v4/admin';
+const SERVICE_BASE = 'https://dukanmitra.com/odata/v4/admin';
 let currentEntity = 'Users';
 let currentData = [];
 let selectedForBulk = new Set();
@@ -208,7 +208,7 @@ function renderTable(entity){
           .map(m => {
             const imgUrl = m.url.startsWith('http')
               ? m.url
-              : `http://localhost:4004${m.url}`;
+              : `https://dukanmitra.com${m.url}`;
             return `
               <img src="${imgUrl}"
                    class="h-14 w-24 object-cover rounded cursor-pointer inline-block mr-1 border border-gray-200"
